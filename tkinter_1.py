@@ -36,6 +36,23 @@ class PuzzleApp:
                                self.piece_w, self.piece_h, n_slots=9,
                                overlap=OVERLAP_FRAC)
 
+        # BUTTONS
+        btn_w = int(2.5 * self.piece_w)
+        btn_h = int(btn_w / 8)
+        btn_top  = cmd_y + int(self.piece_h * CMD_BAR_HEIGHT_FRAC) + 8
+        btn_bot  = btn_top + btn_h
+
+        # "Pradeti is naujo" button
+        btn_left_1 = self.self_w//2 - btn_w - 2
+        btn_right_1= btn_left_1 + btn_w
+        self.canvas.create_rectangle(btn_left_1, btn_top, btn_right_1, btn_bot,
+                                     fill="white")
+        
+        # "Vykdyti" button
+        btn_left_2 = self.self_w//2 + 2
+        btn_right_2 = btn_left_2 + btn_w
+        self.canvas.create_rectangle(btn_left_2, btn_top, btn_right_2, btn_bot, fill="white")
+
         self.root.bind("<Escape>", lambda e: self.root.destroy())
     
     def run(self):
@@ -53,32 +70,13 @@ class CommandLine():
 
         def round_rectangle(x1, y1, x2, y2, radius=100, **kwargs):
         
-            points = [x1+radius, y1,
-                      x1+radius, y1,
-                    x2-radius, y1,
-                    x2-radius, y1,
-                    x2, y1,
-                    x2, y1+radius,
-                    x2, y1+radius,
-                    x2, y2-radius,
-                    x2, y2-radius,
-                    x2, y2,
-                    x2-radius, y2,
-                    x2-radius, y2,
-                    x1+radius, y2,
-                    x1+radius, y2,
-                    x1, y2,
-                    x1, y2-radius,
-                    x1, y2-radius,
-                    x1, y1+radius,
-                    x1, y1+radius,
-                    x1, y1]
+            points = [x1+radius, y1, x1+radius, y1, x2-radius, y1, x2-radius, y1, x2, y1, x2, y1+radius, x2, y1+radius, x2, y2-radius,
+                    x2, y2-radius, x2, y2, x2-radius, y2, x2-radius, y2, x1+radius, y2, x1+radius, y2, x1, y2, x1, y2-radius,
+                    x1, y2-radius, x1, y1+radius, x1, y1+radius, x1, y1]
 
             return canvas.create_polygon(points, **kwargs, smooth=True)
         
         cmd_border = round_rectangle(x0, y_top, x1, y1, fill="black", outline="white", width=3)
-
-        #canvas.create_rectangle(x0, y_top, x1, y1, fill="black", outline="white", width=3)
         self.x0, self.y_mid = x0, (y_top + y1) // 2
 
 if __name__ == "__main__":
