@@ -1,5 +1,4 @@
 import os
-os.environ['path'] += r'C:\Program Files\UniConvertor-2.0rc5\dlls'
 if "DISPLAY" not in os.environ:   # needed when starting from cron/rc.local
     os.environ["DISPLAY"] = ":0"
 import tkinter as tk
@@ -57,19 +56,20 @@ class PuzzleApp:
         btn_w = 380
         btn_h = 51
         btn_top  = cmd_y + int(self.piece_h * CMD_BAR_HEIGHT_FRAC) + 8
-        btn_bot  = btn_top + btn_h
 
         # "Pradeti is naujo" button
         btn_left_1 = self.self_w//2 - btn_w - GAP_BETWEEN_BTNS
         restart_img = svg_to_photo(RESTART_BUTTON_PATH, 'white', (btn_w, btn_h))
         self.img_refs.append(restart_img)
-        self.restart_btn = self.canvas.create_image(btn_left_1 + btn_w//2, btn_top + btn_h//2, image=restart_img)
+        self.restart_btn = self.canvas.create_image(btn_left_1, btn_top, image=restart_img, anchor='nw')
+        self.canvas.create_text(btn_left_1 + btn_w * 0.55, btn_top + btn_h//2 - 3, text="IŠVALYTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black')
         
         # "Vykdyti" button
         btn_left_2 = self.self_w//2 + GAP_BETWEEN_BTNS
         submit_img = svg_to_photo(SUBMIT_BUTTON_PATH, 'white', (btn_w, btn_h))
         self.img_refs.append(submit_img)
-        self.submit_btn = self.canvas.create_image(btn_left_2 + btn_w//2, btn_top + btn_h//2, image=submit_img)
+        self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw') # Good fonts: Cascadia Code SemiBold, Segoe UI Black
+        self.canvas.create_text(btn_left_2 + btn_w * 0.45, btn_top + btn_h//2 - 3, text="PALEISTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black')
 
         self.root.bind("<Escape>", lambda e: self.root.destroy())
     
@@ -94,7 +94,7 @@ class CommandLine():
 
             return canvas.create_polygon(points, **kwargs, smooth=True)
         
-        cmd_border = round_rectangle(x0, y_top, x1, y1, fill="black", outline="white", width=3)
+        self.cmd_border = round_rectangle(x0, y_top, x1, y1, fill="black", outline="white", width=3)
         self.x0, self.y_mid = x0, (y_top + y1) // 2
 
 if __name__ == "__main__":
