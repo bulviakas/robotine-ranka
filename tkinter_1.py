@@ -1,19 +1,34 @@
 import os
+os.environ['path'] += r'C:\Program Files\UniConvertor-2.0rc5\dlls'
 if "DISPLAY" not in os.environ:   # needed when starting from cron/rc.local
     os.environ["DISPLAY"] = ":0"
 import tkinter as tk
 from PIL import Image, ImageTk
-#import cairosvg
+import cairosvg
 import io, re
 from pathlib import Path
 
-# GEOMETRY CONSTANTS
+# ASSET PATHS
+RESTART_BUTTON_PATH = Path("assets/restart_btn.svg")
+SUBMIT_BUTTON_PATH = Path("assets/submit_btn.svg")
+
+# CONSTANTS
 OVERLAP_FRAC        = 0.2
 CMD_BAR_HEIGHT_FRAC = 1.7
 TOP_PAD_FRAC        = 0.19
 MID_PAD_FRAC        = 0.05   # vertical gap between cmd bar & button
 BOT_PAD_FRAC        = 0.10
 SIDE_GAP_FRAC       = 0.02   # side padding for menu
+GAP_BETWEEN_BTNS    = 3
+
+def svg_to_photo(svg_file: Path, colour: str, size_xy) -> ImageTk.PhotoImage:
+    """Return a PhotoImage of the SVG filled with *colour* (stroke stays)."""
+    txt = svg_file.read_text(encoding="utf-8")
+    txt = re.sub(r'fill\s*:\s*#[0-9a-fA-F]{3,6}', f'fill:{colour}', txt)
+    txt = re.sub(r'fill="[^"]+"',                 f'fill="{colour}"', txt, flags=re.I)
+    png = cairosvg.svg2png(bytestring=txt.encode(),
+                           output_width=size_xy[0], output_height=size_xy[1])
+    return ImageTk.PhotoImage(Image.open(io.BytesIO(png)))
 
 class PuzzleApp:
     def __init__(self):
@@ -30,6 +45,8 @@ class PuzzleApp:
         self.piece_w  = int((self.self_w - 2*self.gap) / 8)
         self.piece_h  = int(self.piece_w * 0.6)
 
+        self.img_refs = []
+
         # Command bar
         cmd_y = cmd_y = int(TOP_PAD_FRAC * self.self_h)
         self.cmd = CommandLine(self.canvas, self.self_w//2, cmd_y,
@@ -37,21 +54,22 @@ class PuzzleApp:
                                overlap=OVERLAP_FRAC)
 
         # BUTTONS
-        btn_w = int(2.5 * self.piece_w)
-        btn_h = int(btn_w / 8)
+        btn_w = 380
+        btn_h = 51
         btn_top  = cmd_y + int(self.piece_h * CMD_BAR_HEIGHT_FRAC) + 8
         btn_bot  = btn_top + btn_h
 
         # "Pradeti is naujo" button
-        btn_left_1 = self.self_w//2 - btn_w - 2
-        btn_right_1= btn_left_1 + btn_w
-        self.canvas.create_rectangle(btn_left_1, btn_top, btn_right_1, btn_bot,
-                                     fill="white")
+        btn_left_1 = self.self_w//2 - btn_w - GAP_BETWEEN_BTNS
+        restart_img = svg_to_photo(RESTART_BUTTON_PATH, 'white', (btn_w, btn_h))
+        self.img_refs.append(restart_img)
+        self.restart_btn = self.canvas.create_image(btn_left_1 + btn_w//2, btn_top + btn_h//2, image=restart_img)
         
         # "Vykdyti" button
-        btn_left_2 = self.self_w//2 + 2
-        btn_right_2 = btn_left_2 + btn_w
-        self.canvas.create_rectangle(btn_left_2, btn_top, btn_right_2, btn_bot, fill="white")
+        btn_left_2 = self.self_w//2 + GAP_BETWEEN_BTNS
+        submit_img = svg_to_photo(SUBMIT_BUTTON_PATH, 'white', (btn_w, btn_h))
+        self.img_refs.append(submit_img)
+        self.submit_btn = self.canvas.create_image(btn_left_2 + btn_w//2, btn_top + btn_h//2, image=submit_img)
 
         self.root.bind("<Escape>", lambda e: self.root.destroy())
     
