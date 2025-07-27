@@ -1,0 +1,13 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 165 85" width="165" height="85">
+	<title>New Project</title>
+	<style>
+		.s0 { fill: #ffffff } 
+		.s1 { fill: #000000 } 
+	</style>
+	<g id="Layer 1">
+		<g id="Screenshot 2025-07-25 181651">
+			<path id="Path 1" fill-rule="evenodd" class="s0" d="m36.4 5.8c-2.8 2.9-11.9 12.4-20.3 21.2-8.4 8.7-15.3 16-15.3 16.1 0 0.1 9.1 9.6 20.3 21.2l20.2 21.1h81.7c31.3-32.7 40.4-42.2 40.4-42.3 0-0.1-7.5-8.1-16.7-17.6-9.2-9.6-18.3-19.1-20.3-21.2l-3.6-3.7h-81.4z"/>
+			<path id="Path 2" fill-rule="evenodd" class="s1" d="m25.4 23c-9.7 10.1-18.1 18.8-18.5 19.2l-0.8 0.9 37 38.5h78.2c28.4-29.8 36.7-38.5 36.7-38.5 0.1-0.1-8.2-8.8-18.3-19.3l-18.4-19.3h-78.2z"/>
+		</g>
+	</g>
+</svg>
