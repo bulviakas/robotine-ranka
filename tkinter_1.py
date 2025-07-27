@@ -79,6 +79,7 @@ class PuzzleApp:
         # Start block
         start_block = Block(self, 'white', self.cmd.x0 + self.piece_w//2, cmd_y + self.cmd.piece_h//2 + CMD_H_PAD, template=False, start=True)
         self.cmd.try_snap(start_block)
+        start_block.lock()
 
         self.root.bind("<Escape>", lambda e: self.root.destroy())
     
@@ -107,7 +108,7 @@ class CommandLine():
         self.x0, self.y_mid = x0, (y_top + y1) // 2
 
     def release(self, block):
-        if block.slot is not None:
+        if block.slot is not None and not block.locked:
             self.slots[block.slot] = None
             block.slot = None
 
@@ -137,6 +138,7 @@ class Block():
         self.colour, self.template = colour, template
         self.home_x, self.home_y   = x, y
         self.slot = None
+        self.locked = False
         
         if start:
             img = svg_to_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
@@ -151,30 +153,37 @@ class Block():
             self.canvas.tag_bind(self.item, ev, cb)
 
     def on_click(self, ev):
-        self.app.cmd.release(self)
-        if self.template:
-            # spawn a draggable clone
-            clone = Block(self.app, self.colour, self.home_x, self.home_y, template=False)
-            clone.on_click(ev)
-            return
-        self.drag_x, self.drag_y = ev.x, ev.y
+        if not self.locked:
+            self.app.cmd.release(self)
+            if self.template:
+                # spawn a draggable clone
+                clone = Block(self.app, self.colour, self.home_x, self.home_y, template=False)
+                clone.on_click(ev)
+                return
+            self.drag_x, self.drag_y = ev.x, ev.y
 
     def on_drag(self, ev):
-        if self.template: return
-        dx, dy = ev.x - self.drag_x, ev.y - self.drag_y
-        self.canvas.move(self.item, dx, dy)
-        self.drag_x, self.drag_y = ev.x, ev.y
+        if not self.locked:
+            if self.template: return
+            dx, dy = ev.x - self.drag_x, ev.y - self.drag_y
+            self.canvas.move(self.item, dx, dy)
+            self.drag_x, self.drag_y = ev.x, ev.y
 
     def on_release(self, _ev):
-        if self.template: return
-        if not self.app.cmd.try_snap(self):
-            self.return_home()
+        if not self.locked:
+            if self.template: return
+            if not self.app.cmd.try_snap(self):
+                self.return_home()
 
     def return_home(self):
         cx, cy = [(bb[0]+bb[2])/2 for bb in (self.canvas.bbox(self.item),)][0], \
                  [(bb[1]+bb[3])/2 for bb in (self.canvas.bbox(self.item),)][0]
         self.canvas.move(self.item, self.home_x - cx, self.home_y - cy)
         self.slot = None
+
+    def lock(self):
+        self.locked = True
+        print("Block locked")
 
 if __name__ == "__main__":
     PuzzleApp().run()
