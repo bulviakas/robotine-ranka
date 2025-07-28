@@ -25,6 +25,11 @@ BLOCK_SIZE_COEF     = 0.85
 CMD_SIDE_PAD        = 32
 CMD_H_PAD           = 16
 
+MENU_COLOURS = [
+    "#e74c3c", "#f39c12", "#27ae60", "#8e44ad", "#96d5ff",
+    "#ff5f7f", "#f1c40f", "#2980b9"   # 8 pieces
+]
+
 def svg_to_photo(svg_file: Path, colour: str, size_xy) -> ImageTk.PhotoImage:
     """Return a PhotoImage of the SVG filled with *colour* (stroke stays)."""
     txt = svg_file.read_text(encoding="utf-8")
@@ -81,10 +86,26 @@ class PuzzleApp:
         self.cmd.try_snap(start_block)
         start_block.lock()
 
+        # --- Menu grid positions (4 per row) ---
+        first_row_y  = (self.self_h - (btn_top + btn_h))//2 + btn_top + btn_h - self.piece_h
+        second_row_y = first_row_y + self.piece_h + self.piece_h
+        row_centres  = [first_row_y, second_row_y]
+
+        # x positions for 4 centres: gap + piece_w/2 + col*2piece_w
+        x0 = self.self_w//2 - 3 * self.piece_w
+        col_x = [x0 + c * 2*self.piece_w for c in range(4)]
+
+        # Create 10 template pieces
+        for idx, colour in enumerate(MENU_COLOURS):
+            row, col = divmod(idx, 4)
+            Block(self, colour, col_x[col], row_centres[row], template=True)
+
         self.root.bind("<Escape>", lambda e: self.root.destroy())
     
     def run(self):
         self.root.mainloop()
+
+# TODO fix the command line placement (last block goes over the outline)
 
 class CommandLine():
     def __init__(self, canvas, canvas_x, y_top, piece_w, piece_h, n_slots, overlap):
@@ -153,6 +174,8 @@ class Block():
                        ("<B1-Motion>", self.on_drag),
                        ("<ButtonRelease-1>", self.on_release)):
             self.canvas.tag_bind(self.item, ev, cb)
+
+    # TODO fix clone spawning (either spawn a claw right after start or spawn and drag on one click)
 
     def on_click(self, ev):
         if not self.locked:
