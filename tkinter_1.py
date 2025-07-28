@@ -77,7 +77,7 @@ class PuzzleApp:
         self.canvas.create_text(btn_left_2 + btn_w * 0.45, btn_top + btn_h//2 - 3, text="PALEISTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black')
 
         # Start block
-        start_block = Block(self, 'white', self.cmd.x0 + self.piece_w//2, cmd_y + self.cmd.piece_h//2 + CMD_H_PAD, template=False, start=True)
+        start_block = Block(self, 'white', self.cmd.x0 + self.piece_w//2, cmd_y + self.cmd.piece_h//2 + CMD_H_PAD, template=False, start=True, text="Pradžia")
         self.cmd.try_snap(start_block)
         start_block.lock()
 
@@ -133,12 +133,13 @@ class CommandLine():
         return True
 
 class Block():
-    def __init__(self, app, colour, x, y, template=False, start=False):
+    def __init__(self, app, colour, x, y, template=False, start=False, text=""):
         self.app, self.canvas = app, app.canvas
         self.colour, self.template = colour, template
         self.home_x, self.home_y   = x, y
         self.slot = None
         self.locked = False
+        self.text = text
         
         if start:
             img = svg_to_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
@@ -146,6 +147,7 @@ class Block():
             img = svg_to_photo(CMD_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
         app.img_refs.append(img)
         self.item = self.canvas.create_image(x, y, image=img, anchor="center")
+        self.label = self.canvas.create_text(x, y + 7, text=text, font=('Cascadia Code SemiBold', 14, 'bold'), fill='black', anchor='center')
 
         for ev, cb in (("<Button-1>", self.on_click),
                        ("<B1-Motion>", self.on_drag),
@@ -157,7 +159,7 @@ class Block():
             self.app.cmd.release(self)
             if self.template:
                 # spawn a draggable clone
-                clone = Block(self.app, self.colour, self.home_x, self.home_y, template=False)
+                clone = Block(self.app, self.colour, self.home_x, self.home_y, template=False, text=self.text)
                 clone.on_click(ev)
                 return
             self.drag_x, self.drag_y = ev.x, ev.y
@@ -167,6 +169,7 @@ class Block():
             if self.template: return
             dx, dy = ev.x - self.drag_x, ev.y - self.drag_y
             self.canvas.move(self.item, dx, dy)
+            self.canvas.move(self.label, dx, dy)
             self.drag_x, self.drag_y = ev.x, ev.y
 
     def on_release(self, _ev):
@@ -179,6 +182,7 @@ class Block():
         cx, cy = [(bb[0]+bb[2])/2 for bb in (self.canvas.bbox(self.item),)][0], \
                  [(bb[1]+bb[3])/2 for bb in (self.canvas.bbox(self.item),)][0]
         self.canvas.move(self.item, self.home_x - cx, self.home_y - cy)
+        self.canvas.move(self.label, self.home_x - cx, self.home_y - cy)
         self.slot = None
 
     def lock(self):
