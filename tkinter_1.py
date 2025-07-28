@@ -30,6 +30,11 @@ MENU_COLOURS = [
     "#ff5f7f", "#f1c40f", "#2980b9"   # 8 pieces
 ]
 
+BLOCK_LABELS = [
+    "NAMŲ\nPOZICIJA", "SILPNAS\nPAKRATYMAS", "STIPRUS\nPAKRATYMAS", "ŠALDYTUVO\nPOZICIJA",
+    "SKENAVIMO\nPOZICIJA", "TRUMPA\nPAUZĖ", "ILGESNĖ\nPAUZĖ", "GALUTINĖ\nPOZICIJA"
+]
+
 def svg_to_photo(svg_file: Path, colour: str, size_xy) -> ImageTk.PhotoImage:
     """Return a PhotoImage of the SVG filled with *colour* (stroke stays)."""
     txt = svg_file.read_text(encoding="utf-8")
@@ -72,17 +77,21 @@ class PuzzleApp:
         restart_img = svg_to_photo(RESTART_BUTTON_PATH, 'white', (btn_w, btn_h))
         self.img_refs.append(restart_img)
         self.restart_btn = self.canvas.create_image(btn_left_1, btn_top, image=restart_img, anchor='nw')
-        self.canvas.create_text(btn_left_1 + btn_w * 0.55, btn_top + btn_h//2 - 3, text="IŠVALYTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black')
+        self.canvas.create_text(btn_left_1 + btn_w * 0.55, btn_top + btn_h//2 - 3, 
+                                text="IŠVALYTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black')
         
         # "Vykdyti" button
         btn_left_2 = self.self_w//2 + GAP_BETWEEN_BTNS
         submit_img = svg_to_photo(SUBMIT_BUTTON_PATH, 'white', (btn_w, btn_h))
         self.img_refs.append(submit_img)
         self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw') # Good fonts: Cascadia Code SemiBold, Segoe UI Black
-        self.canvas.create_text(btn_left_2 + btn_w * 0.45, btn_top + btn_h//2 - 3, text="PALEISTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black')
+        self.canvas.create_text(btn_left_2 + btn_w * 0.45, btn_top + btn_h//2 - 3, 
+                                text="PALEISTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black')
 
         # Start block
-        start_block = Block(self, 'white', self.cmd.x0 + self.piece_w//2, cmd_y + self.cmd.piece_h//2 + CMD_H_PAD, template=False, start=True, text="Pradžia")
+        start_block = Block(self, 'white', self.cmd.x0 + self.piece_w//2, 
+                            cmd_y + self.cmd.piece_h//2 + CMD_H_PAD, template=False, start=True,
+                            text="PRADŽIA", text_offset=0)
         self.cmd.try_snap(start_block)
         start_block.lock()
 
@@ -98,7 +107,8 @@ class PuzzleApp:
         # Create 10 template pieces
         for idx, colour in enumerate(MENU_COLOURS):
             row, col = divmod(idx, 4)
-            Block(self, colour, col_x[col], row_centres[row], template=True)
+            label = BLOCK_LABELS[idx]
+            Block(self, colour, col_x[col], row_centres[row], template=True, text=label)
 
         self.root.bind("<Escape>", lambda e: self.root.destroy())
     
@@ -125,7 +135,9 @@ class CommandLine():
 
             return canvas.create_polygon(points, **kwargs, smooth=True)
         
-        self.cmd_border = round_rectangle(x0 - CMD_SIDE_PAD, y_top - CMD_H_PAD, x1 + CMD_SIDE_PAD, y1 + CMD_H_PAD, fill="black", outline="white", width=3)
+        self.cmd_border = round_rectangle(x0 - CMD_SIDE_PAD, y_top - CMD_H_PAD, 
+                                          x1 + CMD_SIDE_PAD, y1 + CMD_H_PAD, fill="black", 
+                                          outline="white", width=3)
         self.x0, self.y_mid = x0, (y_top + y1) // 2
 
     def release(self, block):
@@ -134,7 +146,7 @@ class CommandLine():
             block.slot = None
 
     def try_snap(self, block):
-        bb = self.canvas.bbox(block.item)
+        bb = self.canvas.bbox(block.tag)
         if not bb:
             return False
         cx = (bb[0] + bb[2]) / 2
@@ -148,32 +160,35 @@ class CommandLine():
         # snap!
         tgt_cx = self.x0 + slot*self.slot_w + self.piece_w//2
         dx, dy = tgt_cx - cx, self.y_mid - ((bb[1]+bb[3]) / 2)
-        self.canvas.move(block.item, dx, dy)
+        self.canvas.move(block.tag, dx, dy)
         self.slots[slot], block.slot = block, slot
         print("SNAP!")
         return True
 
 class Block():
-    def __init__(self, app, colour, x, y, template=False, start=False, text=""):
+    def __init__(self, app, colour, x, y, template=False, start=False, text="", text_offset=7):
         self.app, self.canvas = app, app.canvas
         self.colour, self.template = colour, template
         self.home_x, self.home_y   = x, y
         self.slot = None
         self.locked = False
         self.text = text
+        self.tag = f"block_{id(self)}"
         
         if start:
             img = svg_to_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
         else:
             img = svg_to_photo(CMD_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
         app.img_refs.append(img)
-        self.item = self.canvas.create_image(x, y, image=img, anchor="center")
-        self.label = self.canvas.create_text(x, y + 7, text=text, font=('Cascadia Code SemiBold', 14, 'bold'), fill='black', anchor='center')
+        self.item = self.canvas.create_image(x, y, image=img, anchor="center", tags=self.tag)
+        self.label = self.canvas.create_text(x + text_offset, y, text=text, 
+                                             font=('Cascadia Code SemiBold', 10, 'bold'), 
+                                             fill='black', anchor='center', tags=self.tag, justify='center')
 
         for ev, cb in (("<Button-1>", self.on_click),
                        ("<B1-Motion>", self.on_drag),
                        ("<ButtonRelease-1>", self.on_release)):
-            self.canvas.tag_bind(self.item, ev, cb)
+            self.canvas.tag_bind(self.tag, ev, cb)
 
     # TODO fix clone spawning (either spawn a claw right after start or spawn and drag on one click)
 
@@ -191,8 +206,7 @@ class Block():
         if not self.locked:
             if self.template: return
             dx, dy = ev.x - self.drag_x, ev.y - self.drag_y
-            self.canvas.move(self.item, dx, dy)
-            self.canvas.move(self.label, dx, dy)
+            self.canvas.move(self.tag, dx, dy)
             self.drag_x, self.drag_y = ev.x, ev.y
 
     def on_release(self, _ev):
@@ -202,10 +216,9 @@ class Block():
                 self.return_home()
 
     def return_home(self):
-        cx, cy = [(bb[0]+bb[2])/2 for bb in (self.canvas.bbox(self.item),)][0], \
-                 [(bb[1]+bb[3])/2 for bb in (self.canvas.bbox(self.item),)][0]
-        self.canvas.move(self.item, self.home_x - cx, self.home_y - cy)
-        self.canvas.move(self.label, self.home_x - cx, self.home_y - cy)
+        cx, cy = [(bb[0]+bb[2])/2 for bb in (self.canvas.bbox(self.tag),)][0], \
+                 [(bb[1]+bb[3])/2 for bb in (self.canvas.bbox(self.tag),)][0]
+        self.canvas.move(self.tag, self.home_x - cx, self.home_y - cy)
         self.slot = None
 
     def lock(self):
