@@ -72,6 +72,8 @@ class PuzzleApp:
         btn_h = 51
         btn_top  = cmd_y + CMD_H_PAD + int(self.piece_h * CMD_BAR_HEIGHT_FRAC) + 8
 
+        # TODO Add the button events
+
         # "Pradeti is naujo" button
         btn_left_1 = self.self_w//2 - btn_w - GAP_BETWEEN_BTNS
         restart_img = svg_to_photo(RESTART_BUTTON_PATH, 'white', (btn_w, btn_h))
@@ -89,7 +91,7 @@ class PuzzleApp:
                                 text="PALEISTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black')
 
         # Start block
-        start_block = Block(self, 'white', self.cmd.x0 + self.piece_w//2, 
+        start_block = Block(self, self.cmd, 'white', self.cmd.x0 + self.piece_w//2, 
                             cmd_y + self.cmd.piece_h//2 + CMD_H_PAD, template=False, start=True,
                             text="PRADŽIA", text_offset=0)
         self.cmd.try_snap(start_block)
@@ -108,14 +110,12 @@ class PuzzleApp:
         for idx, colour in enumerate(MENU_COLOURS):
             row, col = divmod(idx, 4)
             label = BLOCK_LABELS[idx]
-            Block(self, colour, col_x[col], row_centres[row], template=True, text=label)
+            Block(self, self.cmd, colour, col_x[col], row_centres[row], template=True, text=label)
 
         self.root.bind("<Escape>", lambda e: self.root.destroy())
     
     def run(self):
         self.root.mainloop()
-
-# TODO fix the command line placement (last block goes over the outline)
 
 class CommandLine():
     def __init__(self, canvas, canvas_x, y_top, piece_w, piece_h, n_slots, overlap):
@@ -123,7 +123,7 @@ class CommandLine():
         self.slot_w  = int(piece_w * (1 - overlap))
         self.slots   = [None] * n_slots
 
-        total_w = self.slot_w * n_slots # + int(piece_w * overlap)
+        total_w = self.slot_w * n_slots + int(piece_w * overlap)
         x0, x1  = canvas_x - total_w // 2, canvas_x + total_w // 2
         y1      = y_top + int(piece_h * CMD_BAR_HEIGHT_FRAC)
 
@@ -142,8 +142,12 @@ class CommandLine():
 
     def release(self, block):
         if block.slot is not None and not block.locked:
+            if self.slots[block.slot - 1] is not None:
+                self.slots[block.slot - 1].unlock()
             self.slots[block.slot] = None
             block.slot = None
+            
+    # TODO fix the snapping and releasing distance
 
     def try_snap(self, block):
         bb = self.canvas.bbox(block.tag)
@@ -163,10 +167,12 @@ class CommandLine():
         self.canvas.move(block.tag, dx, dy)
         self.slots[slot], block.slot = block, slot
         print("SNAP!")
+        if self.slots[block.slot - 1] is not None:
+            self.slots[block.slot - 1].lock()
         return True
 
 class Block():
-    def __init__(self, app, colour, x, y, template=False, start=False, text="", text_offset=7):
+    def __init__(self, app, cmd, colour, x, y, template=False, start=False, text="", text_offset=7):
         self.app, self.canvas = app, app.canvas
         self.colour, self.template = colour, template
         self.home_x, self.home_y   = x, y
@@ -174,6 +180,7 @@ class Block():
         self.locked = False
         self.text = text
         self.tag = f"block_{id(self)}"
+        self.cmd = cmd
         
         if start:
             img = svg_to_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
@@ -197,7 +204,7 @@ class Block():
             self.app.cmd.release(self)
             if self.template:
                 # spawn a draggable clone
-                clone = Block(self.app, self.colour, self.home_x, self.home_y, template=False, text=self.text)
+                clone = Block(self.app, self.cmd, self.colour, self.home_x, self.home_y, template=False, text=self.text)
                 clone.on_click(ev)
                 return
             self.drag_x, self.drag_y = ev.x, ev.y
@@ -223,7 +230,12 @@ class Block():
 
     def lock(self):
         self.locked = True
-        print("Block locked")
+        print(self.text, " block locked")
+    
+    def unlock(self):
+        if self.text != "PRADŽIA":
+            self.locked = False
+            print(self.text, " block unlocked")
 
 if __name__ == "__main__":
     PuzzleApp().run()
