@@ -173,8 +173,12 @@ class CommandLine():
         print("SNAP!")
         if self.slots[block.slot - 1] is not None:
             self.slots[block.slot - 1].lock()
+        self.canvas.unbind("<B1-Motion>")
+        self.canvas.unbind("<ButtonRelease-1>")
         return True
     
+    # TODO when clearing destroy the clones instead of returning them to have less objects
+
     def clear(self, event):
         print("Clearing...")
         for slot, block in enumerate(self.slots):
@@ -216,17 +220,26 @@ class Block():
                        ("<ButtonRelease-1>", self.on_release)):
             self.canvas.tag_bind(self.tag, ev, cb)
 
-    # TODO fix clone spawning (either spawn a claw right after start or spawn and drag on one click)
-
     def on_click(self, ev):
+        print("Block clicked")
         if not self.locked:
             self.app.cmd.release(self)
             if self.template:
                 # spawn a draggable clone
                 clone = Block(self.app, self.cmd, self.colour, self.home_x, self.home_y, template=False, text=self.text)
-                clone.on_click(ev)
+
+                clone.drag_x, clone.drag_y = ev.x, ev.y
+                clone.on_drag(ev)
+
+                def drag_handler(e): clone.on_drag(e)
+                def release_handler(e): clone.on_release(e)
+
+                canvas = self.canvas
+                canvas.bind("<B1-Motion>", drag_handler)
+                canvas.bind("<ButtonRelease-1>", release_handler)
                 return
             self.drag_x, self.drag_y = ev.x, ev.y
+
 
     def on_drag(self, ev):
         if not self.locked:
@@ -236,10 +249,13 @@ class Block():
             self.drag_x, self.drag_y = ev.x, ev.y
 
     def on_release(self, _ev):
+        print("Block released")
         if not self.locked:
             if self.template: return
             if not self.app.cmd.try_snap(self):
                 self.return_home()
+                self.canvas.unbind("<B1-Motion>")
+                self.canvas.unbind("<ButtonRelease-1>")
 
     def return_home(self):
         cx, cy = [(bb[0]+bb[2])/2 for bb in (self.canvas.bbox(self.tag),)][0], \
