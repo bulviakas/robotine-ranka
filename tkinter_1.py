@@ -25,6 +25,9 @@ BLOCK_SIZE_COEF     = 0.85
 CMD_SIDE_PAD        = 32
 CMD_H_PAD           = 16
 
+# Good fonts: Cascadia Code SemiBold, Segoe UI Black
+MAIN_FONT = "Cascadia Code SemiBold"
+
 MENU_COLOURS = [
     "#e74c3c", "#f39c12", "#27ae60", "#8e44ad", "#96d5ff",
     "#ff5f7f", "#f1c40f", "#2980b9"   # 8 pieces
@@ -81,16 +84,16 @@ class PuzzleApp:
         self.img_refs.append(clear_img)
         self.clear_btn = self.canvas.create_image(btn_left_1, btn_top, image=clear_img, anchor='nw', tags=self.clear_tag)
         self.canvas.create_text(btn_left_1 + btn_w * 0.55, btn_top + btn_h//2 - 3, 
-                                text="IŠVALYTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black', tags=self.clear_tag)
+                                text="IŠVALYTI", font=(MAIN_FONT, 18, 'bold'), fill='black', tags=self.clear_tag)
         self.canvas.tag_bind(self.clear_tag, "<Button-1>", self.cmd.clear)
 
         # "Vykdyti" button
         btn_left_2 = self.self_w//2 + GAP_BETWEEN_BTNS
         submit_img = svg_to_photo(SUBMIT_BUTTON_PATH, 'white', (btn_w, btn_h))
         self.img_refs.append(submit_img)
-        self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw') # Good fonts: Cascadia Code SemiBold, Segoe UI Black
+        self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw') 
         self.canvas.create_text(btn_left_2 + btn_w * 0.45, btn_top + btn_h//2 - 3, 
-                                text="PALEISTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black')
+                                text="PALEISTI", font=(MAIN_FONT, 18, 'bold'), fill='black')
 
         # Start block
         start_block = Block(self, self.cmd, 'white', self.cmd.x0 + self.piece_w//2, 
@@ -176,8 +179,6 @@ class CommandLine():
         self.canvas.unbind("<B1-Motion>")
         self.canvas.unbind("<ButtonRelease-1>")
         return True
-    
-    # TODO when clearing destroy the clones instead of returning them to have less objects
 
     def clear(self, event):
         print("Clearing...")
@@ -186,10 +187,10 @@ class CommandLine():
                 print("CLEARED!")
                 return
             if block.text == "PRADŽIA": continue
+            block.destroy()
             self.slots[slot] = None
             block.slot = None
-            block.return_home()
-            block.unlock()
+            
         print("CLEARED!")
         return
 
@@ -212,7 +213,7 @@ class Block():
         app.img_refs.append(img)
         self.item = self.canvas.create_image(x, y, image=img, anchor="center", tags=self.tag)
         self.label = self.canvas.create_text(x + text_offset, y, text=text, 
-                                             font=('Cascadia Code SemiBold', 10, 'bold'), 
+                                             font=(MAIN_FONT, 10, 'bold'), 
                                              fill='black', anchor='center', tags=self.tag, justify='center')
 
         for ev, cb in (("<Button-1>", self.on_click),
@@ -271,6 +272,9 @@ class Block():
         if self.text != "PRADŽIA":
             self.locked = False
             print(self.text, " block unlocked")
+
+    def destroy(self):
+        self.canvas.delete(self.tag)
 
 if __name__ == "__main__":
     PuzzleApp().run()
