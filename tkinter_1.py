@@ -74,14 +74,16 @@ class PuzzleApp:
 
         # TODO Add the button events
 
-        # "Pradeti is naujo" button
+        # "Isvalyti" button
+        self.clear_tag = 'clear'
         btn_left_1 = self.self_w//2 - btn_w - GAP_BETWEEN_BTNS
-        restart_img = svg_to_photo(RESTART_BUTTON_PATH, 'white', (btn_w, btn_h))
-        self.img_refs.append(restart_img)
-        self.restart_btn = self.canvas.create_image(btn_left_1, btn_top, image=restart_img, anchor='nw')
+        clear_img = svg_to_photo(RESTART_BUTTON_PATH, 'white', (btn_w, btn_h))
+        self.img_refs.append(clear_img)
+        self.clear_btn = self.canvas.create_image(btn_left_1, btn_top, image=clear_img, anchor='nw', tags=self.clear_tag)
         self.canvas.create_text(btn_left_1 + btn_w * 0.55, btn_top + btn_h//2 - 3, 
-                                text="IŠVALYTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black')
-        
+                                text="IŠVALYTI", font=('Cascadia Code SemiBold', 18, 'bold'), fill='black', tags=self.clear_tag)
+        self.canvas.tag_bind(self.clear_tag, "<Button-1>", self.cmd.clear)
+
         # "Vykdyti" button
         btn_left_2 = self.self_w//2 + GAP_BETWEEN_BTNS
         submit_img = svg_to_photo(SUBMIT_BUTTON_PATH, 'white', (btn_w, btn_h))
@@ -146,8 +148,6 @@ class CommandLine():
                 self.slots[block.slot - 1].unlock()
             self.slots[block.slot] = None
             block.slot = None
-            
-    # TODO fix the snapping and releasing distance
 
     def try_snap(self, block):
         bb = self.canvas.bbox(block.tag)
@@ -174,6 +174,21 @@ class CommandLine():
         if self.slots[block.slot - 1] is not None:
             self.slots[block.slot - 1].lock()
         return True
+    
+    def clear(self, event):
+        print("Clearing...")
+        for slot, block in enumerate(self.slots):
+            if block is None: 
+                print("CLEARED!")
+                return
+            if block.text == "PRADŽIA": continue
+            self.slots[slot] = None
+            block.slot = None
+            block.return_home()
+            block.unlock()
+        print("CLEARED!")
+        return
+
 
 class Block():
     def __init__(self, app, cmd, colour, x, y, template=False, start=False, text="", text_offset=7):
