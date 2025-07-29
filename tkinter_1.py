@@ -154,12 +154,16 @@ class CommandLine():
         if not bb:
             return False
         cx = (bb[0] + bb[2]) / 2
+        cy = (bb[1] + bb[3]) / 2
         slot = int((cx - self.x0) // self.slot_w)
 
         # validity: in range & sequential
         if not (0 <= slot < len(self.slots)):     return False
         if self.slots[slot] is not None:          return False
         if slot and self.slots[slot-1] is None:   return False
+        if abs(cy - self.y_mid) > 2*self.piece_h: 
+            print("Too far away")
+            return False
 
         # snap!
         tgt_cx = self.x0 + slot*self.slot_w + self.piece_w//2
