@@ -18,7 +18,7 @@ OVERLAP_FRAC        = 0.2
 CMD_BAR_HEIGHT_FRAC = 1.7
 TOP_PAD_FRAC        = 0.19
 MID_PAD_FRAC        = 0.05   # vertical gap between cmd bar & button
-BOT_PAD_FRAC        = 0.10
+BOT_PAD_FRAC        = 0.1
 SIDE_GAP_FRAC       = 0.02   # side padding for menu
 GAP_BETWEEN_BTNS    = 3
 BLOCK_SIZE_COEF     = 0.85
@@ -35,7 +35,12 @@ MENU_COLOURS = [
 
 BLOCK_LABELS = [
     "NAMŲ\nPOZICIJA", "SILPNAS\nPAKRATYMAS", "STIPRUS\nPAKRATYMAS", "ŠALDYTUVO\nPOZICIJA",
-    "SKENAVIMO\nPOZICIJA", "TRUMPA\nPAUZĖ", "ILGESNĖ\nPAUZĖ", "GALUTINĖ\nPOZICIJA"
+    "SKENAVIMO\nPOZICIJA", "TRUMPA\nPAUZĖ", "ILGA\nPAUZĖ", "GALUTINĖ\nPOZICIJA"
+]
+
+THE_CORRECT_SEQUENCE = [
+    "ŠALDYTUVO\nPOZICIJA", "NAMŲ\nPOZICIJA", "STIPRUS\nPAKRATYMAS", "SKENAVIMO\nPOZICIJA",
+    "ILGA\nPAUZĖ", "NAMŲ\nPOZICIJA", "GALUTINĖ\nPOZICIJA", None
 ]
 
 def svg_to_photo(svg_file: Path, colour: str, size_xy) -> ImageTk.PhotoImage:
@@ -77,7 +82,7 @@ class PuzzleApp:
 
         # TODO Add the button events
 
-        # "Isvalyti" button
+        # CLEAR button
         self.clear_tag = 'clear'
         btn_left_1 = self.self_w//2 - btn_w - GAP_BETWEEN_BTNS
         clear_img = svg_to_photo(RESTART_BUTTON_PATH, 'white', (btn_w, btn_h))
@@ -87,13 +92,15 @@ class PuzzleApp:
                                 text="IŠVALYTI", font=(MAIN_FONT, 18, 'bold'), fill='black', tags=self.clear_tag)
         self.canvas.tag_bind(self.clear_tag, "<Button-1>", self.cmd.clear)
 
-        # "Vykdyti" button
+        # SUBMIT button
+        self.submit_tag = 'submit'
         btn_left_2 = self.self_w//2 + GAP_BETWEEN_BTNS
         submit_img = svg_to_photo(SUBMIT_BUTTON_PATH, 'white', (btn_w, btn_h))
         self.img_refs.append(submit_img)
-        self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw') 
+        self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw', tags=self.submit_tag) 
         self.canvas.create_text(btn_left_2 + btn_w * 0.45, btn_top + btn_h//2 - 3, 
-                                text="PALEISTI", font=(MAIN_FONT, 18, 'bold'), fill='black')
+                                text="PALEISTI", font=(MAIN_FONT, 18, 'bold'), fill='black', tags=self.submit_tag)
+        self.canvas.tag_bind(self.submit_tag, "<Button-1>", self.cmd.submit)
 
         # Start block
         start_block = Block(self, self.cmd, 'white', self.cmd.x0 + self.piece_w//2, 
@@ -193,6 +200,18 @@ class CommandLine():
             
         print("CLEARED!")
         return
+    
+    def submit(self, event):
+        print("Submited!")
+        print("-----------------")
+        for block in self.slots:
+            if block is None: 
+                print("---------------")
+                return
+            print(block.text, "\n")
+        print("-----------------")
+        return
+
 
 
 class Block():
