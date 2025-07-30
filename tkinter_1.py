@@ -80,8 +80,6 @@ class PuzzleApp:
         btn_h = 51
         btn_top  = cmd_y + CMD_H_PAD + int(self.piece_h * CMD_BAR_HEIGHT_FRAC) + 8
 
-        # TODO Add the button events
-
         # CLEAR button
         self.clear_tag = 'clear'
         btn_left_1 = self.self_w//2 - btn_w - GAP_BETWEEN_BTNS
@@ -221,18 +219,23 @@ class Block():
         self.home_x, self.home_y   = x, y
         self.slot = None
         self.locked = False
-        self.text = text
+        self.text, self.font_size = text, 10
         self.tag = f"block_{id(self)}"
         self.cmd = cmd
         
+        # TODO make the clones spawn at the mouse's pos rather than template's home pos
+
         if start:
             img = svg_to_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
+        elif self.template:
+            img = svg_to_photo(CMD_BLOCK_PATH, colour, (1.5*app.piece_w, 1.5*app.piece_h))
+            self.font_size = 14
         else:
             img = svg_to_photo(CMD_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
         app.img_refs.append(img)
         self.item = self.canvas.create_image(x, y, image=img, anchor="center", tags=self.tag)
         self.label = self.canvas.create_text(x + text_offset, y, text=text, 
-                                             font=(MAIN_FONT, 10, 'bold'), 
+                                             font=(MAIN_FONT, self.font_size, 'bold'), 
                                              fill='black', anchor='center', tags=self.tag, justify='center')
 
         for ev, cb in (("<Button-1>", self.on_click),
@@ -280,7 +283,7 @@ class Block():
     def return_home(self):
         cx, cy = [(bb[0]+bb[2])/2 for bb in (self.canvas.bbox(self.tag),)][0], \
                  [(bb[1]+bb[3])/2 for bb in (self.canvas.bbox(self.tag),)][0]
-        self.canvas.move(self.tag, self.home_x - cx, self.home_y - cy)
+        self.destroy()
         self.slot = None
 
     def lock(self):
