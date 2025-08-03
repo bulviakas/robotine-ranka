@@ -23,7 +23,7 @@ MID_PAD_FRAC        = 0.05   # vertical gap between cmd bar & button
 BOT_PAD_FRAC        = 0.1
 SIDE_GAP_FRAC       = 0.02   # side padding for menu
 GAP_BETWEEN_BTNS    = 3
-BLOCK_SIZE_COEF     = 0.85
+BLOCK_SIZE_COEF     = 0.02
 CMD_SIDE_PAD        = 32
 CMD_H_PAD           = 16
 
@@ -76,20 +76,25 @@ class PuzzleApp:
 
         # piece width so that 9pw + 2 gap covers screen (5 pieces + 4 gaps = 9 pw)
         self.gap = int(SIDE_GAP_FRAC * self.self_w)
-        self.piece_w  = 165 * BLOCK_SIZE_COEF
-        self.piece_h  = 85 * BLOCK_SIZE_COEF
+        self.piece_h  = self.self_h//8
+        self.piece_w  = 165 * (self.piece_h / 85)
+        BLOCK_SIZE_COEF = self.piece_h / 85
+        if self.piece_w > self.self_w//9:
+            self.piece_w = self.self_w//9
+            self.piece_h = 85 * (self.piece_w / 165)
+            BLOCK_SIZE_COEF = self.piece_w / 165
 
         self.img_refs = []
 
         # Command bar
-        cmd_y = cmd_y = int(TOP_PAD_FRAC * self.self_h)
+        cmd_y = int(TOP_PAD_FRAC * self.self_h)
         self.cmd = CommandLine(self, self.canvas, self.self_w//2, cmd_y,
                                self.piece_w, self.piece_h, n_slots=9,
                                overlap=OVERLAP_FRAC)
 
-        # BUTTONS
-        btn_w = 380
-        btn_h = 51
+        # BUTTONS w:380 h:51
+        btn_h = (CMD_H_PAD + int(self.piece_h * CMD_BAR_HEIGHT_FRAC)) // 3
+        btn_w = 380 * (btn_h / 51)
         btn_top  = cmd_y + CMD_H_PAD + int(self.piece_h * CMD_BAR_HEIGHT_FRAC) + 8
 
         # CLEAR button
@@ -120,8 +125,8 @@ class PuzzleApp:
         start_block.lock()
 
         # --- Menu grid positions (4 per row) ---
-        first_row_y  = (self.self_h - (btn_top + btn_h))//2 + btn_top + btn_h - self.piece_h
-        second_row_y = first_row_y + self.piece_h + self.piece_h
+        first_row_y  = self.self_h//2 + (self.self_h//8)
+        second_row_y = first_row_y + 1.5*self.self_h//8
         row_centres  = [first_row_y, second_row_y]
 
         # x positions for 4 centres: gap + piece_w/2 + col*2piece_w
@@ -250,7 +255,7 @@ class Block():
             self.font_size = 12
         elif self.template:
             img = svg_to_coloured_photo(BLOCK_TEMPLATE_PATH, colour, (1.5*app.piece_w, 1.5*app.piece_h))
-            self.font_size = 14
+            self.font_size = int(self.font_size * 1.5)
             self.text_offset = 2
         else:
             img = svg_to_coloured_photo(CMD_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
