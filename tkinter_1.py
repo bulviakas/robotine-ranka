@@ -224,8 +224,6 @@ class Block():
         self.tag = f"block_{id(self)}"
         self.cmd = cmd
         self.text_offset = text_offset
-        
-        # TODO make the clones spawn at the mouse's pos rather than template's home pos
 
         if start:
             img = svg_to_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
@@ -252,7 +250,7 @@ class Block():
             self.app.cmd.release(self)
             if self.template:
                 # spawn a draggable clone
-                clone = Block(self.app, self.cmd, self.colour, self.home_x, self.home_y, template=False, text=self.text)
+                clone = Block(self.app, self.cmd, self.colour, ev.x, ev.y, template=False, text=self.text)
 
                 clone.drag_x, clone.drag_y = ev.x, ev.y
                 clone.on_drag(ev)
