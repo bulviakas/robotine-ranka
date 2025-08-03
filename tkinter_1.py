@@ -12,6 +12,7 @@ RESTART_BUTTON_PATH = Path("assets/restart_btn.svg")
 SUBMIT_BUTTON_PATH = Path("assets/submit_btn.svg")
 START_BLOCK_PATH = Path("assets/start_block.svg")
 CMD_BLOCK_PATH = Path("assets/game_blocks.svg")
+BLOCK_TEMPLATE_PATH = Path("assets/block_template.svg")
 
 # CONSTANTS
 OVERLAP_FRAC        = 0.2
@@ -222,19 +223,21 @@ class Block():
         self.text, self.font_size = text, 10
         self.tag = f"block_{id(self)}"
         self.cmd = cmd
+        self.text_offset = text_offset
         
         # TODO make the clones spawn at the mouse's pos rather than template's home pos
 
         if start:
             img = svg_to_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
         elif self.template:
-            img = svg_to_photo(CMD_BLOCK_PATH, colour, (1.5*app.piece_w, 1.5*app.piece_h))
+            img = svg_to_photo(BLOCK_TEMPLATE_PATH, colour, (1.5*app.piece_w, 1.5*app.piece_h))
             self.font_size = 14
+            self.text_offset = 2
         else:
             img = svg_to_photo(CMD_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
         app.img_refs.append(img)
         self.item = self.canvas.create_image(x, y, image=img, anchor="center", tags=self.tag)
-        self.label = self.canvas.create_text(x + text_offset, y, text=text, 
+        self.label = self.canvas.create_text(x + self.text_offset, y, text=text, 
                                              font=(MAIN_FONT, self.font_size, 'bold'), 
                                              fill='black', anchor='center', tags=self.tag, justify='center')
 
@@ -281,8 +284,6 @@ class Block():
                 self.canvas.unbind("<ButtonRelease-1>")
 
     def return_home(self):
-        cx, cy = [(bb[0]+bb[2])/2 for bb in (self.canvas.bbox(self.tag),)][0], \
-                 [(bb[1]+bb[3])/2 for bb in (self.canvas.bbox(self.tag),)][0]
         self.destroy()
         self.slot = None
 
