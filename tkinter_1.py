@@ -142,7 +142,6 @@ class CommandLine():
         self.canvas, self.piece_w, self.piece_h, self.app = canvas, piece_w, piece_h, app
         self.slot_w  = int(piece_w * (1 - overlap))
         self.slots   = [None] * n_slots
-        self.background = n_slots * [None]
 
         total_w = self.slot_w * n_slots + int(piece_w * overlap)
         x0, x1  = canvas_x - total_w // 2, canvas_x + total_w // 2
@@ -163,10 +162,14 @@ class CommandLine():
         
         # TODO show the background only for the next available slot
         
-        cmd_img = svg_to_photo(CMD_BLOCK_PATH, self.piece_w, self.piece_h)
-        app.img_refs.append(cmd_img)
-        for i in range(1, n_slots):
-            self.background[i] = self.canvas.create_image(x0 + i*self.slot_w + self.piece_w//2, self.y_mid, image=cmd_img, anchor="center")
+        self.cmd_img = svg_to_photo(CMD_BLOCK_PATH, self.piece_w, self.piece_h)
+        app.img_refs.append(self.cmd_img)
+        #self.canvas.create_image(x0 + self.slot_w + self.piece_w//2, self.y_mid, image=cmd_img, 
+        #                                                  anchor="center", tags=f"bg_1")
+        """for i in range(1, n_slots):
+            self.canvas.create_image(x0 + i*self.slot_w + self.piece_w//2, self.y_mid, image=cmd_img, 
+                                                          anchor="center", tags=f"bg_{i}")
+        self.canvas.delete(f"bg_4")"""
         
 
     def release(self, block):
@@ -202,6 +205,8 @@ class CommandLine():
             self.slots[block.slot - 1].lock()
         self.canvas.unbind("<B1-Motion>")
         self.canvas.unbind("<ButtonRelease-1>")
+        self.canvas.create_image(tgt_cx + self.slot_w, self.y_mid, image=self.cmd_img, 
+                                                          anchor="center", tags=f"bg_{slot + 1}")
         return True
 
     def clear(self, event):
@@ -212,6 +217,7 @@ class CommandLine():
                 return
             if block.text == "PRADŽIA": continue
             block.destroy()
+            self.canvas.delete(f"bg_{slot + 1}")
             self.slots[slot] = None
             block.slot = None
             
