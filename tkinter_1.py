@@ -13,6 +13,7 @@ SUBMIT_BUTTON_PATH = Path("assets/submit_btn.svg")
 START_BLOCK_PATH = Path("assets/start_block.svg")
 CMD_BLOCK_PATH = Path("assets/game_blocks.svg")
 BLOCK_TEMPLATE_PATH = Path("assets/block_template.svg")
+CMD_BLOCK_PATH = Path("assets/cmd_block.svg")
 
 # CONSTANTS
 OVERLAP_FRAC        = 0.2
@@ -44,7 +45,7 @@ THE_CORRECT_SEQUENCE = [
     "ILGA\nPAUZĖ", "NAMŲ\nPOZICIJA", "GALUTINĖ\nPOZICIJA", None
 ]
 
-def svg_to_photo(svg_file: Path, colour: str, size_xy) -> ImageTk.PhotoImage:
+def svg_to_coloured_photo(svg_file: Path, colour: str, size_xy) -> ImageTk.PhotoImage:
     """Return a PhotoImage of the SVG filled with *colour* (stroke stays)."""
     txt = svg_file.read_text(encoding="utf-8")
     txt = re.sub(r'fill\s*:\s*#[0-9a-fA-F]{3,6}', f'fill:{colour}', txt)
@@ -52,6 +53,14 @@ def svg_to_photo(svg_file: Path, colour: str, size_xy) -> ImageTk.PhotoImage:
     png = cairosvg.svg2png(bytestring=txt.encode(),
                            output_width=size_xy[0], output_height=size_xy[1])
     return ImageTk.PhotoImage(Image.open(io.BytesIO(png)))
+
+def svg_to_photo(svg_path, width=None, height=None):
+
+    svg_path = str(svg_path)
+    png_bytes = cairosvg.svg2png(url=svg_path, output_width=width, output_height=height)
+    image = Image.open(io.BytesIO(png_bytes))
+
+    return ImageTk.PhotoImage(image)
 
 class PuzzleApp:
     def __init__(self):
@@ -72,7 +81,7 @@ class PuzzleApp:
 
         # Command bar
         cmd_y = cmd_y = int(TOP_PAD_FRAC * self.self_h)
-        self.cmd = CommandLine(self.canvas, self.self_w//2, cmd_y,
+        self.cmd = CommandLine(self, self.canvas, self.self_w//2, cmd_y,
                                self.piece_w, self.piece_h, n_slots=9,
                                overlap=OVERLAP_FRAC)
 
@@ -84,7 +93,7 @@ class PuzzleApp:
         # CLEAR button
         self.clear_tag = 'clear'
         btn_left_1 = self.self_w//2 - btn_w - GAP_BETWEEN_BTNS
-        clear_img = svg_to_photo(RESTART_BUTTON_PATH, 'white', (btn_w, btn_h))
+        clear_img = svg_to_coloured_photo(RESTART_BUTTON_PATH, 'white', (btn_w, btn_h))
         self.img_refs.append(clear_img)
         self.clear_btn = self.canvas.create_image(btn_left_1, btn_top, image=clear_img, anchor='nw', tags=self.clear_tag)
         self.canvas.create_text(btn_left_1 + btn_w * 0.55, btn_top + btn_h//2 - 3, 
@@ -94,7 +103,7 @@ class PuzzleApp:
         # SUBMIT button
         self.submit_tag = 'submit'
         btn_left_2 = self.self_w//2 + GAP_BETWEEN_BTNS
-        submit_img = svg_to_photo(SUBMIT_BUTTON_PATH, 'white', (btn_w, btn_h))
+        submit_img = svg_to_coloured_photo(SUBMIT_BUTTON_PATH, 'white', (btn_w, btn_h))
         self.img_refs.append(submit_img)
         self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw', tags=self.submit_tag) 
         self.canvas.create_text(btn_left_2 + btn_w * 0.45, btn_top + btn_h//2 - 3, 
@@ -129,14 +138,16 @@ class PuzzleApp:
         self.root.mainloop()
 
 class CommandLine():
-    def __init__(self, canvas, canvas_x, y_top, piece_w, piece_h, n_slots, overlap):
-        self.canvas, self.piece_w, self.piece_h = canvas, piece_w, piece_h
+    def __init__(self, app, canvas, canvas_x, y_top, piece_w, piece_h, n_slots, overlap):
+        self.canvas, self.piece_w, self.piece_h, self.app = canvas, piece_w, piece_h, app
         self.slot_w  = int(piece_w * (1 - overlap))
         self.slots   = [None] * n_slots
+        self.background = n_slots * [None]
 
         total_w = self.slot_w * n_slots + int(piece_w * overlap)
         x0, x1  = canvas_x - total_w // 2, canvas_x + total_w // 2
         y1      = y_top + int(piece_h * CMD_BAR_HEIGHT_FRAC)
+        self.x0, self.y_mid = x0, (y_top + y1) // 2
 
         def round_rectangle(x1, y1, x2, y2, radius=100, **kwargs):
         
@@ -149,7 +160,14 @@ class CommandLine():
         self.cmd_border = round_rectangle(x0 - CMD_SIDE_PAD, y_top - CMD_H_PAD, 
                                           x1 + CMD_SIDE_PAD, y1 + CMD_H_PAD, fill="black", 
                                           outline="white", width=3)
-        self.x0, self.y_mid = x0, (y_top + y1) // 2
+        
+        # TODO show the background only for the next available slot
+        
+        cmd_img = svg_to_photo(CMD_BLOCK_PATH, self.piece_w, self.piece_h)
+        app.img_refs.append(cmd_img)
+        for i in range(1, n_slots):
+            self.background[i] = self.canvas.create_image(x0 + i*self.slot_w + self.piece_w//2, self.y_mid, image=cmd_img, anchor="center")
+        
 
     def release(self, block):
         if block.slot is not None and not block.locked:
@@ -226,13 +244,14 @@ class Block():
         self.text_offset = text_offset
 
         if start:
-            img = svg_to_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
+            img = svg_to_coloured_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
+            self.font_size = 12
         elif self.template:
-            img = svg_to_photo(BLOCK_TEMPLATE_PATH, colour, (1.5*app.piece_w, 1.5*app.piece_h))
+            img = svg_to_coloured_photo(BLOCK_TEMPLATE_PATH, colour, (1.5*app.piece_w, 1.5*app.piece_h))
             self.font_size = 14
             self.text_offset = 2
         else:
-            img = svg_to_photo(CMD_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
+            img = svg_to_coloured_photo(CMD_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
         app.img_refs.append(img)
         self.item = self.canvas.create_image(x, y, image=img, anchor="center", tags=self.tag)
         self.label = self.canvas.create_text(x + self.text_offset, y, text=text, 
