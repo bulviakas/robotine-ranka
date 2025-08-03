@@ -72,6 +72,8 @@ class PuzzleApp:
         self.canvas = tk.Canvas(self.root, width=self.self_w, height=self.self_h, bg = 'black')
         self.canvas.pack(fill="both", expand=True)
 
+        # TODO: check (and fix) the sizing of everything
+
         # piece width so that 9pw + 2 gap covers screen (5 pieces + 4 gaps = 9 pw)
         self.gap = int(SIDE_GAP_FRAC * self.self_w)
         self.piece_w  = 165 * BLOCK_SIZE_COEF
@@ -139,11 +141,11 @@ class PuzzleApp:
 
 class CommandLine():
     def __init__(self, app, canvas, canvas_x, y_top, piece_w, piece_h, n_slots, overlap):
-        self.canvas, self.piece_w, self.piece_h, self.app = canvas, piece_w, piece_h, app
+        self.canvas, self.piece_w, self.piece_h, self.app, self.n_slots = canvas, piece_w, piece_h, app, n_slots
         self.slot_w  = int(piece_w * (1 - overlap))
-        self.slots   = [None] * n_slots
+        self.slots   = [None] * self.n_slots
 
-        total_w = self.slot_w * n_slots + int(piece_w * overlap)
+        total_w = self.slot_w * self.n_slots + int(piece_w * overlap)
         x0, x1  = canvas_x - total_w // 2, canvas_x + total_w // 2
         y1      = y_top + int(piece_h * CMD_BAR_HEIGHT_FRAC)
         self.x0, self.y_mid = x0, (y_top + y1) // 2
@@ -160,22 +162,15 @@ class CommandLine():
                                           x1 + CMD_SIDE_PAD, y1 + CMD_H_PAD, fill="black", 
                                           outline="white", width=3)
         
-        # TODO show the background only for the next available slot
-        
         self.cmd_img = svg_to_photo(CMD_BLOCK_PATH, self.piece_w, self.piece_h)
         app.img_refs.append(self.cmd_img)
-        #self.canvas.create_image(x0 + self.slot_w + self.piece_w//2, self.y_mid, image=cmd_img, 
-        #                                                  anchor="center", tags=f"bg_1")
-        """for i in range(1, n_slots):
-            self.canvas.create_image(x0 + i*self.slot_w + self.piece_w//2, self.y_mid, image=cmd_img, 
-                                                          anchor="center", tags=f"bg_{i}")
-        self.canvas.delete(f"bg_4")"""
         
 
     def release(self, block):
         if block.slot is not None and not block.locked:
             if self.slots[block.slot - 1] is not None:
                 self.slots[block.slot - 1].unlock()
+            self.canvas.delete(f"bg_{block.slot + 1}")
             self.slots[block.slot] = None
             block.slot = None
 
@@ -205,8 +200,9 @@ class CommandLine():
             self.slots[block.slot - 1].lock()
         self.canvas.unbind("<B1-Motion>")
         self.canvas.unbind("<ButtonRelease-1>")
-        self.canvas.create_image(tgt_cx + self.slot_w, self.y_mid, image=self.cmd_img, 
-                                                          anchor="center", tags=f"bg_{slot + 1}")
+        if slot + 1 < self.n_slots:
+            self.canvas.create_image(tgt_cx + self.slot_w, self.y_mid, image=self.cmd_img, 
+                                                            anchor="center", tags=f"bg_{slot + 1}")
         return True
 
     def clear(self, event):
