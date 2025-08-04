@@ -14,7 +14,9 @@ START_BLOCK_PATH = Path("assets/start_block.svg")
 CMD_BLOCK_PATH = Path("assets/game_blocks.svg")
 BLOCK_TEMPLATE_PATH = Path("assets/block_template.svg")
 CMD_BLOCK_PATH = Path("assets/cmd_block.svg")
-TT_ICON_PATH = Path("assets/tutorial_icon.svg")
+TT_ICON_PATH = Path("assets/tutorial_icon_thin.svg")
+HOME_ICON_PATH = Path("assets/home_icon_thin.svg")
+LNG_ICON_PATH = Path("assets/language_icon_thin.svg")
 
 # CONSTANTS
 OVERLAP_FRAC        = 0.2
@@ -38,13 +40,13 @@ BLOCK_COLOURS = [
 ]
 
 BLOCK_LABELS = [
-    "NAMŲ\nPOZICIJA", "SILPNAS\nPAKRATYMAS", "STIPRUS\nPAKRATYMAS", "ŠALDYTUVO\nPOZICIJA",
+    "TESTAVIMO\nPOZICIJA", "SILPNAS\nPAKRATYMAS", "STIPRUS\nPAKRATYMAS", "ŠALDYTUVO\nPOZICIJA",
     "SKENAVIMO\nPOZICIJA", "TRUMPA\nPAUZĖ", "ILGA\nPAUZĖ", "GALUTINĖ\nPOZICIJA"
 ]
 
 THE_CORRECT_SEQUENCE = [
-    "ŠALDYTUVO\nPOZICIJA", "NAMŲ\nPOZICIJA", "STIPRUS\nPAKRATYMAS", "SKENAVIMO\nPOZICIJA",
-    "ILGA\nPAUZĖ", "NAMŲ\nPOZICIJA", "GALUTINĖ\nPOZICIJA", None
+    "ŠALDYTUVO\nPOZICIJA", "TESTAVIMO\nPOZICIJA", "STIPRUS\nPAKRATYMAS", "SKENAVIMO\nPOZICIJA",
+    "ILGA\nPAUZĖ", "TESTAVIMO\nPOZICIJA", "GALUTINĖ\nPOZICIJA", None
 ]
 
 def svg_to_coloured_photo(svg_file: Path, colour: str, size_xy) -> ImageTk.PhotoImage:
@@ -118,13 +120,29 @@ class PuzzleApp:
                                 text="PALEISTI", font=(MAIN_FONT, int(18 * (btn_h / 51)), 'bold'), fill='black', tags=self.submit_tag)
         self.canvas.tag_bind(self.submit_tag, "<Button-1>", self.cmd.submit)
 
+        # ICONS ---
+        icon_size = self.self_h * TOP_PAD_FRAC // 2.75
+
         # TUTORIAL icon
         tt_y = self.self_h * MENU_TOP_FRAC
         tt_x = (self.self_w - self.cmd.x1) / 2 + self.cmd.x1
-        #self.canvas.create_text(tt_x, tt_y, text="?", font=(MAIN_FONT, 26, 'bold'), fill='white')
-        tt_img = svg_to_coloured_photo(TT_ICON_PATH, 'white', (self.self_h * TOP_PAD_FRAC // 2.5, self.self_h * TOP_PAD_FRAC // 2.5))
+        tt_img = svg_to_coloured_photo(TT_ICON_PATH, 'white', (icon_size, icon_size))
         self.img_refs.append(tt_img)
         self.tt_icon = self.canvas.create_image(tt_x, tt_y, image=tt_img, anchor='center')
+
+        # HOME icon
+        home_y = self.self_h * MENU_TOP_FRAC
+        home_x = self.cmd.x0 // 2
+        home_img = svg_to_coloured_photo(HOME_ICON_PATH, 'white', (icon_size, icon_size))
+        self.img_refs.append(home_img)
+        self.tt_icon = self.canvas.create_image(home_x, home_y, image=home_img, anchor='center')
+
+        # LANGUAGE icon
+        lng_y = self.self_h * MENU_TOP_FRAC
+        lng_x = tt_x - 1.5*icon_size
+        lng_img = svg_to_coloured_photo(LNG_ICON_PATH, 'white', (icon_size, icon_size))
+        self.img_refs.append(lng_img)
+        self.tt_icon = self.canvas.create_image(lng_x, lng_y, image=lng_img, anchor='center')
 
         # Start block
         start_block = Block(self, self.cmd, 'white', self.cmd.x0 + self.piece_w//2, 
