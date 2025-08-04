@@ -14,6 +14,7 @@ START_BLOCK_PATH = Path("assets/start_block.svg")
 CMD_BLOCK_PATH = Path("assets/game_blocks.svg")
 BLOCK_TEMPLATE_PATH = Path("assets/block_template.svg")
 CMD_BLOCK_PATH = Path("assets/cmd_block.svg")
+TT_ICON_PATH = Path("assets/tutorial_icon.svg")
 
 # CONSTANTS
 OVERLAP_FRAC        = 0.2
@@ -26,11 +27,12 @@ GAP_BETWEEN_BTNS    = 3
 BLOCK_SIZE_COEF     = 0.02
 CMD_SIDE_PAD        = 32
 CMD_H_PAD           = 16
+MENU_TOP_FRAC       = 0.08
 
 # Good fonts: Cascadia Code SemiBold, Segoe UI Black
 MAIN_FONT = "Cascadia Code SemiBold"
 
-MENU_COLOURS = [
+BLOCK_COLOURS = [
     "#e74c3c", "#f39c12", "#27ae60", "#8e44ad", "#96d5ff",
     "#ff5f7f", "#f1c40f", "#2980b9"   # 8 pieces
 ]
@@ -116,6 +118,14 @@ class PuzzleApp:
                                 text="PALEISTI", font=(MAIN_FONT, int(18 * (btn_h / 51)), 'bold'), fill='black', tags=self.submit_tag)
         self.canvas.tag_bind(self.submit_tag, "<Button-1>", self.cmd.submit)
 
+        # TUTORIAL icon
+        tt_y = self.self_h * MENU_TOP_FRAC
+        tt_x = (self.self_w - self.cmd.x1) / 2 + self.cmd.x1
+        #self.canvas.create_text(tt_x, tt_y, text="?", font=(MAIN_FONT, 26, 'bold'), fill='white')
+        tt_img = svg_to_coloured_photo(TT_ICON_PATH, 'white', (self.self_h * TOP_PAD_FRAC // 2.5, self.self_h * TOP_PAD_FRAC // 2.5))
+        self.img_refs.append(tt_img)
+        self.tt_icon = self.canvas.create_image(tt_x, tt_y, image=tt_img, anchor='center')
+
         # Start block
         start_block = Block(self, self.cmd, 'white', self.cmd.x0 + self.piece_w//2, 
                             cmd_y + self.cmd.piece_h//2 + CMD_H_PAD, template=False, start=True,
@@ -133,7 +143,7 @@ class PuzzleApp:
         col_x = [x0 + c * 2*self.piece_w for c in range(4)]
 
         # Create 10 template pieces
-        for idx, colour in enumerate(MENU_COLOURS):
+        for idx, colour in enumerate(BLOCK_COLOURS):
             row, col = divmod(idx, 4)
             label = BLOCK_LABELS[idx]
             Block(self, self.cmd, colour, col_x[col], row_centres[row], template=True, text=label)
@@ -150,7 +160,7 @@ class CommandLine():
         self.slots   = [None] * self.n_slots
 
         total_w = self.slot_w * self.n_slots + int(piece_w * overlap)
-        x0, x1  = canvas_x - total_w // 2, canvas_x + total_w // 2
+        x0, self.x1  = canvas_x - total_w // 2, canvas_x + total_w // 2
         y1      = y_top + int(piece_h * CMD_BAR_HEIGHT_FRAC)
         self.x0, self.y_mid = x0, (y_top + y1) // 2
 
@@ -163,7 +173,7 @@ class CommandLine():
             return canvas.create_polygon(points, **kwargs, smooth=True)
         
         self.cmd_border = round_rectangle(x0 - CMD_SIDE_PAD, y_top - CMD_H_PAD, 
-                                          x1 + CMD_SIDE_PAD, y1 + CMD_H_PAD, fill="black", 
+                                          self.x1 + CMD_SIDE_PAD, y1 + CMD_H_PAD, fill="black", 
                                           outline="white", width=3)
         
         self.cmd_img = svg_to_photo(CMD_BLOCK_PATH, self.piece_w, self.piece_h)
