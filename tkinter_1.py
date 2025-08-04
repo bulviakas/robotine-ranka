@@ -109,11 +109,8 @@ class PuzzleApp:
             title = tk.Label(self.start_page, text="Puzzle Command Builder", font=(MAIN_FONT, 32), fg="white", bg="black")
             title.place(relx=0.5, rely=0.3, anchor='center')
 
-            play_btn = tk.Button(self.start_page, text="Play", font=(MAIN_FONT, 20), command=lambda: self.show_page(self.game_page))
+            play_btn = tk.Button(self.start_page, text="Play", font=(MAIN_FONT, 20), command=lambda: self.show_page(self.tutorial_page))
             play_btn.place(relx=0.5, rely=0.5, anchor='center')
-
-            tutorial_btn = tk.Button(self.start_page, text="Tutorial", font=(MAIN_FONT, 20), command=lambda: self.show_page(self.tutorial_page))
-            tutorial_btn.place(relx=0.5, rely=0.6, anchor='center')
 
         def setup_tutorial_page(self):
             canvas = tk.Canvas(self.tutorial_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
@@ -122,7 +119,7 @@ class PuzzleApp:
             label = tk.Label(self.tutorial_page, text="Tutorial Page", font=(MAIN_FONT, 28), fg='white', bg='black')
             label.place(relx=0.5, rely=0.4, anchor='center')
 
-            back_btn = tk.Button(self.tutorial_page, text="Back", font=(MAIN_FONT, 16), command=lambda: self.show_page(self.start_page))
+            back_btn = tk.Button(self.tutorial_page, text="Start", font=(MAIN_FONT, 16), command=lambda: self.show_page(self.game_page))
             back_btn.place(relx=0.5, rely=0.6, anchor='center')
 
         def setup_game_page(self):
@@ -164,18 +161,22 @@ class PuzzleApp:
             icon_size = self.self_h * TOP_PAD_FRAC // 2.75
 
             # TUTORIAL icon
+            self.tt_tag = 'tutorial'
             tt_y = self.self_h * MENU_TOP_FRAC
             tt_x = (self.self_w - self.cmd.x1) / 2 + self.cmd.x1
             tt_img = svg_to_coloured_photo(TT_ICON_PATH, 'white', (icon_size, icon_size))
             self.img_refs.append(tt_img)
-            self.tt_icon = self.canvas.create_image(tt_x, tt_y, image=tt_img, anchor='center')
+            self.tt_icon = self.canvas.create_image(tt_x, tt_y, image=tt_img, anchor='center', tags=self.tt_tag)
+            self.canvas.tag_bind(self.tt_tag, "<Button-1>", lambda e: self.show_page(self.tutorial_page))
 
             # HOME icon
+            self.home_tag = 'home'
             home_y = self.self_h * MENU_TOP_FRAC
             home_x = self.cmd.x0 // 2
             home_img = svg_to_coloured_photo(HOME_ICON_PATH, 'white', (icon_size, icon_size))
             self.img_refs.append(home_img)
-            self.tt_icon = self.canvas.create_image(home_x, home_y, image=home_img, anchor='center')
+            self.tt_icon = self.canvas.create_image(home_x, home_y, image=home_img, anchor='center', tags=self.home_tag)
+            self.canvas.tag_bind(self.home_tag, "<Button-1>", lambda e: self.show_page(self.start_page))
 
             # LANGUAGE icon
             lng_y = self.self_h * MENU_TOP_FRAC
