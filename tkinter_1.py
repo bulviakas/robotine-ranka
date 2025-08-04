@@ -64,6 +64,7 @@ def svg_to_photo(svg_path, width=None, height=None):
 
 class PuzzleApp:
     def __init__(self):
+        global BLOCK_SIZE_COEF
         self.root = tk.Tk()
         self.root.attributes("-fullscreen", True)
         self.root.title("Puzzle Command Builder")
@@ -71,8 +72,6 @@ class PuzzleApp:
         self.self_w, self.self_h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
         self.canvas = tk.Canvas(self.root, width=self.self_w, height=self.self_h, bg = 'black')
         self.canvas.pack(fill="both", expand=True)
-
-        # TODO: check (and fix) the sizing of everything
 
         # piece width so that 9pw + 2 gap covers screen (5 pieces + 4 gaps = 9 pw)
         self.gap = int(SIDE_GAP_FRAC * self.self_w)
@@ -104,7 +103,7 @@ class PuzzleApp:
         self.img_refs.append(clear_img)
         self.clear_btn = self.canvas.create_image(btn_left_1, btn_top, image=clear_img, anchor='nw', tags=self.clear_tag)
         self.canvas.create_text(btn_left_1 + btn_w * 0.55, btn_top + btn_h//2 - 3, 
-                                text="IŠVALYTI", font=(MAIN_FONT, 18, 'bold'), fill='black', tags=self.clear_tag)
+                                text="IŠVALYTI", font=(MAIN_FONT, int(18 * (btn_h / 51)), 'bold'), fill='black', tags=self.clear_tag)
         self.canvas.tag_bind(self.clear_tag, "<Button-1>", self.cmd.clear)
 
         # SUBMIT button
@@ -114,7 +113,7 @@ class PuzzleApp:
         self.img_refs.append(submit_img)
         self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw', tags=self.submit_tag) 
         self.canvas.create_text(btn_left_2 + btn_w * 0.45, btn_top + btn_h//2 - 3, 
-                                text="PALEISTI", font=(MAIN_FONT, 18, 'bold'), fill='black', tags=self.submit_tag)
+                                text="PALEISTI", font=(MAIN_FONT, int(18 * (btn_h / 51)), 'bold'), fill='black', tags=self.submit_tag)
         self.canvas.tag_bind(self.submit_tag, "<Button-1>", self.cmd.submit)
 
         # Start block
@@ -245,14 +244,14 @@ class Block():
         self.home_x, self.home_y   = x, y
         self.slot = None
         self.locked = False
-        self.text, self.font_size = text, 10
+        self.text, self.font_size = text, int(12 * BLOCK_SIZE_COEF)
         self.tag = f"block_{id(self)}"
         self.cmd = cmd
         self.text_offset = text_offset
 
         if start:
             img = svg_to_coloured_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
-            self.font_size = 12
+            self.font_size = int(14 * BLOCK_SIZE_COEF)
         elif self.template:
             img = svg_to_coloured_photo(BLOCK_TEMPLATE_PATH, colour, (1.5*app.piece_w, 1.5*app.piece_h))
             self.font_size = int(self.font_size * 1.5)
