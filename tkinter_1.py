@@ -17,6 +17,7 @@ CMD_BLOCK_PATH = Path("assets/cmd_block.svg")
 TT_ICON_PATH = Path("assets/tutorial_icon_thin.svg")
 HOME_ICON_PATH = Path("assets/home_icon_thin.svg")
 LNG_ICON_PATH = Path("assets/language_icon_thin.svg")
+START_BTN_PATH = Path("assets/start_btn.svg")
 
 # CONSTANTS
 OVERLAP_FRAC        = 0.2
@@ -30,6 +31,8 @@ BLOCK_SIZE_COEF     = 0.02
 CMD_SIDE_PAD        = 32
 CMD_H_PAD           = 16
 MENU_TOP_FRAC       = 0.08
+
+# TODO: import better fonts
 
 # Good fonts: Cascadia Code SemiBold, Segoe UI Black
 MAIN_FONT = "Cascadia Code SemiBold"
@@ -102,15 +105,22 @@ class PuzzleApp:
         self.game_page.place(relwidth=1, relheight=1)
         self.tutorial_page.place(relwidth=1, relheight=1)
 
+        # --- PAGE SETUP ---
+
         def setup_start_page(self):
             canvas = tk.Canvas(self.start_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
             canvas.pack()
 
-            title = tk.Label(self.start_page, text="Puzzle Command Builder", font=(MAIN_FONT, 32), fg="white", bg="black")
-            title.place(relx=0.5, rely=0.3, anchor='center')
+            title = tk.Label(self.start_page, text="Kazkoks inviting sukis or whatever!!!", font=(MAIN_FONT, int(44 * (self.self_h / 5 / 165))), fg="white", bg="black")
+            title.place(relx=0.5, rely=0.35, anchor='center')
 
-            play_btn = tk.Button(self.start_page, text="Play", font=(MAIN_FONT, 20), command=lambda: self.show_page(self.tutorial_page))
-            play_btn.place(relx=0.5, rely=0.5, anchor='center')
+            start_tag = 'start'
+            start_img = svg_to_coloured_photo(START_BTN_PATH, BLOCK_COLOURS[2], (self.self_w / 2, self.self_h / 5))
+            self.img_refs.append(start_img)
+            start_btn = canvas.create_image(int(self.self_w * 0.5), int(self.self_h * 0.6), image=start_img, anchor='center', tags=start_tag)
+            canvas.tag_bind(start_tag, "<Button-1>", lambda e: self.show_page(self.tutorial_page))
+
+            canvas.create_text(int(self.self_w * 0.5), int(self.self_h * 0.595), text="ŽAISTI", font=(MAIN_FONT, int(48 * (self.self_h / 5 / 165)), 'bold'), fill='black', tags=start_tag)
 
         def setup_tutorial_page(self):
             canvas = tk.Canvas(self.tutorial_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
@@ -131,6 +141,8 @@ class PuzzleApp:
             self.cmd = CommandLine(self, self.canvas, self.self_w//2, cmd_y,
                                 self.piece_w, self.piece_h, n_slots=9,
                                 overlap=OVERLAP_FRAC)
+            
+            # TODO: rewrite all button actions on left mouse click release and add "animations"
 
             # BUTTONS w:380 h:51
             btn_h = (CMD_H_PAD + int(self.piece_h * CMD_BAR_HEIGHT_FRAC)) // 3
@@ -177,6 +189,8 @@ class PuzzleApp:
             self.img_refs.append(home_img)
             self.tt_icon = self.canvas.create_image(home_x, home_y, image=home_img, anchor='center', tags=self.home_tag)
             self.canvas.tag_bind(self.home_tag, "<Button-1>", lambda e: self.show_page(self.start_page))
+
+            # TODO: make a dropdown menu for changing languages (perhaps a seperate class)
 
             # LANGUAGE icon
             lng_y = self.self_h * MENU_TOP_FRAC
