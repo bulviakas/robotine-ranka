@@ -2,7 +2,7 @@ import os
 if "DISPLAY" not in os.environ:   # needed when starting from cron/rc.local
     os.environ["DISPLAY"] = ":0"
 import tkinter as tk
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageOps
 import cairosvg
 import io, re
 from pathlib import Path
@@ -52,14 +52,19 @@ THE_CORRECT_SEQUENCE = [
     "ILGA\nPAUZĖ", "TESTAVIMO\nPOZICIJA", "GALUTINĖ\nPOZICIJA", None
 ]
 
-def svg_to_coloured_photo(svg_file: Path, colour: str, size_xy) -> ImageTk.PhotoImage:
+def svg_to_coloured_photo(svg_file: Path, colour: str, size_xy, mirror=False) -> ImageTk.PhotoImage:
     """Return a PhotoImage of the SVG filled with *colour* (stroke stays)."""
     txt = svg_file.read_text(encoding="utf-8")
     txt = re.sub(r'fill\s*:\s*#[0-9a-fA-F]{3,6}', f'fill:{colour}', txt)
     txt = re.sub(r'fill="[^"]+"',                 f'fill="{colour}"', txt, flags=re.I)
     png = cairosvg.svg2png(bytestring=txt.encode(),
                            output_width=size_xy[0], output_height=size_xy[1])
-    return ImageTk.PhotoImage(Image.open(io.BytesIO(png)))
+    pil_img = Image.open(io.BytesIO(png)).convert("RGBA")
+
+    if mirror:
+        pil_img = ImageOps.mirror(pil_img)
+
+    return ImageTk.PhotoImage(pil_img)
 
 def svg_to_photo(svg_path, width=None, height=None):
 
@@ -77,8 +82,6 @@ class PuzzleApp:
         self.root.title("Puzzle Command Builder")
 
         self.self_w, self.self_h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
-        """self.canvas = tk.Canvas(self.root, width=self.self_w, height=self.self_h, bg = 'black')
-        self.canvas.pack(fill="both", expand=True)"""
 
         # piece width so that 9pw + 2 gap covers screen (5 pieces + 4 gaps = 9 pw)
         self.gap = int(SIDE_GAP_FRAC * self.self_w)
@@ -92,6 +95,8 @@ class PuzzleApp:
 
         self.img_refs = []
 
+        # FIXME change the pure black to a different shade
+
         # Create container frame to hold pages
         self.container = tk.Frame(self.root, bg='black')
         self.container.pack(fill="both", expand=True)
@@ -99,13 +104,15 @@ class PuzzleApp:
         # Pages
         self.start_page = tk.Frame(self.container, bg='black')
         self.game_page = tk.Frame(self.container, bg='black')
-        self.tutorial_page = tk.Frame(self.container, bg='black')
+        self.context_page = tk.Frame(self.container, bg='black')
 
         self.start_page.place(relwidth=1, relheight=1)
         self.game_page.place(relwidth=1, relheight=1)
-        self.tutorial_page.place(relwidth=1, relheight=1)
+        self.context_page.place(relwidth=1, relheight=1)
 
         # --- PAGE SETUP ---
+
+        # FIXME: Change the random labels to actually meaningful text
 
         def setup_start_page(self):
             canvas = tk.Canvas(self.start_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
@@ -118,19 +125,34 @@ class PuzzleApp:
             start_img = svg_to_coloured_photo(START_BTN_PATH, BLOCK_COLOURS[2], (self.self_w / 2, self.self_h / 5))
             self.img_refs.append(start_img)
             start_btn = canvas.create_image(int(self.self_w * 0.5), int(self.self_h * 0.6), image=start_img, anchor='center', tags=start_tag)
-            canvas.tag_bind(start_tag, "<Button-1>", lambda e: self.show_page(self.tutorial_page))
+            canvas.tag_bind(start_tag, "<Button-1>", lambda e: self.show_page(self.context_page))
 
             canvas.create_text(int(self.self_w * 0.5), int(self.self_h * 0.595), text="ŽAISTI", font=(MAIN_FONT, int(48 * (self.self_h / 5 / 165)), 'bold'), fill='black', tags=start_tag)
 
-        def setup_tutorial_page(self):
-            canvas = tk.Canvas(self.tutorial_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
+        def setup_context_page(self):
+            canvas = tk.Canvas(self.context_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
             canvas.pack()
 
-            label = tk.Label(self.tutorial_page, text="Tutorial Page", font=(MAIN_FONT, 28), fg='white', bg='black')
+            label = tk.Label(self.context_page, text="Tutorial Page", font=(MAIN_FONT, 28), fg='white', bg='black')
             label.place(relx=0.5, rely=0.4, anchor='center')
 
-            back_btn = tk.Button(self.tutorial_page, text="Start", font=(MAIN_FONT, 16), command=lambda: self.show_page(self.game_page))
-            back_btn.place(relx=0.5, rely=0.6, anchor='center')
+            # NEXT Button
+            self.next_tag = 'next'
+            next_img = svg_to_coloured_photo(CMD_BLOCK_PATH, BLOCK_COLOURS[6], (1.25*self.piece_w, 1.25*self.piece_h))
+            self.img_refs.append(next_img)
+            self.next_btn = canvas.create_image(int(self.self_w * 0.9), int(self.self_h * 0.9), image=next_img, anchor='center', tags=self.next_tag)
+            canvas.create_text(int(self.self_w * 0.9) + 7, int(self.self_h * 0.9), 
+                                    text="TOLIAU", font=(MAIN_FONT, int(18 * BLOCK_SIZE_COEF), 'bold'), fill='black', tags=self.next_tag)
+            canvas.tag_bind(self.next_tag, "<Button-1>", lambda e: self.show_page(self.game_page))
+
+            # BACK Button
+            self.back_tag = 'back'
+            back_img = svg_to_coloured_photo(CMD_BLOCK_PATH, BLOCK_COLOURS[5], (1.25*self.piece_w, 1.25*self.piece_h), mirror=True)
+            self.img_refs.append(back_img)
+            back_btn = canvas.create_image(int(self.self_w * 0.1), int(self.self_h * 0.9), image=back_img, tags=self.back_tag)
+            canvas.create_text(int(self.self_w * 0.1 - 7), int(self.self_h * 0.9), 
+                                    text="ATGAL", font=(MAIN_FONT, int(18 * BLOCK_SIZE_COEF), 'bold'), fill='black', tags=self.back_tag)
+            canvas.tag_bind(self.back_tag, "<Button-1>", lambda e: self.show_page(self.start_page))
 
         def setup_game_page(self):
             self.canvas = tk.Canvas(self.game_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
@@ -179,7 +201,7 @@ class PuzzleApp:
             tt_img = svg_to_coloured_photo(TT_ICON_PATH, 'white', (icon_size, icon_size))
             self.img_refs.append(tt_img)
             self.tt_icon = self.canvas.create_image(tt_x, tt_y, image=tt_img, anchor='center', tags=self.tt_tag)
-            self.canvas.tag_bind(self.tt_tag, "<Button-1>", lambda e: self.show_page(self.tutorial_page))
+            self.canvas.tag_bind(self.tt_tag, "<Button-1>", lambda e: self.show_page(self.context_page))
 
             # HOME icon
             self.home_tag = 'home'
@@ -223,7 +245,7 @@ class PuzzleApp:
             
         setup_start_page(self)
         setup_game_page(self)
-        setup_tutorial_page(self)
+        setup_context_page(self)
 
         self.show_page(self.start_page)
 
