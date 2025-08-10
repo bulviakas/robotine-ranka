@@ -18,6 +18,7 @@ TT_ICON_PATH = Path("assets/tutorial_icon_thin.svg")
 HOME_ICON_PATH = Path("assets/home_icon_thin.svg")
 LNG_ICON_PATH = Path("assets/language_icon_thin.svg")
 START_BTN_PATH = Path("assets/start_btn.svg")
+CONTEXT_VIDEO_PATH = Path("assets/Fish-spinning.mp4")
 
 # CONSTANTS
 OVERLAP_FRAC        = 0.2
@@ -51,6 +52,19 @@ THE_CORRECT_SEQUENCE = [
     "ŠALDYTUVO\nPOZICIJA", "TESTAVIMO\nPOZICIJA", "STIPRUS\nPAKRATYMAS", "SKENAVIMO\nPOZICIJA",
     "ILGA\nPAUZĖ", "TESTAVIMO\nPOZICIJA", "GALUTINĖ\nPOZICIJA", None
 ]
+
+CONTEXT_VIDEO_SIZE = [480, 854] # Change when importing the actual video
+
+CONTEXT_TEXT = {
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed faucibus at sapien ac egestas. "
+    "Morbi quis tellus ut mauris efficitur pellentesque ac luctus nisl. Pellentesque pharetra sapien dui. "
+    "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. "
+    "Vivamus a tortor nec elit auctor sagittis eu at risus. Nulla ut ex eu justo luctus blandit ac non ipsum. "
+    "Mauris sollicitudin fringilla eros, ac vulputate orci sagittis non. "
+    "Donec a tortor vestibulum, blandit enim quis, convallis dolor. Curabitur laoreet justo quis rutrum pellentesque. "
+    "Curabitur nisi ex, ornare eu blandit at, pulvinar eu eros. Proin sollicitudin massa sed nibh sollicitudin bibendum. "
+    "Cras nunc elit, vestibulum et elit eget, mattis tristique neque. Sed tincidunt massa id turpis congue, et lobortis velit dapibus."
+}
 
 def svg_to_coloured_photo(svg_file: Path, colour: str, size_xy, mirror=False) -> ImageTk.PhotoImage:
     """Return a PhotoImage of the SVG filled with *colour* (stroke stays)."""
@@ -135,9 +149,6 @@ class PuzzleApp:
             canvas = tk.Canvas(self.context_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
             canvas.pack()
 
-            label = tk.Label(self.context_page, text="Context Page", font=(MAIN_FONT, 28), fg='white', bg='black')
-            label.place(relx=0.5, rely=0.4, anchor='center')
-
             # NEXT Button
             self.next_tag = 'next'
             next_img = svg_to_coloured_photo(CMD_BLOCK_PATH, BLOCK_COLOURS[6], (1.25*self.piece_w, 1.25*self.piece_h))
@@ -147,21 +158,24 @@ class PuzzleApp:
                                     text="TOLIAU", font=(MAIN_FONT, int(18 * BLOCK_SIZE_COEF), 'bold'), fill='black', tags=self.next_tag)
             canvas.tag_bind(self.next_tag, "<Button-1>", lambda e: self.show_page(self.instructions_page))
 
-            # BACK Button
-            self.back_tag = 'back'
-            back_img = svg_to_coloured_photo(CMD_BLOCK_PATH, BLOCK_COLOURS[5], (1.25*self.piece_w, 1.25*self.piece_h), mirror=True)
-            self.img_refs.append(back_img)
-            back_btn = canvas.create_image(int(self.self_w * 0.1), int(self.self_h * 0.9), image=back_img, tags=self.back_tag)
-            canvas.create_text(int(self.self_w * 0.1 - 7), int(self.self_h * 0.9), 
-                                    text="ATGAL", font=(MAIN_FONT, int(18 * BLOCK_SIZE_COEF), 'bold'), fill='black', tags=self.back_tag)
-            canvas.tag_bind(self.back_tag, "<Button-1>", lambda e: self.show_page(self.start_page))
+            # Video block
+            video_h = self.self_h * 0.75
+            video_w = CONTEXT_VIDEO_SIZE[1] * (video_h / CONTEXT_VIDEO_SIZE[0])
+            """if video_w > (self.self_w * 1.6 / 3):
+                video_w = self.self_w * 1.6 / 3
+                video_h = CONTEXT_VIDEO_SIZE[0] * (video_w / CONTEXT_VIDEO_SIZE[1])"""
+            video_x0, video_y0 = (self.self_w - video_w) / 2, self.self_h * 0.425 - video_h / 2
+            
+            canvas.create_rectangle(video_x0, video_y0, video_x0 + video_w, video_y0 + video_h, width=3, outline="white")
+
+            # Text block (if even needed)
+            """text_x0, text_y0 = video_x0 + video_w + 10, video_y0
+            canvas.create_text(text_x0, text_y0, text=CONTEXT_TEXT, font=(MAIN_FONT, 16), fill='white', width=video_w/2, anchor="nw")"""
+
 
         def setup_instructions_page(self):
             canvas = tk.Canvas(self.instructions_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
-            canvas.pack() 
-
-            label = tk.Label(self.instructions_page, text="Instructions Page", font=(MAIN_FONT, 28), fg='white', bg='black')
-            label.place(relx=0.5, rely=0.4, anchor='center')
+            canvas.pack()
 
             # BACK Button
             self.back_tag = 'back'
@@ -180,6 +194,16 @@ class PuzzleApp:
             canvas.create_text(int(self.self_w * 0.9) + 7, int(self.self_h * 0.9), 
                                     text="TOLIAU", font=(MAIN_FONT, int(18 * BLOCK_SIZE_COEF), 'bold'), fill='black', tags=self.play_tag)
             canvas.tag_bind(self.play_tag, "<Button-1>", lambda e: self.show_page(self.game_page))
+
+            # Video block
+            video_h = self.self_h * 0.65
+            video_w = CONTEXT_VIDEO_SIZE[1] * (video_h / CONTEXT_VIDEO_SIZE[0])
+            if video_w > (self.self_w * 1.6 / 3):
+                video_w = self.self_w * 1.6 / 3
+                video_h = CONTEXT_VIDEO_SIZE[0] * (video_w / CONTEXT_VIDEO_SIZE[1])
+            video_x0, video_y0 = self.self_w * 0.6 - video_w, self.self_h * 0.4 - video_h / 2
+            
+            canvas.create_rectangle(video_x0, video_y0, video_x0 + video_w, video_y0 + video_h, width=3, outline="white")
 
         def setup_game_page(self):
             self.canvas = tk.Canvas(self.game_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
