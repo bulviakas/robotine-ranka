@@ -6,6 +6,7 @@ from PIL import Image, ImageTk, ImageOps
 import cairosvg
 import io, re
 from pathlib import Path
+import cv2
 
 # ASSET PATHS
 RESTART_BUTTON_PATH = Path("assets/restart_btn.svg")
@@ -149,6 +150,9 @@ class PuzzleApp:
             canvas = tk.Canvas(self.context_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
             canvas.pack()
 
+            self.context_video_frame = tk.Frame(self.context_page, bg='black')
+            self.context_video_frame.place(relx=0.5, rely=0.425, anchor='center')
+
             # NEXT Button
             self.next_tag = 'next'
             next_img = svg_to_coloured_photo(CMD_BLOCK_PATH, BLOCK_COLOURS[6], (1.25*self.piece_w, 1.25*self.piece_h))
@@ -161,17 +165,15 @@ class PuzzleApp:
             # Video block
             video_h = self.self_h * 0.75
             video_w = CONTEXT_VIDEO_SIZE[1] * (video_h / CONTEXT_VIDEO_SIZE[0])
-            """if video_w > (self.self_w * 1.6 / 3):
-                video_w = self.self_w * 1.6 / 3
-                video_h = CONTEXT_VIDEO_SIZE[0] * (video_w / CONTEXT_VIDEO_SIZE[1])"""
-            video_x0, video_y0 = (self.self_w - video_w) / 2, self.self_h * 0.425 - video_h / 2
-            
-            canvas.create_rectangle(video_x0, video_y0, video_x0 + video_w, video_y0 + video_h, width=3, outline="white")
 
-            # Text block (if even needed)
-            """text_x0, text_y0 = video_x0 + video_w + 10, video_y0
-            canvas.create_text(text_x0, text_y0, text=CONTEXT_TEXT, font=(MAIN_FONT, 16), fill='white', width=video_w/2, anchor="nw")"""
+            self.video_player = VideoPlayer(
+                self.context_video_frame,
+                video_path=CONTEXT_VIDEO_PATH,
+                width=int(video_w),
+                height=int(video_h)
+            )
 
+            self.video_player.label.pack()
 
         def setup_instructions_page(self):
             canvas = tk.Canvas(self.instructions_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
@@ -201,7 +203,7 @@ class PuzzleApp:
             if video_w > (self.self_w * 1.6 / 3):
                 video_w = self.self_w * 1.6 / 3
                 video_h = CONTEXT_VIDEO_SIZE[0] * (video_w / CONTEXT_VIDEO_SIZE[1])
-            video_x0, video_y0 = self.self_w * 0.6 - video_w, self.self_h * 0.4 - video_h / 2
+            video_x0, video_y0 = int(self.self_w * 0.6 - video_w), int(self.self_h * 0.4 - video_h / 2)
             
             canvas.create_rectangle(video_x0, video_y0, video_x0 + video_w, video_y0 + video_h, width=3, outline="white")
 
@@ -308,6 +310,10 @@ class PuzzleApp:
 
     def show_page(self, page):
         """Raise the specified page to the front."""
+        if page == self.context_page:
+            self.video_player.start()
+        else:
+            self.video_player.stop()
         page.tkraise()
 
 class CommandLine():
@@ -488,6 +494,61 @@ class Block():
 
     def destroy(self):
         self.canvas.delete(self.tag)
+
+class VideoPlayer:
+    def __init__(self, parent, video_path, width=None, height=None):
+        self.parent = parent
+        self.video_path = video_path
+        self.cap = cv2.VideoCapture(video_path)
+        self.width = width
+        self.height = height
+
+        self.label = tk.Label(parent, bg='black')
+        self.label.pack()
+
+        self.playing = False
+
+        # FIXME: make the video restart when the user enters the context page
+
+    def start(self):
+        if not self.playing:
+            self.playing = True
+            self._play_frame()
+
+    def stop(self):
+        self.playing = False
+
+    def _play_frame(self):
+        if not self.playing:
+            return
+
+        ret, frame = self.cap.read()
+        if not ret:
+            # Restart video
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            ret, frame = self.cap.read()
+            if not ret:
+                self.stop()
+                return
+
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        # Resize frame if needed
+        if self.width and self.height:
+            frame = cv2.resize(frame, (self.width, self.height))
+
+        img = Image.fromarray(frame)
+        imgtk = ImageTk.PhotoImage(image=img)
+
+        self.label.imgtk = imgtk
+        self.label.configure(image=imgtk)
+
+        self.parent.after(33, self._play_frame) # ~30FPS (hopefully will be better)
+
+    def destroy(self):
+        self.stop()
+        self.cap.release()
+        self.label.destroy()
 
 if __name__ == "__main__":
     PuzzleApp().run()
