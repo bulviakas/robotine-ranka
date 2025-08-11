@@ -16,7 +16,7 @@ class Block():
 
         if start:
             img = svg_to_coloured_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
-            self.font_size = int(14 * BLOCK_SIZE_COEF)
+            self.font_size = int(14 * config.BLOCK_SIZE_COEF)
 
         elif self.template:
             img = svg_to_coloured_photo(BLOCK_TEMPLATE_PATH, colour, (1.5*app.piece_w, 1.5*app.piece_h))
