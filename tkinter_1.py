@@ -20,6 +20,7 @@ HOME_ICON_PATH = Path("assets/home_icon_thin.svg")
 LNG_ICON_PATH = Path("assets/language_icon_thin.svg")
 START_BTN_PATH = Path("assets/start_btn.svg")
 CONTEXT_VIDEO_PATH = Path("assets/Fish-spinning.mp4")
+INSTRUCTIONS_VIDEO_PATH = Path("assets/roach.gif")
 
 # CONSTANTS
 OVERLAP_FRAC        = 0.2
@@ -55,6 +56,7 @@ THE_CORRECT_SEQUENCE = [
 ]
 
 CONTEXT_VIDEO_SIZE = [480, 854] # Change when importing the actual video
+INSTRUCTIONS_VIDEO_SIZE = [360, 480]
 
 CONTEXT_TEXT = {
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed faucibus at sapien ac egestas. "
@@ -166,14 +168,14 @@ class PuzzleApp:
             video_h = self.self_h * 0.75
             video_w = CONTEXT_VIDEO_SIZE[1] * (video_h / CONTEXT_VIDEO_SIZE[0])
 
-            self.video_player = VideoPlayer(
+            self.context_video = VideoPlayer(
                 self.context_video_frame,
                 video_path=CONTEXT_VIDEO_PATH,
                 width=int(video_w),
                 height=int(video_h)
             )
 
-            self.video_player.label.pack()
+            self.context_video.label.pack()
 
         def setup_instructions_page(self):
             canvas = tk.Canvas(self.instructions_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
@@ -199,13 +201,22 @@ class PuzzleApp:
 
             # Video block
             video_h = self.self_h * 0.65
-            video_w = CONTEXT_VIDEO_SIZE[1] * (video_h / CONTEXT_VIDEO_SIZE[0])
+            video_w = INSTRUCTIONS_VIDEO_SIZE[1] * (video_h / INSTRUCTIONS_VIDEO_SIZE[0])
             if video_w > (self.self_w * 1.6 / 3):
                 video_w = self.self_w * 1.6 / 3
-                video_h = CONTEXT_VIDEO_SIZE[0] * (video_w / CONTEXT_VIDEO_SIZE[1])
-            video_x0, video_y0 = int(self.self_w * 0.6 - video_w), int(self.self_h * 0.4 - video_h / 2)
+                video_h = INSTRUCTIONS_VIDEO_SIZE[0] * (video_w / INSTRUCTIONS_VIDEO_SIZE[1])
+
+            self.instructions_video_frame = tk.Frame(self.instructions_page, bg='white')
+            self.instructions_video_frame.place(relx=0.3, rely=0.425, anchor='center')
             
-            canvas.create_rectangle(video_x0, video_y0, video_x0 + video_w, video_y0 + video_h, width=3, outline="white")
+            self.instructions_video = VideoPlayer(
+                self.instructions_video_frame,
+                video_path=INSTRUCTIONS_VIDEO_PATH,
+                width=int(video_w),
+                height=int(video_h)
+            )
+
+            self.instructions_video.label.pack()
 
         def setup_game_page(self):
             self.canvas = tk.Canvas(self.game_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
@@ -311,9 +322,13 @@ class PuzzleApp:
     def show_page(self, page):
         """Raise the specified page to the front."""
         if page == self.context_page:
-            self.video_player.start()
+            self.context_video.start()
         else:
-            self.video_player.stop()
+            self.context_video.stop()
+        if page == self.instructions_page:
+            self.instructions_video.start()
+        else:
+            self.instructions_video.stop()
         page.tkraise()
 
 class CommandLine():
