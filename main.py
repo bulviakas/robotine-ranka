@@ -2,11 +2,10 @@ import os
 if "DISPLAY" not in os.environ:   # needed when starting from cron/rc.local
     os.environ["DISPLAY"] = ":0"
 import tkinter as tk
-from PIL import Image, ImageTk, ImageOps
-import cairosvg
-import io, re
+from PIL import Image, ImageTk
 from pathlib import Path
 import cv2
+from utils import svg_to_coloured_photo, svg_to_photo
 
 # ASSET PATHS
 RESTART_BUTTON_PATH = Path("assets/restart_btn.svg")
@@ -67,28 +66,6 @@ CONTEXT_TEXT = (
     "Donec a tortor vestibulum, blandit enim quis, convallis dolor. Curabitur laoreet justo quis rutrum pellentesque. "
     "Curabitur nisi ex, ornare eu blandit at, pulvinar eu eros. Proin sollicitudin massa sed nibh sollicitudin bibendum. "
 )
-
-def svg_to_coloured_photo(svg_file: Path, colour: str, size_xy, mirror=False) -> ImageTk.PhotoImage:
-    """Return a PhotoImage of the SVG filled with *colour* (stroke stays)."""
-    txt = svg_file.read_text(encoding="utf-8")
-    txt = re.sub(r'fill\s*:\s*#[0-9a-fA-F]{3,6}', f'fill:{colour}', txt)
-    txt = re.sub(r'fill="[^"]+"',                 f'fill="{colour}"', txt, flags=re.I)
-    png = cairosvg.svg2png(bytestring=txt.encode(),
-                           output_width=size_xy[0], output_height=size_xy[1])
-    pil_img = Image.open(io.BytesIO(png)).convert("RGBA")
-
-    if mirror:
-        pil_img = ImageOps.mirror(pil_img)
-
-    return ImageTk.PhotoImage(pil_img)
-
-def svg_to_photo(svg_path, width=None, height=None):
-
-    svg_path = str(svg_path)
-    png_bytes = cairosvg.svg2png(url=svg_path, output_width=width, output_height=height)
-    image = Image.open(io.BytesIO(png_bytes))
-
-    return ImageTk.PhotoImage(image)
 
 class PuzzleApp:
     def __init__(self):
