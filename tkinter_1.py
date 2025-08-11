@@ -58,7 +58,7 @@ THE_CORRECT_SEQUENCE = [
 CONTEXT_VIDEO_SIZE = [480, 854] # Change when importing the actual video
 INSTRUCTIONS_VIDEO_SIZE = [360, 480]
 
-CONTEXT_TEXT = {
+CONTEXT_TEXT = (
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed faucibus at sapien ac egestas. "
     "Morbi quis tellus ut mauris efficitur pellentesque ac luctus nisl. Pellentesque pharetra sapien dui. "
     "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. "
@@ -66,8 +66,7 @@ CONTEXT_TEXT = {
     "Mauris sollicitudin fringilla eros, ac vulputate orci sagittis non. "
     "Donec a tortor vestibulum, blandit enim quis, convallis dolor. Curabitur laoreet justo quis rutrum pellentesque. "
     "Curabitur nisi ex, ornare eu blandit at, pulvinar eu eros. Proin sollicitudin massa sed nibh sollicitudin bibendum. "
-    "Cras nunc elit, vestibulum et elit eget, mattis tristique neque. Sed tincidunt massa id turpis congue, et lobortis velit dapibus."
-}
+)
 
 def svg_to_coloured_photo(svg_file: Path, colour: str, size_xy, mirror=False) -> ImageTk.PhotoImage:
     """Return a PhotoImage of the SVG filled with *colour* (stroke stays)."""
@@ -199,6 +198,8 @@ class PuzzleApp:
                                     text="TOLIAU", font=(MAIN_FONT, int(18 * BLOCK_SIZE_COEF), 'bold'), fill='black', tags=self.play_tag)
             canvas.tag_bind(self.play_tag, "<Button-1>", lambda e: self.show_page(self.game_page))
 
+            # FIXME change the relative placement so that the video with the text would be centered
+
             # Video block
             video_h = self.self_h * 0.65
             video_w = INSTRUCTIONS_VIDEO_SIZE[1] * (video_h / INSTRUCTIONS_VIDEO_SIZE[0])
@@ -217,6 +218,17 @@ class PuzzleApp:
             )
 
             self.instructions_video.label.pack()
+
+            # TEXT BLOCK
+            canvas.text_block = canvas.create_text(
+                int(self.self_w * 0.3 + video_w / 2 + 32), 
+                int(self.self_h * 0.425), 
+                anchor="w", 
+                fill='white', 
+                font=(MAIN_FONT, 14), 
+                text=CONTEXT_TEXT, 
+                width=video_w / 1.5
+                )
 
         def setup_game_page(self):
             self.canvas = tk.Canvas(self.game_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
