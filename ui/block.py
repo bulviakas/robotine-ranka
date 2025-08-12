@@ -1,7 +1,8 @@
 from config import *
 import config
 from utils import load_svg_img
-from logger import logger
+from logger import get_logger
+logger = get_logger("Block")
 
 class Block():
     def __init__(self, app, cmd, colour, x, y, template=False, start=False, text="", text_offset=7):
@@ -92,12 +93,12 @@ class Block():
 
     def lock(self):
         self.locked = True
-        logger.debug(f"{self.text} block locked")
+        logger.info(f"{self.text} block locked")
     
     def unlock(self):
         if self.text != "PRADŽIA":
             self.locked = False
-            logger.debug(f"{self.text} block unlocked")
+            logger.info(f"{self.text} block unlocked")
 
     def destroy(self):
         self.canvas.delete(self.tag)

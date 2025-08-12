@@ -1,6 +1,8 @@
 from PIL import Image, ImageTk
 import tkinter as tk
 import cv2
+from logger import get_logger
+logger = get_logger("Video Player")
 
 class VideoPlayer:
     def __init__(self, parent, video_path, width=None, height=None):

@@ -2,7 +2,8 @@ from config import *
 from utils import load_svg_img
 import tkinter as tk
 from ui import VideoPlayer, CommandLine, Block
-from logger import logger
+from logger import get_logger
+logger = get_logger("Pages")
 
 # FIXME: Change the random labels to actually meaningful text
 

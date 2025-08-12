@@ -1,6 +1,7 @@
 from config import *
 from utils import load_svg_img
-from logger import logger
+from logger import get_logger
+logger = get_logger("Command Line")
 
 class CommandLine():
     def __init__(self, app, canvas, canvas_x, y_top, piece_w, piece_h, n_slots, overlap):

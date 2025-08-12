@@ -5,7 +5,8 @@ import tkinter as tk
 from config import *
 import config
 from ui.pages import *
-from logger import logger
+from logger import get_logger
+logger = get_logger("Main")
 
 class PuzzleApp:
     def __init__(self):
