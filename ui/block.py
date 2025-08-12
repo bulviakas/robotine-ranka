@@ -1,6 +1,7 @@
 from config import *
 import config
 from utils import load_svg_img
+from logger import logger
 
 class Block():
     def __init__(self, app, cmd, colour, x, y, template=False, start=False, text="", text_offset=7):
@@ -49,7 +50,7 @@ class Block():
             self.canvas.tag_bind(self.tag, ev, cb)
 
     def on_click(self, ev):
-        print("Block clicked")
+        logger.debug("Block clicked")
         if not self.locked:
             self.app.cmd.release(self)
             if self.template:
@@ -77,7 +78,7 @@ class Block():
             self.drag_x, self.drag_y = ev.x, ev.y
 
     def on_release(self, _ev):
-        print("Block released")
+        logger.debug("Block released")
         if not self.locked:
             if self.template: return
             if not self.app.cmd.try_snap(self):
@@ -91,12 +92,12 @@ class Block():
 
     def lock(self):
         self.locked = True
-        print(self.text, " block locked")
+        logger.debug(f"{self.text} block locked")
     
     def unlock(self):
         if self.text != "PRADŽIA":
             self.locked = False
-            print(self.text, " block unlocked")
+            logger.debug(f"{self.text} block unlocked")
 
     def destroy(self):
         self.canvas.delete(self.tag)

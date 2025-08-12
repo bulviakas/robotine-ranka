@@ -2,10 +2,14 @@ from config import *
 from utils import load_svg_img
 import tkinter as tk
 from ui import VideoPlayer, CommandLine, Block
+from logger import logger
 
 # FIXME: Change the random labels to actually meaningful text
 
 def setup_start_page(self):
+
+    logger.info("Setting up the Start page...")
+
     canvas = tk.Canvas(self.start_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
     canvas.pack()
 
@@ -26,6 +30,9 @@ def setup_start_page(self):
         )
 
 def setup_context_page(self):
+
+    logger.info("Setting up the Context page...")
+    
     canvas = tk.Canvas(self.context_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
     canvas.pack()
 
@@ -62,6 +69,9 @@ def setup_context_page(self):
     self.context_video.label.pack()
 
 def setup_instructions_page(self):
+
+    logger.info("Setting up the Instructions page...")
+
     canvas = tk.Canvas(self.instructions_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
     canvas.pack()
 
@@ -130,6 +140,9 @@ def setup_instructions_page(self):
         )
 
 def setup_game_page(self):
+
+    logger.info("Setting up the Game page...")
+    
     self.canvas = tk.Canvas(self.game_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
     self.canvas.pack(fill="both", expand=True)
 

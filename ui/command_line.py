@@ -1,5 +1,6 @@
 from config import *
 from utils import load_svg_img
+from logger import logger
 
 class CommandLine():
     def __init__(self, app, canvas, canvas_x, y_top, piece_w, piece_h, n_slots, overlap):
@@ -48,7 +49,7 @@ class CommandLine():
         if self.slots[slot] is not None:          return False
         if slot and self.slots[slot-1] is None:   return False
         if abs(cy - self.y_mid) > 2*self.piece_h: 
-            print("Too far away")
+            logger.debug("Too far away")
             return False
 
         # snap!
@@ -56,7 +57,7 @@ class CommandLine():
         dx, dy = tgt_cx - cx, self.y_mid - ((bb[1]+bb[3]) / 2)
         self.canvas.move(block.tag, dx, dy)
         self.slots[slot], block.slot = block, slot
-        print("SNAP!")
+        logger.debug("SNAP!")
         if self.slots[block.slot - 1] is not None:
             self.slots[block.slot - 1].lock()
         self.canvas.unbind("<B1-Motion>")
@@ -67,10 +68,10 @@ class CommandLine():
         return True
 
     def clear(self, event):
-        print("Clearing...")
+        logger.info("Clearing...")
         for slot, block in enumerate(self.slots):
             if block is None: 
-                print("CLEARED!")
+                logger.info("CLEARED!")
                 return
             if block.text == "PRADŽIA": continue
             block.destroy()
@@ -78,16 +79,16 @@ class CommandLine():
             self.slots[slot] = None
             block.slot = None
             
-        print("CLEARED!")
+        logger.info("CLEARED!")
         return
     
     def submit(self, event):
-        print("Submited!")
-        print("-----------------")
+        logger.info("Submited!")
+        logger.debug("-----------------")
         for block in self.slots:
             if block is None: 
-                print("---------------")
+                logger.debug("---------------")
                 return
-            print(block.text, "\n")
-        print("-----------------")
+            logger.debug(f"{block.text}")
+        logger.debug("-----------------")
         return

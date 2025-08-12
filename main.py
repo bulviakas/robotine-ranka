@@ -5,9 +5,11 @@ import tkinter as tk
 from config import *
 import config
 from ui.pages import *
+from logger import logger
 
 class PuzzleApp:
     def __init__(self):
+        logger.info("Initializing PuzzleApp...")
         self.root = tk.Tk()
         self.root.attributes("-fullscreen", True)
         self.root.title("Puzzle Command Builder")
@@ -23,6 +25,8 @@ class PuzzleApp:
             self.piece_w = self.self_w//9
             self.piece_h = 85 * (self.piece_w / 165)
             config.BLOCK_SIZE_COEF = self.piece_w / 165
+
+        logger.debug(f"BLOCK_SIZE_COEF set to {config.BLOCK_SIZE_COEF:.3f}")
 
         self.img_refs = []
 
@@ -49,6 +53,8 @@ class PuzzleApp:
         setup_instructions_page(self)
 
         self.show_page(self.start_page)
+
+        logger.info("PuzzleApp setup complete.")
 
         self.root.bind("<Escape>", lambda e: self.root.destroy())
     
