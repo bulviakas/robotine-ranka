@@ -1,5 +1,5 @@
 from config import *
-from utils import svg_to_photo
+from utils import load_svg_img
 
 class CommandLine():
     def __init__(self, app, canvas, canvas_x, y_top, piece_w, piece_h, n_slots, overlap):
@@ -24,8 +24,7 @@ class CommandLine():
                                           self.x1 + CMD_SIDE_PAD, y1 + CMD_H_PAD, fill="black", 
                                           outline="white", width=3)
         
-        self.cmd_img = svg_to_photo(CMD_BLOCK_PATH, self.piece_w, self.piece_h)
-        app.img_refs.append(self.cmd_img)
+        self.cmd_img = load_svg_img(app, CMD_BLOCK_PATH, (self.piece_w, self.piece_h))
         
 
     def release(self, block):

@@ -1,5 +1,5 @@
 from config import *
-from utils import svg_to_coloured_photo
+from utils import load_svg_img
 import tkinter as tk
 from ui import VideoPlayer, CommandLine, Block
 
@@ -13,8 +13,7 @@ def setup_start_page(self):
     title.place(relx=0.5, rely=0.35, anchor='center')
 
     start_tag = 'start'
-    start_img = svg_to_coloured_photo(START_BTN_PATH, BLOCK_COLOURS[2], (self.self_w / 2, self.self_h / 5))
-    self.img_refs.append(start_img)
+    start_img = load_svg_img(self, START_BTN_PATH, (self.self_w / 2, self.self_h / 5), BLOCK_COLOURS[2])
     start_btn = canvas.create_image(int(self.self_w * 0.5), int(self.self_h * 0.6), image=start_img, anchor='center', tags=start_tag)
     canvas.tag_bind(start_tag, "<Button-1>", lambda e: self.show_page(self.context_page))
 
@@ -29,8 +28,7 @@ def setup_context_page(self):
 
     # NEXT Button
     self.next_tag = 'next'
-    next_img = svg_to_coloured_photo(CMD_BLOCK_PATH, BLOCK_COLOURS[6], (1.25*self.piece_w, 1.25*self.piece_h))
-    self.img_refs.append(next_img)
+    next_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), BLOCK_COLOURS[6])
     self.next_btn = canvas.create_image(int(self.self_w * 0.9), int(self.self_h * 0.9), image=next_img, anchor='center', tags=self.next_tag)
     canvas.create_text(int(self.self_w * 0.9) + 7, int(self.self_h * 0.9), 
                                     text="TOLIAU", font=(MAIN_FONT, int(18 * BLOCK_SIZE_COEF), 'bold'), fill='black', tags=self.next_tag)
@@ -55,8 +53,7 @@ def setup_instructions_page(self):
 
     # BACK Button
     self.back_tag = 'back'
-    back_img = svg_to_coloured_photo(CMD_BLOCK_PATH, BLOCK_COLOURS[5], (1.25*self.piece_w, 1.25*self.piece_h), mirror=True)
-    self.img_refs.append(back_img)
+    back_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), BLOCK_COLOURS[5], mirror=True)
     back_btn = canvas.create_image(int(self.self_w * 0.1), int(self.self_h * 0.9), image=back_img, tags=self.back_tag)
     canvas.create_text(int(self.self_w * 0.1 - 7), int(self.self_h * 0.9), 
                                     text="ATGAL", font=(MAIN_FONT, int(18 * BLOCK_SIZE_COEF), 'bold'), fill='black', tags=self.back_tag)
@@ -64,8 +61,7 @@ def setup_instructions_page(self):
 
     # PLAY Button
     self.play_tag = 'play'
-    play_img = svg_to_coloured_photo(CMD_BLOCK_PATH, BLOCK_COLOURS[6], (1.25*self.piece_w, 1.25*self.piece_h))
-    self.img_refs.append(play_img)
+    play_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), BLOCK_COLOURS[6])
     self.next_btn = canvas.create_image(int(self.self_w * 0.9), int(self.self_h * 0.9), image=play_img, anchor='center', tags=self.play_tag)
     canvas.create_text(int(self.self_w * 0.9) + 7, int(self.self_h * 0.9), 
                                     text="TOLIAU", font=(MAIN_FONT, int(18 * BLOCK_SIZE_COEF), 'bold'), fill='black', tags=self.play_tag)
@@ -123,8 +119,7 @@ def setup_game_page(self):
     # CLEAR button
     self.clear_tag = 'clear'
     btn_left_1 = self.self_w//2 - btn_w - GAP_BETWEEN_BTNS
-    clear_img = svg_to_coloured_photo(RESTART_BUTTON_PATH, 'white', (btn_w, btn_h))
-    self.img_refs.append(clear_img)
+    clear_img = load_svg_img(self, RESTART_BUTTON_PATH, (btn_w, btn_h), 'white')
     self.clear_btn = self.canvas.create_image(btn_left_1, btn_top, image=clear_img, anchor='nw', tags=self.clear_tag)
     self.canvas.create_text(btn_left_1 + btn_w * 0.55, btn_top + btn_h//2 - 3, 
                             text="IŠVALYTI", font=(MAIN_FONT, int(18 * (btn_h / 51)), 'bold'), fill='black', tags=self.clear_tag)
@@ -133,8 +128,7 @@ def setup_game_page(self):
     # SUBMIT button
     self.submit_tag = 'submit'
     btn_left_2 = self.self_w//2 + GAP_BETWEEN_BTNS
-    submit_img = svg_to_coloured_photo(SUBMIT_BUTTON_PATH, 'white', (btn_w, btn_h))
-    self.img_refs.append(submit_img)
+    submit_img = load_svg_img(self, SUBMIT_BUTTON_PATH, (btn_w, btn_h), 'white')
     self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw', tags=self.submit_tag) 
     self.canvas.create_text(btn_left_2 + btn_w * 0.45, btn_top + btn_h//2 - 3, 
                             text="PALEISTI", font=(MAIN_FONT, int(18 * (btn_h / 51)), 'bold'), fill='black', tags=self.submit_tag)
@@ -147,8 +141,7 @@ def setup_game_page(self):
     self.tt_tag = 'tutorial'
     tt_y = self.self_h * MENU_TOP_FRAC
     tt_x = (self.self_w - self.cmd.x1) / 2 + self.cmd.x1
-    tt_img = svg_to_coloured_photo(TT_ICON_PATH, 'white', (icon_size, icon_size))
-    self.img_refs.append(tt_img)
+    tt_img = load_svg_img(self, TT_ICON_PATH, (icon_size, icon_size), 'white')
     self.tt_icon = self.canvas.create_image(tt_x, tt_y, image=tt_img, anchor='center', tags=self.tt_tag)
     self.canvas.tag_bind(self.tt_tag, "<Button-1>", lambda e: self.show_page(self.context_page))
 
@@ -156,8 +149,7 @@ def setup_game_page(self):
     self.home_tag = 'home'
     home_y = self.self_h * MENU_TOP_FRAC
     home_x = self.cmd.x0 // 2
-    home_img = svg_to_coloured_photo(HOME_ICON_PATH, 'white', (icon_size, icon_size))
-    self.img_refs.append(home_img)
+    home_img = load_svg_img(self, HOME_ICON_PATH, (icon_size, icon_size), 'white')
     self.tt_icon = self.canvas.create_image(home_x, home_y, image=home_img, anchor='center', tags=self.home_tag)
     self.canvas.tag_bind(self.home_tag, "<Button-1>", lambda e: self.show_page(self.start_page))
 
@@ -166,8 +158,7 @@ def setup_game_page(self):
     # LANGUAGE icon
     lng_y = self.self_h * MENU_TOP_FRAC
     lng_x = tt_x - 1.5*icon_size
-    lng_img = svg_to_coloured_photo(LNG_ICON_PATH, 'white', (icon_size, icon_size))
-    self.img_refs.append(lng_img)
+    lng_img = load_svg_img(self, LNG_ICON_PATH, (icon_size, icon_size), 'white')
     self.tt_icon = self.canvas.create_image(lng_x, lng_y, image=lng_img, anchor='center')
 
     # Start block

@@ -24,3 +24,11 @@ def svg_to_photo(svg_path, width=None, height=None):
     image = Image.open(io.BytesIO(png_bytes))
 
     return ImageTk.PhotoImage(image)
+
+def load_svg_img(self, path, size_xy, colour='', mirror=False):
+    if colour != '':
+        img = svg_to_coloured_photo(path, colour, size_xy, mirror)
+    else:
+        img = svg_to_photo(path, size_xy[0], size_xy[1])
+    self.img_refs.append(img)
+    return img

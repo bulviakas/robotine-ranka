@@ -1,6 +1,6 @@
 from config import *
 import config
-from utils import svg_to_coloured_photo
+from utils import load_svg_img
 
 class Block():
     def __init__(self, app, cmd, colour, x, y, template=False, start=False, text="", text_offset=7):
@@ -15,18 +15,16 @@ class Block():
         self.text_offset = text_offset
 
         if start:
-            img = svg_to_coloured_photo(START_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
+            img = load_svg_img(app, START_BLOCK_PATH, (app.piece_w, app.piece_h), colour)
             self.font_size = int(14 * config.BLOCK_SIZE_COEF)
 
         elif self.template:
-            img = svg_to_coloured_photo(BLOCK_TEMPLATE_PATH, colour, (1.5*app.piece_w, 1.5*app.piece_h))
+            img = load_svg_img(app, BLOCK_TEMPLATE_PATH, (1.5*app.piece_w, 1.5*app.piece_h), colour)
             self.font_size = int(self.font_size * 1.5)
             self.text_offset = 2
 
         else:
-            img = svg_to_coloured_photo(CMD_BLOCK_PATH, colour, (app.piece_w, app.piece_h))
-
-        app.img_refs.append(img)
+            img = load_svg_img(app, CMD_BLOCK_PATH, (app.piece_w, app.piece_h), colour)
 
         self.item = self.canvas.create_image(
             x, y, 
