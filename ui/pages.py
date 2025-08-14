@@ -108,8 +108,6 @@ def setup_instructions_page(self):
         text_offset_x=7
     )
 
-    # FIXME change the relative placement so that the video with the text would be centered
-
     # Video block
     video_h = self.self_h * 0.65
     video_w = INSTRUCTIONS_VIDEO_SIZE[1] * (video_h / INSTRUCTIONS_VIDEO_SIZE[0])
@@ -117,8 +115,15 @@ def setup_instructions_page(self):
        video_w = self.self_w * 1.6 / 3
        video_h = INSTRUCTIONS_VIDEO_SIZE[0] * (video_w / INSTRUCTIONS_VIDEO_SIZE[1])
 
+    text_w = video_w / 1.5
+
+    side_padding = (self.self_w - (video_w + text_w + GAP_FROM_VIDEO)) / 2
+    video_x = self.self_w - side_padding - text_w - GAP_FROM_VIDEO
+
     self.instructions_video_frame = tk.Frame(self.instructions_page, bg='white')
-    self.instructions_video_frame.place(relx=0.3, rely=0.425, anchor='center')
+    self.instructions_video_frame.place(x=video_x, y=self.self_h * 0.425, anchor='e')
+    logger.debug(f"video frame x: {video_x}")
+    logger.debug(f"video width: {video_w} height: {video_h}")
             
     self.instructions_video = VideoPlayer(
         self.instructions_video_frame,
@@ -131,13 +136,13 @@ def setup_instructions_page(self):
 
     # TEXT BLOCK
     canvas.text_block = canvas.create_text(
-        int(self.self_w * 0.3 + video_w / 2 + 32), 
+        int(video_x + GAP_FROM_VIDEO), 
         int(self.self_h * 0.425), 
         anchor="w", 
         fill='white', 
         font=(MAIN_FONT, 14), 
         text=CONTEXT_TEXT, 
-        width=video_w / 1.5
+        width=text_w
         )
 
 def setup_game_page(self):

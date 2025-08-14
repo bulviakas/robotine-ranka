@@ -26,6 +26,7 @@ BLOCK_SIZE_COEF     = 0.02
 CMD_SIDE_PAD        = 32
 CMD_H_PAD           = 16
 MENU_TOP_FRAC       = 0.08
+GAP_FROM_VIDEO      = 24 #px
 
 # TODO: import better fonts
 
