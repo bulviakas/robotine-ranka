@@ -11,14 +11,14 @@ class Block():
         self.home_x, self.home_y   = x, y
         self.slot = None
         self.locked = False
-        self.text, self.font_size = text, int(12 * config.BLOCK_SIZE_COEF)
+        self.text, self.font_size = text, scale_font(12)
         self.tag = f"block_{id(self)}"
         self.cmd = cmd
         self.text_offset = text_offset
 
         if start:
             img = load_svg_img(app, START_BLOCK_PATH, (app.piece_w, app.piece_h), colour)
-            self.font_size = int(14 * config.BLOCK_SIZE_COEF)
+            self.font_size = scale_font(14)
 
         elif self.template:
             img = load_svg_img(app, BLOCK_TEMPLATE_PATH, (1.5*app.piece_w, 1.5*app.piece_h), colour)
@@ -37,7 +37,7 @@ class Block():
         
         self.label = self.canvas.create_text(
             x + self.text_offset, y, 
-            text=text, 
+            text=text.replace(' ', '\n'), 
             font=(MAIN_FONT, self.font_size, 'bold'), 
             fill='black', 
             anchor='center', 
@@ -102,3 +102,6 @@ class Block():
 
     def destroy(self):
         self.canvas.delete(self.tag)
+
+def scale_font(base_size):
+    return int(base_size * config.BLOCK_SIZE_COEF)
