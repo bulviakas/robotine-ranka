@@ -1,5 +1,8 @@
 from pathlib import Path
 
+BLACK = "#161316"
+WHITE = "#F5F5F5"
+
 # ASSET PATHS
 RESTART_BUTTON_PATH = Path("assets/restart_btn.svg")
 SUBMIT_BUTTON_PATH = Path("assets/submit_btn.svg")
@@ -33,7 +36,7 @@ GAP_FROM_VIDEO      = 24 #px
 # Good fonts: Cascadia Code SemiBold, Segoe UI Black
 MAIN_FONT = "Cascadia Code SemiBold"
 
-BLOCK_COLOURS = [
+COLOUR_PALETTE = [
     "#e74c3c", "#f39c12", "#27ae60", "#8e44ad", "#96d5ff",
     "#ff5f7f", "#f1c40f", "#2980b9"   # 8 pieces
 ]

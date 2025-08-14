@@ -11,14 +11,14 @@ def setup_start_page(self):
 
     logger.info("Setting up the Start page...")
 
-    canvas = tk.Canvas(self.start_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
+    canvas = tk.Canvas(self.start_page, width=self.self_w, height=self.self_h, bg=BLACK, highlightthickness=0)
     canvas.pack()
 
-    title = tk.Label(self.start_page, text="Kazkoks inviting sukis or whatever!!!", font=(MAIN_FONT, int(44 * (self.self_h / 5 / 165))), fg="white", bg="black")
+    title = tk.Label(self.start_page, text="Kazkoks inviting sukis or whatever!!!", font=(MAIN_FONT, int(44 * (self.self_h / 5 / 165))), fg=WHITE, bg=BLACK)
     title.place(relx=0.5, rely=0.35, anchor='center')
 
     start_tag = 'start'
-    start_img = load_svg_img(self, START_BTN_PATH, (self.self_w / 2, self.self_h / 5), BLOCK_COLOURS[2])
+    start_img = load_svg_img(self, START_BTN_PATH, (self.self_w / 2, self.self_h / 5), COLOUR_PALETTE[2])
 
     create_button(
         self, canvas, 
@@ -34,15 +34,15 @@ def setup_context_page(self):
 
     logger.info("Setting up the Context page...")
     
-    canvas = tk.Canvas(self.context_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
+    canvas = tk.Canvas(self.context_page, width=self.self_w, height=self.self_h, bg=BLACK, highlightthickness=0)
     canvas.pack()
 
-    self.context_video_frame = tk.Frame(self.context_page, bg='black')
+    self.context_video_frame = tk.Frame(self.context_page, bg=BLACK)
     self.context_video_frame.place(relx=0.5, rely=0.425, anchor='center')
 
     # NEXT Button
     self.next_tag = 'next'
-    next_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), BLOCK_COLOURS[6])
+    next_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), COLOUR_PALETTE[6])
 
     create_button(
         self, canvas,
@@ -73,12 +73,12 @@ def setup_instructions_page(self):
 
     logger.info("Setting up the Instructions page...")
 
-    canvas = tk.Canvas(self.instructions_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
+    canvas = tk.Canvas(self.instructions_page, width=self.self_w, height=self.self_h, bg=BLACK, highlightthickness=0)
     canvas.pack()
 
     # BACK Button
     self.back_tag = 'back'
-    back_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), BLOCK_COLOURS[5], mirror=True)
+    back_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), COLOUR_PALETTE[5], mirror=True)
 
     create_button(
         self, canvas,
@@ -94,7 +94,7 @@ def setup_instructions_page(self):
 
     # PLAY Button
     self.play_tag = 'play'
-    play_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), BLOCK_COLOURS[6])
+    play_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), COLOUR_PALETTE[6])
 
     create_button(
         self, canvas,
@@ -120,7 +120,7 @@ def setup_instructions_page(self):
     side_padding = (self.self_w - (video_w + text_w + GAP_FROM_VIDEO)) / 2
     video_x = self.self_w - side_padding - text_w - GAP_FROM_VIDEO
 
-    self.instructions_video_frame = tk.Frame(self.instructions_page, bg='white')
+    self.instructions_video_frame = tk.Frame(self.instructions_page, bg=WHITE)
     self.instructions_video_frame.place(x=video_x, y=self.self_h * 0.425, anchor='e')
     logger.debug(f"video frame x: {video_x}")
     logger.debug(f"video width: {video_w} height: {video_h}")
@@ -139,7 +139,7 @@ def setup_instructions_page(self):
         int(video_x + GAP_FROM_VIDEO), 
         int(self.self_h * 0.425), 
         anchor="w", 
-        fill='white', 
+        fill=WHITE, 
         font=(MAIN_FONT, 14), 
         text=CONTEXT_TEXT, 
         width=text_w
@@ -149,7 +149,7 @@ def setup_game_page(self):
 
     logger.info("Setting up the Game page...")
     
-    self.canvas = tk.Canvas(self.game_page, width=self.self_w, height=self.self_h, bg='black', highlightthickness=0)
+    self.canvas = tk.Canvas(self.game_page, width=self.self_w, height=self.self_h, bg=BLACK, highlightthickness=0)
     self.canvas.pack(fill="both", expand=True)
 
     # Command bar
@@ -168,7 +168,7 @@ def setup_game_page(self):
     # CLEAR button
     self.clear_tag = 'clear'
     btn_left_1 = self.self_w//2 - btn_w - GAP_BETWEEN_BTNS
-    clear_img = load_svg_img(self, RESTART_BUTTON_PATH, (btn_w, btn_h), 'white')
+    clear_img = load_svg_img(self, RESTART_BUTTON_PATH, (btn_w, btn_h), WHITE)
 
     create_button(
         self, self.canvas,
@@ -185,10 +185,10 @@ def setup_game_page(self):
     # SUBMIT button
     self.submit_tag = 'submit'
     btn_left_2 = self.self_w//2 + GAP_BETWEEN_BTNS
-    submit_img = load_svg_img(self, SUBMIT_BUTTON_PATH, (btn_w, btn_h), 'white')
+    submit_img = load_svg_img(self, SUBMIT_BUTTON_PATH, (btn_w, btn_h), WHITE)
     self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw', tags=self.submit_tag) 
     self.canvas.create_text(btn_left_2 + btn_w * 0.45, btn_top + btn_h//2 - 3, 
-                            text="PALEISTI", font=(MAIN_FONT, int(18 * (btn_h / 51)), 'bold'), fill='black', tags=self.submit_tag)
+                            text="PALEISTI", font=(MAIN_FONT, int(18 * (btn_h / 51)), 'bold'), fill=BLACK, tags=self.submit_tag)
     self.canvas.tag_bind(self.submit_tag, "<Button-1>", self.cmd.submit)
 
     create_button(
@@ -210,7 +210,7 @@ def setup_game_page(self):
     self.tt_tag = 'tutorial'
     tt_y = self.self_h * MENU_TOP_FRAC
     tt_x = (self.self_w - self.cmd.x1) / 2 + self.cmd.x1
-    tt_img = load_svg_img(self, TT_ICON_PATH, (icon_size, icon_size), 'white')
+    tt_img = load_svg_img(self, TT_ICON_PATH, (icon_size, icon_size), WHITE)
     self.tt_icon = self.canvas.create_image(tt_x, tt_y, image=tt_img, anchor='center', tags=self.tt_tag)
     self.canvas.tag_bind(self.tt_tag, "<Button-1>", lambda e: self.show_page(self.context_page))
 
@@ -218,7 +218,7 @@ def setup_game_page(self):
     self.home_tag = 'home'
     home_y = self.self_h * MENU_TOP_FRAC
     home_x = self.cmd.x0 // 2
-    home_img = load_svg_img(self, HOME_ICON_PATH, (icon_size, icon_size), 'white')
+    home_img = load_svg_img(self, HOME_ICON_PATH, (icon_size, icon_size), WHITE)
     self.tt_icon = self.canvas.create_image(home_x, home_y, image=home_img, anchor='center', tags=self.home_tag)
     self.canvas.tag_bind(self.home_tag, "<Button-1>", lambda e: self.show_page(self.start_page))
 
@@ -227,11 +227,11 @@ def setup_game_page(self):
     # LANGUAGE icon
     lng_y = self.self_h * MENU_TOP_FRAC
     lng_x = tt_x - 1.5*icon_size
-    lng_img = load_svg_img(self, LNG_ICON_PATH, (icon_size, icon_size), 'white')
+    lng_img = load_svg_img(self, LNG_ICON_PATH, (icon_size, icon_size), WHITE)
     self.tt_icon = self.canvas.create_image(lng_x, lng_y, image=lng_img, anchor='center')
 
     # Start block
-    start_block = Block(self, self.cmd, 'white', self.cmd.x0 + self.piece_w//2, 
+    start_block = Block(self, self.cmd, WHITE, self.cmd.x0 + self.piece_w//2, 
                         cmd_y + self.cmd.piece_h//2 + CMD_H_PAD, template=False, start=True,
                         text="PRADŽIA", text_offset=0)
     self.cmd.try_snap(start_block)
@@ -247,12 +247,12 @@ def setup_game_page(self):
     col_x = [x0 + c * 2*self.piece_w for c in range(4)]
 
     # Create 10 template pieces
-    for idx, colour in enumerate(BLOCK_COLOURS):
+    for idx, colour in enumerate(COLOUR_PALETTE):
         row, col = divmod(idx, 4)
         label = BLOCK_LABELS[idx]
         Block(self, self.cmd, colour, col_x[col], row_centres[row], template=True, text=label)
 
 def create_button(self, canvas, img, x, y, text, font_size, tag, command, text_offset_x=0, anchor="center"):
     canvas.create_image(x, y, image=img, tags=tag, anchor=anchor)
-    canvas.create_text(x + text_offset_x, y, text=text, font=(MAIN_FONT, font_size, 'bold'), fill='black', tags=tag)
+    canvas.create_text(x + text_offset_x, y, text=text, font=(MAIN_FONT, font_size, 'bold'), fill=BLACK, tags=tag)
     canvas.tag_bind(tag, "<Button-1>", command)

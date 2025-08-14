@@ -31,17 +31,15 @@ class PuzzleApp:
 
         self.img_refs = []
 
-        # FIXME change the pure black to a different shade
-
         # Create container frame to hold pages
-        self.container = tk.Frame(self.root, bg='black')
+        self.container = tk.Frame(self.root, bg=BLACK)
         self.container.pack(fill="both", expand=True)
 
         # Pages
-        self.start_page = tk.Frame(self.container, bg='black')
-        self.game_page = tk.Frame(self.container, bg='black')
-        self.context_page = tk.Frame(self.container, bg='black')
-        self.instructions_page = tk.Frame(self.container, bg='black')
+        self.start_page = tk.Frame(self.container, bg=BLACK)
+        self.game_page = tk.Frame(self.container, bg=BLACK)
+        self.context_page = tk.Frame(self.container, bg=BLACK)
+        self.instructions_page = tk.Frame(self.container, bg=BLACK)
 
         self.start_page.place(relwidth=1, relheight=1)
         self.game_page.place(relwidth=1, relheight=1)

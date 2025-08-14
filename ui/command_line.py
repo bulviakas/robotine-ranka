@@ -23,8 +23,8 @@ class CommandLine():
             return canvas.create_polygon(points, **kwargs, smooth=True)
         
         self.cmd_border = round_rectangle(x0 - CMD_SIDE_PAD, y_top - CMD_H_PAD, 
-                                          self.x1 + CMD_SIDE_PAD, y1 + CMD_H_PAD, fill="black", 
-                                          outline="white", width=3)
+                                          self.x1 + CMD_SIDE_PAD, y1 + CMD_H_PAD, fill=BLACK, 
+                                          outline=WHITE, width=3)
         
         self.cmd_img = load_svg_img(app, CMD_BLOCK_PATH, (self.piece_w, self.piece_h))
         

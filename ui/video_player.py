@@ -3,6 +3,7 @@ import tkinter as tk
 import cv2
 from logger import get_logger
 logger = get_logger("Video Player")
+from config import BLACK
 
 class VideoPlayer:
     def __init__(self, parent, video_path, width=None, height=None):
@@ -12,7 +13,7 @@ class VideoPlayer:
         self.width = width
         self.height = height
 
-        self.label = tk.Label(parent, bg='black')
+        self.label = tk.Label(parent, bg=BLACK)
         self.label.pack()
 
         self.playing = False

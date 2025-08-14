@@ -39,7 +39,7 @@ class Block():
             x + self.text_offset, y, 
             text=text.replace(' ', '\n'), 
             font=(MAIN_FONT, self.font_size, 'bold'), 
-            fill='black', 
+            fill=BLACK, 
             anchor='center', 
             tags=self.tag, 
             justify='center'
