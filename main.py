@@ -70,7 +70,14 @@ class PuzzleApp:
             self.instructions_video.start()
         else:
             self.instructions_video.stop()
+        if page == self.start_page:
+            try:
+                self.cmd.clear()
+            except AttributeError:
+                logger.warning("Game not setup yet, unable to clear")
+                pass
         page.tkraise()
+        logger.info(f"Switched to {page}")
 
 if __name__ == "__main__":
     PuzzleApp().run()

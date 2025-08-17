@@ -68,7 +68,7 @@ class CommandLine():
                                                             anchor="center", tags=f"bg_{slot + 1}")
         return True
 
-    def clear(self, event):
+    def clear(self, event=None):
         logger.info("Clearing...")
         for slot, block in enumerate(self.slots):
             if block is None: 
