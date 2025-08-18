@@ -1,39 +1,71 @@
 import logging
+import sys
 
 logging.getLogger("PIL").setLevel(logging.WARNING)
 
-# Bind the colours to different loggers because I get lost in the green logs
-
-class LogColors:
-    RESET = "\033[0m"
-    GREY = "\033[90m"
-    GREEN = "\033[32m"
-    YELLOW = "\033[33m"
-    RED = "\033[31m"
-    BOLD_RED = "\033[1;31m"
-
 class ColorFormatter(logging.Formatter):
-    FORMATS = {
-        logging.DEBUG: LogColors.GREY + "%(asctime)s [DEBUG] %(name)s: %(message)s" + LogColors.RESET,
-        logging.INFO: LogColors.GREEN + "%(asctime)s [INFO]  %(name)s: %(message)s" + LogColors.RESET,
-        logging.WARNING: LogColors.YELLOW + "%(asctime)s [WARN]  %(name)s: %(message)s" + LogColors.RESET,
-        logging.ERROR: LogColors.RED + "%(asctime)s [ERROR] %(name)s: %(message)s" + LogColors.RESET,
-        logging.CRITICAL: LogColors.BOLD_RED + "%(asctime)s [CRIT]  %(name)s: %(message)s" + LogColors.RESET
+    COLORS = {
+        "DEBUG": "\033[90m",   # Gray
+        "INFO": "\033[97m",    # White
+        "WARNING": "\033[93m", # Yellow
+        "ERROR": "\033[91m",   # Red
+        "CRITICAL": "\033[31m" # Dark Red
     }
 
-    def format(self, record):
-        log_fmt = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt, "%H:%M:%S")
-        return formatter.format(record)
+    LOGGER_COLORS = {
+        "Main": "\033[32m",          # Dark Green
+        "Pages": "\033[34m",         # Dark Blue
+        "Block": "\033[92m",         # Bright green
+        "Video Player": "\033[95m",  # Purple
+        "Command Line": "\033[33m",   # Yellow
+        "Language Handler": "\033[31m"
+    }
 
+    RESET = "\033[0m"
+
+    def format(self, record):
+        level_color = self.COLORS.get(record.levelname, "")
+        logger_color = self.LOGGER_COLORS.get(record.name, "")
+        
+        if record.levelname == "DEBUG":
+            # DEBUG: only level in gray, rest normal
+            gray = self.COLORS["DEBUG"]
+            return f"{gray}[{self.formatTime(record, '%H:%M:%S')}] [{record.name}] [{record.levelname}] {record.getMessage()}{self.RESET}"
+        else:
+            # Others: color logger name + message
+            levelname = f"{level_color}{record.levelname}{self.RESET}"
+            name = f"{logger_color}{record.name}{self.RESET}"
+            msg = f"{logger_color}{record.getMessage()}{self.RESET}"
+
+        return f"[{self.formatTime(record, '%H:%M:%S')}] [{name}] [{levelname}] {msg}"
+
+
+# --- Logger Factory ---
 def get_logger(name: str, level=logging.DEBUG):
     logger = logging.getLogger(name)
     logger.setLevel(level)
+    logger.propagate = False
 
-    if not logger.handlers:  
-        ch = logging.StreamHandler()
-        ch.setLevel(level)
-        ch.setFormatter(ColorFormatter())
-        logger.addHandler(ch)
+    if not logger.handlers:
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(ColorFormatter())
+        logger.addHandler(handler)
 
     return logger
+
+
+# --- Usage ---
+log_main = get_logger("Main")
+log_pages = get_logger("Pages")
+log_block = get_logger("Block")
+log_video = get_logger("Video Player")
+log_cmd   = get_logger("Command Line")
+
+
+# --- Example ---
+if __name__ == "__main__":
+    log_main.info("App started")
+    log_pages.debug("video width: 683 height: 512")
+    log_block.warning("Block misaligned")
+    log_video.info("Video stopped")
+    log_cmd.info("Clearing...")
