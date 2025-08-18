@@ -63,11 +63,11 @@ class PuzzleApp:
     def show_page(self, page):
         """Raise the specified page to the front."""
         if page == self.context_page:
-            self.context_video.start()
+            self.context_video.restart()
         else:
             self.context_video.stop()
         if page == self.instructions_page:
-            self.instructions_video.start()
+            self.instructions_video.restart()
         else:
             self.instructions_video.stop()
         if page == self.start_page:

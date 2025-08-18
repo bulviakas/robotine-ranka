@@ -18,15 +18,15 @@ class VideoPlayer:
 
         self.playing = False
 
-        # FIXME: make the video restart when the user enters the context page
-
     def start(self):
         if not self.playing:
             self.playing = True
             self._play_frame()
+            logger.info("Video started")
 
     def stop(self):
         self.playing = False
+        logger.info("Video stopped")
 
     def _play_frame(self):
         if not self.playing:
@@ -59,3 +59,15 @@ class VideoPlayer:
         self.stop()
         self.cap.release()
         self.label.destroy()
+    
+    def restart(self):
+        """Restart video from the beginning and start playing."""
+        if not self.cap.isOpened():
+            self.cap = cv2.VideoCapture(self.video_path)
+
+        # Reset to the first frame
+        self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+
+        self.playing = True
+        self._play_frame()
+        logger.info("Video restarted")
