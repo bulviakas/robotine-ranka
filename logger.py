@@ -13,12 +13,13 @@ class ColorFormatter(logging.Formatter):
     }
 
     LOGGER_COLORS = {
-        "Main": "\033[32m",          # Dark Green
-        "Pages": "\033[34m",         # Dark Blue
-        "Block": "\033[92m",         # Bright green
-        "Video Player": "\033[95m",  # Purple
-        "Command Line": "\033[33m",   # Yellow
-        "Language Handler": "\033[31m"
+        "Main": "\033[32m",              # Dark Green
+        "Pages": "\033[34m",             # Dark Blue
+        "Block": "\033[92m",             # Bright green
+        "Video Player": "\033[95m",      # Bright Magenta
+        "Command Line": "\033[33m",      # Yellow
+        "Language Dropdown": "\033[94m", # Bright Red
+        "Language Manager": "\033[31m"   # Dark Red
     }
 
     RESET = "\033[0m"

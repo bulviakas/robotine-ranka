@@ -7,6 +7,7 @@ import config
 from ui.pages import *
 from logger import get_logger
 logger = get_logger("Main")
+from language_manager import LanguageManager
 
 class PuzzleApp:
     def __init__(self):
@@ -45,6 +46,8 @@ class PuzzleApp:
         self.game_page.place(relwidth=1, relheight=1)
         self.context_page.place(relwidth=1, relheight=1)
         self.instructions_page.place(relwidth=1, relheight=1)
+
+        self.lang_manager = LanguageManager(self, default_lang="LT")
             
         setup_start_page(self)
         setup_game_page(self)

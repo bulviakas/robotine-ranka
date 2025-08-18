@@ -16,6 +16,7 @@ def setup_start_page(self):
 
     title = tk.Label(self.start_page, text="Kazkoks inviting sukis or whatever!!!", font=(MAIN_FONT, int(44 * (self.self_h / 5 / 165))), fg=WHITE, bg=BLACK)
     title.place(relx=0.5, rely=0.35, anchor='center')
+    self.lang_manager.register_widget(title, "start")
 
     start_tag = 'start'
     start_img = load_svg_img(self, START_BTN_PATH, (self.self_w / 2, self.self_h / 5), COLOUR_PALETTE[2])
@@ -30,7 +31,7 @@ def setup_start_page(self):
         command=lambda e: self.show_page(self.context_page)
         )
     
-    lang_dd = LanguageDropdown(canvas, LANGUAGES)
+    lang_dd = LanguageDropdown(canvas, languages=LANGUAGES, command=lambda lang: self.lang_manager.set_language(lang))
 
 def setup_context_page(self):
 

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from logger import get_logger
-logger = get_logger("Language Handler")
+logger = get_logger("Language Dropdown")
 
 class LanguageDropdown:
     def __init__(self, parent, languages, default="LT", command=None):
@@ -41,7 +41,7 @@ class LanguageDropdown:
 
     def _on_select(self, event):
         lang = self.var.get()
-        logger.info(f"Language switched to {lang}")
+        logger.info(f"Requested language switch to {lang}")
         if self.command:
             self.command(lang)
 
