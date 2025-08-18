@@ -63,3 +63,5 @@ CONTEXT_TEXT = (
     "Donec a tortor vestibulum, blandit enim quis, convallis dolor. Curabitur laoreet justo quis rutrum pellentesque. "
     "Curabitur nisi ex, ornare eu blandit at, pulvinar eu eros. Proin sollicitudin massa sed nibh sollicitudin bibendum. "
 )
+
+LANGUAGES = ["LT", "EN", "RU"]

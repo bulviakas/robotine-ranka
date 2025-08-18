@@ -2,6 +2,8 @@ import logging
 
 logging.getLogger("PIL").setLevel(logging.WARNING)
 
+# Bind the colours to different loggers because I get lost in the green logs
+
 class LogColors:
     RESET = "\033[0m"
     GREY = "\033[90m"

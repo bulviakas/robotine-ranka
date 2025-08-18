@@ -1,7 +1,7 @@
 from config import *
 from utils import load_svg_img
 import tkinter as tk
-from ui import VideoPlayer, CommandLine, Block
+from ui import VideoPlayer, CommandLine, Block, LanguageDropdown
 from logger import get_logger
 logger = get_logger("Pages")
 
@@ -29,6 +29,8 @@ def setup_start_page(self):
         tag=start_tag, 
         command=lambda e: self.show_page(self.context_page)
         )
+    
+    lang_dd = LanguageDropdown(canvas, LANGUAGES)
 
 def setup_context_page(self):
 
