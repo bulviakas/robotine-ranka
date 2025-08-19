@@ -1,0 +1,23 @@
+{
+  "EN": {
+    "play_btn": "PLAY",
+    "start_title": "An inviting slogan or whatever!!!",
+    "next_btn": "NEXT",
+    "back_btn": "BACK",
+    "instructions": "This is a chunk of text in which the instructions for the game will be displayed. The user will have to read them and not just glance over or skip because that would devalue my horrible writing skills even more and i would be very sad :(",
+    "clear_btn": "CLEAR",
+    "submit_btn": "SUBMIT",
+    "start_block": "START"
+    
+  },
+  "LT": {
+    "play_btn": "ŽAISTI",
+    "start_title": "Labai pritraukiantis sukis!!!",
+    "next_btn": "TOLIAU",
+    "back_btn": "ATGAL",
+    "instructions": "Čia yra teksto blokas, kuriame bus surašytos trumpos žaidimo instrukcijos. Žaidėjas turės visas jas perskaityti, o ne šiaip peržvelgti ar praleisti, nes tai nuvertintų jau ir taip skurdžius mano rašymo sugebėjimus ir man būtų baisiai liūdna :(",
+    "clear_btn": "IŠVALYTI",
+    "submit_btn": "PATEIKTI",
+    "start_block": "PRADŽIA"
+  }
+}
