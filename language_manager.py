@@ -1,5 +1,6 @@
 from logger import get_logger
 logger = get_logger("Language Manager")
+import tkinter as tk
 
 class LanguageManager:
     def __init__(self, canvas, default_lang="EN"):
@@ -11,60 +12,44 @@ class LanguageManager:
             "EN": {"start": "Start", "quit": "Quit", "tutorial": "Tutorial"},
             "LT": {"start": "Pradėti", "quit": "Išeiti", "tutorial": "Pamoka"},
         }
-        self.items = []  # list of (item_id, key)
-        self.widgets = []  # list of (widget, key, type)
+
+        self.widgets = []  # list of (widget, key, kwargs)
 
     def register_text(self, item_id, key):
-        """Register a canvas text item for automatic translation"""
+        
         self.items.append((item_id, key))
         self.update_item(item_id, key)
         logger.debug(f"Text {key} registered")
 
-    def register_widget(self, widget, key, widget_type="text", var=None):
+    def register_widget(self, widget, key, **kwargs):
         """
-        Register a widget for automatic translation.
-        - widget: the tk widget
-        - key: translation key
-        - widget_type: 'text' (Label/Button), 'option' (OptionMenu), 'var' (StringVar)
-        - var: for option menus or StringVars
+        Register a widget with a translation key.
+        kwargs may include 'text', 'item_id' (for canvas), etc.
         """
-        self.widgets.append((widget, key, widget_type, var))
+        self.widgets.append((widget, key, kwargs))
         logger.debug(f"Widget {key} registered")
-        self.update_widget(widget, key, widget_type, var)
+        self.update_widget(widget, key, kwargs)
 
     def set_language(self, lang):
         if lang not in self.translations:
-            logger.warning(f"Language '{lang}' not available!")
+            logger.warning(f"Language '{lang}' not available")
             return
         self.lang = lang
         logger.info(f"Updating everything to {lang}")
-        for item_id, key in self.items:
-            self.update_item(item_id, key)
-        for widget, key, widget_type, var in self.widgets:
-            self.update_widget(widget, key, widget_type, var)
+        for widget, key, kwargs in self.widgets:
+            self.update_widget(widget, key, kwargs)
         logger.info(f"App language updated to {lang}")
 
-    def update_item(self, item_id, key):
-        text = self.translations[self.lang].get(key, key)
-        self.canvas.itemconfig(item_id, text=text)
-        logger.debug(f"Item {key} updated")
+    def update_widget(self, widget, key, kwargs):
+        text = self.translations.get(self.lang, {}).get(key, key)
 
-    def update_widget(self, widget, key, widget_type, var):
-        text = self.translations[self.lang].get(key, key)
+        if isinstance(widget, tk.Canvas) and "item_id" in kwargs:
+            widget.itemconfig(kwargs["item_id"], text=text)
+            logger.debug(f"Canvas item {text} updated")
 
-        if widget_type == "text":  # Label, Button, etc.
+        elif hasattr(widget, "config"):
             widget.config(text=text)
+            logger.debug(f"Widget {text} updated")
 
-        elif widget_type == "var":  # linked variable
-            var.set(text)
-
-        elif widget_type == "option":  # OptionMenu
-            menu = widget["menu"]
-            menu.delete(0, "end")
-            for lang in self.translations.keys():
-                menu.add_command(
-                    label=self.translations[lang]["language"],
-                    command=lambda l=lang: self.set_language(l)
-                )
-            var.set(self.translations[self.lang]["language"])
-        logger.debug(f"Widget {key} updated")
+        else:
+            logger.error(f"Unsupported widget type for {widget} with key {key}")

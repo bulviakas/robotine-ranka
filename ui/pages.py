@@ -21,7 +21,7 @@ def setup_start_page(self):
     start_tag = 'start'
     start_img = load_svg_img(self, START_BTN_PATH, (self.self_w / 2, self.self_h / 5), COLOUR_PALETTE[2])
 
-    create_button(
+    start_btn = create_button(
         self, canvas, 
         img=start_img, 
         x=int(self.self_w * 0.5), y=int(self.self_h * 0.6), 
@@ -30,6 +30,8 @@ def setup_start_page(self):
         tag=start_tag, 
         command=lambda e: self.show_page(self.context_page)
         )
+    
+    self.lang_manager.register_widget(canvas, "start", item_id=start_btn)
     
     lang_dd = LanguageDropdown(canvas, languages=LANGUAGES, command=lambda lang: self.lang_manager.set_language(lang))
 
@@ -257,5 +259,6 @@ def setup_game_page(self):
 
 def create_button(self, canvas, img, x, y, text, font_size, tag, command, text_offset_x=0, anchor="center"):
     canvas.create_image(x, y, image=img, tags=tag, anchor=anchor)
-    canvas.create_text(x + text_offset_x, y, text=text, font=(MAIN_FONT, font_size, 'bold'), fill=BLACK, tags=tag)
+    btn_text = canvas.create_text(x + text_offset_x, y, text=text, font=(MAIN_FONT, font_size, 'bold'), fill=BLACK, tags=tag)
     canvas.tag_bind(tag, "<Button-1>", command)
+    return btn_text
