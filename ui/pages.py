@@ -16,22 +16,22 @@ def setup_start_page(self):
 
     title = tk.Label(self.start_page, text="Kazkoks inviting sukis or whatever!!!", font=(MAIN_FONT, int(44 * (self.self_h / 5 / 165))), fg=WHITE, bg=BLACK)
     title.place(relx=0.5, rely=0.35, anchor='center')
-    self.lang_manager.register_widget(title, "start")
+    self.lang_manager.register_widget(title, "start_title")
 
-    start_tag = 'start'
-    start_img = load_svg_img(self, START_BTN_PATH, (self.self_w / 2, self.self_h / 5), COLOUR_PALETTE[2])
+    play_tag = "play_btn"
+    play_img = load_svg_img(self, START_BTN_PATH, (self.self_w / 2, self.self_h / 5), COLOUR_PALETTE[2])
 
-    start_btn = create_button(
+    play_btn = create_button(
         self, canvas, 
-        img=start_img, 
+        img=play_img, 
         x=int(self.self_w * 0.5), y=int(self.self_h * 0.6), 
         text="ŽAISTI", 
         font_size=int(48 * (self.self_h / 5 / 165)), 
-        tag=start_tag, 
+        tag=play_tag, 
         command=lambda e: self.show_page(self.context_page)
         )
     
-    self.lang_manager.register_widget(canvas, "start", item_id=start_btn)
+    self.lang_manager.register_widget(canvas, play_tag, item_id=play_btn)
     
     lang_dd = LanguageDropdown(canvas, languages=LANGUAGES, command=lambda lang: self.lang_manager.set_language(lang))
 

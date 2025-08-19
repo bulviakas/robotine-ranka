@@ -1,17 +1,20 @@
 from logger import get_logger
 logger = get_logger("Language Manager")
 import tkinter as tk
+import json
 
 class LanguageManager:
-    def __init__(self, canvas, default_lang="EN"):
+    def __init__(self, canvas, default_lang="EN", translations_file="translations.json"):
         self.canvas = canvas
         self.lang = default_lang
 
-        # FIXME add all translations and transfer them to a json file
-        self.translations = {
-            "EN": {"start": "Start", "quit": "Quit", "tutorial": "Tutorial"},
-            "LT": {"start": "Pradėti", "quit": "Išeiti", "tutorial": "Pamoka"},
-        }
+        try:
+            with open(translations_file, "r", encoding="utf-8") as f:
+                self.translations = json.load(f)
+            logger.info(f"Loaded translations from {translations_file}")
+        except Exception as e:
+            logger.error(f"Failed to load translations: {e}")
+            self.translations = {}
 
         self.widgets = []  # list of (widget, key, kwargs)
 
