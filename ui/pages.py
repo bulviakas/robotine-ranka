@@ -22,7 +22,8 @@ def setup_start_page(self):
     play_img = load_svg_img(self, START_BTN_PATH, (self.self_w / 2, self.self_h / 5), COLOUR_PALETTE[2])
 
     play_btn = create_button(
-        self, canvas, 
+        self, canvas,
+        self.lang_manager, 
         img=play_img, 
         x=int(self.self_w * 0.5), y=int(self.self_h * 0.6), 
         text="ŽAISTI", 
@@ -31,7 +32,7 @@ def setup_start_page(self):
         command=lambda e: self.show_page(self.context_page)
         )
     
-    self.lang_manager.register_widget(canvas, play_tag, item_id=play_btn)
+    #self.lang_manager.register_widget(canvas, play_tag, item_id=play_btn)
     
     lang_dd = LanguageDropdown(canvas, languages=LANGUAGES, command=lambda lang: self.lang_manager.set_language(lang))
 
@@ -46,11 +47,12 @@ def setup_context_page(self):
     self.context_video_frame.place(relx=0.5, rely=0.425, anchor='center')
 
     # NEXT Button
-    self.next_tag = 'next'
+    self.next_tag = 'next_btn'
     next_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), COLOUR_PALETTE[6])
 
     create_button(
         self, canvas,
+        self.lang_manager,
         img=next_img,
         x=int(self.self_w * 0.9),
         y=int(self.self_h * 0.9),
@@ -82,11 +84,12 @@ def setup_instructions_page(self):
     canvas.pack()
 
     # BACK Button
-    self.back_tag = 'back'
+    self.back_tag = 'back_btn'
     back_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), COLOUR_PALETTE[5], mirror=True)
 
     create_button(
         self, canvas,
+        self.lang_manager,
         img=back_img,
         x=int(self.self_w * 0.1), 
         y=int(self.self_h * 0.9),
@@ -97,12 +100,13 @@ def setup_instructions_page(self):
         text_offset_x=-7
     )
 
-    # PLAY Button
-    self.play_tag = 'play'
+    # NEXT Button
+    self.play_tag = 'next_btn'
     play_img = load_svg_img(self, CMD_BLOCK_PATH, (1.25*self.piece_w, 1.25*self.piece_h), COLOUR_PALETTE[6])
 
     create_button(
         self, canvas,
+        self.lang_manager,
         img=play_img,
         x=int(self.self_w * 0.9),
         y=int(self.self_h * 0.9),
@@ -171,12 +175,13 @@ def setup_game_page(self):
     btn_top  = cmd_y + CMD_H_PAD + int(self.piece_h * CMD_BAR_HEIGHT_FRAC) + 8
 
     # CLEAR button
-    self.clear_tag = 'clear'
+    self.clear_tag = 'clear_btn'
     btn_left_1 = self.self_w//2 - btn_w - GAP_BETWEEN_BTNS
     clear_img = load_svg_img(self, RESTART_BUTTON_PATH, (btn_w, btn_h), WHITE)
 
     create_button(
         self, self.canvas,
+        self.lang_manager,
         img=clear_img,
         x=btn_left_1 + btn_w / 2,
         y=btn_top + btn_h / 2,
@@ -188,7 +193,7 @@ def setup_game_page(self):
     )
 
     # SUBMIT button
-    self.submit_tag = 'submit'
+    self.submit_tag = 'submit_btn'
     btn_left_2 = self.self_w//2 + GAP_BETWEEN_BTNS
     submit_img = load_svg_img(self, SUBMIT_BUTTON_PATH, (btn_w, btn_h), WHITE)
     self.submit_btn = self.canvas.create_image(btn_left_2, btn_top, image=submit_img, anchor='nw', tags=self.submit_tag) 
@@ -198,6 +203,7 @@ def setup_game_page(self):
 
     create_button(
         self, self.canvas,
+        self.lang_manager,
         img=submit_img,
         x=btn_left_2 + btn_w * 0.5,
         y=btn_top + btn_h//2,
@@ -257,8 +263,9 @@ def setup_game_page(self):
         label = BLOCK_LABELS[idx]
         Block(self, self.cmd, colour, col_x[col], row_centres[row], template=True, text=label)
 
-def create_button(self, canvas, img, x, y, text, font_size, tag, command, text_offset_x=0, anchor="center"):
+def create_button(self, canvas, language_manager, img, x, y, text, font_size, tag, command, text_offset_x=0, anchor="center"):
     canvas.create_image(x, y, image=img, tags=tag, anchor=anchor)
     btn_text = canvas.create_text(x + text_offset_x, y, text=text, font=(MAIN_FONT, font_size, 'bold'), fill=BLACK, tags=tag)
     canvas.tag_bind(tag, "<Button-1>", command)
+    language_manager.register_widget(canvas, tag, item_id=btn_text)
     return btn_text
