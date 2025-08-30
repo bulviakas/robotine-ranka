@@ -74,7 +74,9 @@ class CommandLine():
             if block is None: 
                 logger.info("CLEARED!")
                 return
-            if block.text == "PRADŽIA": continue
+            if block.start: 
+                logger.info("start_block skipped")
+                continue
             block.destroy()
             self.canvas.delete(f"bg_{slot + 1}")
             self.slots[slot] = None

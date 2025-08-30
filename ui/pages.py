@@ -150,9 +150,10 @@ def setup_instructions_page(self):
         anchor="w", 
         fill=WHITE, 
         font=(MAIN_FONT, 14), 
-        text=CONTEXT_TEXT, 
+        text="", 
         width=text_w
         )
+    self.lang_manager.register_widget(canvas, "instructions", item_id=canvas.text_block)
 
 def setup_game_page(self):
 
@@ -242,9 +243,9 @@ def setup_game_page(self):
     self.tt_icon = self.canvas.create_image(lng_x, lng_y, image=lng_img, anchor='center')
 
     # Start block
-    start_block = Block(self, self.cmd, WHITE, self.cmd.x0 + self.piece_w//2, 
+    start_block = Block(self, self.lang_manager, self.cmd, WHITE, self.cmd.x0 + self.piece_w//2, 
                         cmd_y + self.cmd.piece_h//2 + CMD_H_PAD, template=False, start=True,
-                        text="PRADŽIA", text_offset=0)
+                        text="start_block", text_offset=0)
     self.cmd.try_snap(start_block)
     start_block.lock()
 
@@ -261,7 +262,7 @@ def setup_game_page(self):
     for idx, colour in enumerate(COLOUR_PALETTE):
         row, col = divmod(idx, 4)
         label = BLOCK_LABELS[idx]
-        Block(self, self.cmd, colour, col_x[col], row_centres[row], template=True, text=label)
+        Block(self, self.lang_manager, self.cmd, colour, col_x[col], row_centres[row], template=True, text=label)
 
 def create_button(self, canvas, language_manager, img, x, y, text, font_size, tag, command, text_offset_x=0, anchor="center"):
     canvas.create_image(x, y, image=img, tags=tag, anchor=anchor)

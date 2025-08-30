@@ -42,8 +42,8 @@ COLOUR_PALETTE = [
 ]
 
 BLOCK_LABELS = [
-    "TESTAVIMO POZICIJA", "SILPNAS PAKRATYMAS", "STIPRUS PAKRATYMAS", "ŠALDYTUVO POZICIJA",
-    "SKENAVIMO POZICIJA", "TRUMPA PAUZĖ", "ILGA PAUZĖ", "GALUTINĖ POZICIJA"
+    "test_pos_block", "weak_shake_block", "strong_shake_block", "fridge_pos_block",
+    "scan_pos_block", "short_pause_block", "long_pause_block", "end_pos_block"
 ]
 
 THE_CORRECT_SEQUENCE = [
@@ -53,15 +53,5 @@ THE_CORRECT_SEQUENCE = [
 
 CONTEXT_VIDEO_SIZE = [480, 854] # Change when importing the actual video
 INSTRUCTIONS_VIDEO_SIZE = [360, 480]
-
-CONTEXT_TEXT = (
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed faucibus at sapien ac egestas. "
-    "Morbi quis tellus ut mauris efficitur pellentesque ac luctus nisl. Pellentesque pharetra sapien dui. "
-    "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. "
-    "Vivamus a tortor nec elit auctor sagittis eu at risus. Nulla ut ex eu justo luctus blandit ac non ipsum. "
-    "Mauris sollicitudin fringilla eros, ac vulputate orci sagittis non. "
-    "Donec a tortor vestibulum, blandit enim quis, convallis dolor. Curabitur laoreet justo quis rutrum pellentesque. "
-    "Curabitur nisi ex, ornare eu blandit at, pulvinar eu eros. Proin sollicitudin massa sed nibh sollicitudin bibendum. "
-)
 
 LANGUAGES = ["LT", "EN", "RU"]

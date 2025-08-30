@@ -5,8 +5,8 @@ from logger import get_logger
 logger = get_logger("Block")
 
 class Block():
-    def __init__(self, app, cmd, colour, x, y, template=False, start=False, text="", text_offset=7):
-        self.app, self.canvas = app, app.canvas
+    def __init__(self, app, lang_mngr, cmd, colour, x, y, template=False, start=False, text="", text_offset=7):
+        self.app, self.canvas, self.lang_mngr = app, app.canvas, lang_mngr
         self.colour, self.template = colour, template
         self.home_x, self.home_y   = x, y
         self.slot = None
@@ -15,8 +15,9 @@ class Block():
         self.tag = f"block_{id(self)}"
         self.cmd = cmd
         self.text_offset = text_offset
+        self.start = start
 
-        if start:
+        if self.start:
             img = load_svg_img(app, START_BLOCK_PATH, (app.piece_w, app.piece_h), colour)
             self.font_size = scale_font(14)
 
@@ -44,6 +45,7 @@ class Block():
             tags=self.tag, 
             justify='center'
             )
+        lang_mngr.register_widget(app.canvas, text, item_id=self.label)
 
         for ev, cb in (("<Button-1>", self.on_click),
                        ("<B1-Motion>", self.on_drag),
@@ -56,7 +58,7 @@ class Block():
             self.app.cmd.release(self)
             if self.template:
                 # spawn a draggable clone
-                clone = Block(self.app, self.cmd, self.colour, ev.x, ev.y, template=False, text=self.text)
+                clone = Block(self.app, self.lang_mngr, self.cmd, self.colour, ev.x, ev.y, template=False, text=self.text)
 
                 clone.drag_x, clone.drag_y = ev.x, ev.y
                 clone.on_drag(ev)
@@ -96,7 +98,7 @@ class Block():
         logger.info(f"{self.text} block locked")
     
     def unlock(self):
-        if self.text != "PRADŽIA":
+        if not self.start:
             self.locked = False
             logger.info(f"{self.text} block unlocked")
 

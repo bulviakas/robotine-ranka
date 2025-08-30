@@ -48,7 +48,7 @@ class LanguageManager:
 
         if isinstance(widget, tk.Canvas) and "item_id" in kwargs:
             widget.itemconfig(kwargs["item_id"], text=text)
-            logger.debug(f"Canvas item {text} updated")
+            logger.debug(f"Canvas item {text.replace("\n", " ")} updated")
 
         elif hasattr(widget, "config"):
             widget.config(text=text)
