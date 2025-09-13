@@ -1,5 +1,5 @@
 import cairosvg
-from PIL import Image, ImageTk, ImageOps
+from PIL import Image, ImageTk, ImageOps, ImageEnhance
 from pathlib import Path
 import io, re
 
@@ -32,3 +32,26 @@ def load_svg_img(self, path, size_xy, colour='', mirror=False):
         img = svg_to_photo(path, size_xy[0], size_xy[1])
     self.img_refs.append(img)
     return img
+
+def _darken_img(self, photoimage, factor=0.7):
+    """
+    Return a darker PhotoImage derived from the given PhotoImage.
+    Keeps a reference in self.img_refs to avoid garbage collection.
+    """
+    try:
+        # works for PIL ImageTk.PhotoImage
+        pil = ImageTk.getimage(photoimage).convert("RGBA")
+    except Exception:
+        # if conversion fails, just return original
+        return photoimage
+
+    enhancer = ImageEnhance.Brightness(pil)
+    darker = enhancer.enhance(factor)
+    dark_photo = ImageTk.PhotoImage(darker)
+    # keep reference so tkinter doesn't GC it
+    try:
+        self.img_refs.append(dark_photo)
+    except AttributeError:
+        # If called before img_refs exists, create list
+        self.img_refs = [dark_photo]
+    return dark_photo
