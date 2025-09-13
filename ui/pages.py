@@ -32,7 +32,7 @@ def setup_start_page(self):
         command=lambda e: self.show_page(self.context_page)
         )
     
-    lang_dd = LanguageDropdown(canvas, languages=LANGUAGES, x=self.self_w * 0.95, y=self.self_h * MENU_TOP_FRAC, command=lambda lang: self.lang_manager.set_language(lang))
+    lang_dd = LanguageDropdown(canvas, languages=LANGUAGES, x=self.self_w * 0.95, y=self.self_h * MENU_TOP_FRAC - 5, command=lambda lang: self.lang_manager.set_language(lang))
 
 def setup_context_page(self):
 
@@ -235,10 +235,9 @@ def setup_game_page(self):
     # TODO: make a dropdown menu for changing languages (perhaps a seperate class)
 
     # LANGUAGE icon
-    lng_y = self.self_h * MENU_TOP_FRAC
+    lng_y = self.self_h * MENU_TOP_FRAC - 5
     lng_x = tt_x - 1.5*icon_size
-    lng_img = load_svg_img(self, LNG_ICON_PATH, (icon_size, icon_size), WHITE)
-    self.tt_icon = self.canvas.create_image(lng_x, lng_y, image=lng_img, anchor='center')
+    lang_dd = LanguageDropdown(self.canvas, languages=LANGUAGES, x=lng_x, y=lng_y, command=lambda lang: self.lang_manager.set_language(lang))
 
     # Start block
     start_block = Block(self, self.lang_manager, self.cmd, WHITE, self.cmd.x0 + self.piece_w//2, 

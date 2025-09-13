@@ -17,18 +17,19 @@ class LanguageDropdown:
         self.dropdown = tk.OptionMenu(parent, self.var, *languages, command=self._on_select)
         self.dropdown.config(
             bg=BLACK, fg=WHITE,
-            font=(MAIN_FONT, 32, "bold"),
+            font=(MAIN_FONT, 32),
             highlightthickness=2,
             highlightbackground=BLACK,
             activebackground=BLACK,
             activeforeground=WHITE,
             indicatoron=0,
-            bd=0
+            bd=0,
+            anchor="center"
         )
         self.dropdown["menu"].config(
             bg=BLACK,
             fg=WHITE,
-            font=(MAIN_FONT, 16, "bold"),
+            font=(MAIN_FONT, 16),
             activebackground=WHITE,
             activeforeground=BLACK,
             borderwidth=2,
