@@ -32,9 +32,7 @@ def setup_start_page(self):
         command=lambda e: self.show_page(self.context_page)
         )
     
-    #self.lang_manager.register_widget(canvas, play_tag, item_id=play_btn)
-    
-    lang_dd = LanguageDropdown(canvas, languages=LANGUAGES, command=lambda lang: self.lang_manager.set_language(lang))
+    lang_dd = LanguageDropdown(canvas, languages=LANGUAGES, x=self.self_w * 0.95, y=self.self_h * MENU_TOP_FRAC, command=lambda lang: self.lang_manager.set_language(lang))
 
 def setup_context_page(self):
 
