@@ -33,7 +33,9 @@ def load_svg_img(self, path, size_xy, colour='', mirror=False):
     self.img_refs.append(img)
     return img
 
-def _darken_img(self, photoimage, factor=0.7):
+img_refs = []
+
+def darken_img(photoimage, factor=0.7):
     """
     Return a darker PhotoImage derived from the given PhotoImage.
     Keeps a reference in self.img_refs to avoid garbage collection.
@@ -48,10 +50,6 @@ def _darken_img(self, photoimage, factor=0.7):
     enhancer = ImageEnhance.Brightness(pil)
     darker = enhancer.enhance(factor)
     dark_photo = ImageTk.PhotoImage(darker)
-    # keep reference so tkinter doesn't GC it
-    try:
-        self.img_refs.append(dark_photo)
-    except AttributeError:
-        # If called before img_refs exists, create list
-        self.img_refs = [dark_photo]
+    
+    img_refs.append(dark_photo)
     return dark_photo

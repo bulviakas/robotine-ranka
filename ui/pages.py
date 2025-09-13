@@ -1,5 +1,5 @@
 from config import *
-from utils import load_svg_img
+from utils import load_svg_img, darken_img
 import tkinter as tk
 from ui import VideoPlayer, CommandLine, Block, LanguageDropdown
 from logger import get_logger
@@ -232,8 +232,6 @@ def setup_game_page(self):
     self.tt_icon = self.canvas.create_image(home_x, home_y, image=home_img, anchor='center', tags=self.home_tag)
     self.canvas.tag_bind(self.home_tag, "<Button-1>", lambda e: self.show_page(self.start_page))
 
-    # TODO: make a dropdown menu for changing languages (perhaps a seperate class)
-
     # LANGUAGE icon
     lng_y = self.self_h * MENU_TOP_FRAC - 5
     lng_x = tt_x - 1.5*icon_size
@@ -262,8 +260,66 @@ def setup_game_page(self):
         Block(self, self.lang_manager, self.cmd, colour, col_x[col], row_centres[row], template=True, text=label)
 
 def create_button(self, canvas, language_manager, img, x, y, text, font_size, tag, command, text_offset_x=0, anchor="center"):
-    canvas.create_image(x, y, image=img, tags=tag, anchor=anchor)
-    btn_text = canvas.create_text(x + text_offset_x, y, text=text, font=(MAIN_FONT, font_size, 'bold'), fill=BLACK, tags=tag)
-    canvas.tag_bind(tag, "<Button-1>", command)
+    """
+    Creates image + text on a canvas, darkens on press and runs `command`
+    only on release if mouse was released over the button.
+    Returns the text item id (like before).
+    """
+    btn_img = canvas.create_image(x, y, image=img, tags=tag, anchor=anchor)
+    btn_text = canvas.create_text(x + text_offset_x, y, text=text,
+                                  font=(MAIN_FONT, font_size, 'bold'),
+                                  fill=BLACK, tags=tag)
+
+    dark_img = darken_img(img)
+
+    pressed = {"tag": None}
+
+    # FIXME: make it work with a touchscreen
+
+    def _is_inside(ev):
+        bbox = canvas.bbox(tag)
+        if not bbox:
+            return False
+        x0, y0, x1, y1 = bbox
+        return (x0 <= ev.x <= x1) and (y0 <= ev.y <= y1)
+
+    def on_press(ev):
+        # darken image immediately
+        try:
+            canvas.itemconfig(btn_img, image=dark_img)
+        except Exception:
+            pass
+        pressed["tag"] = tag
+
+    def on_release(ev):
+        # always restore the original image
+        try:
+            canvas.itemconfig(btn_img, image=img)
+        except Exception:
+            pass
+
+        # only execute command if mouse released while still over button
+        if pressed["tag"] == tag and _is_inside(ev):
+            if callable(command):
+                try:
+                    command(ev)
+                except TypeError:
+                    logger.warning("Call without event")
+                    command()
+        pressed["tag"] = None
+
+    def on_leave(ev):
+        # restore image while pointer leaves the button area while pressed
+        # but keep 'pressed' state so release outside won't trigger command
+        try:
+            canvas.itemconfig(btn_img, image=img)
+        except Exception:
+            pass
+
+    canvas.tag_bind(tag, "<ButtonPress-1>", on_press)
+    canvas.tag_bind(tag, "<ButtonRelease-1>", on_release)
+    canvas.tag_bind(tag, "<Leave>", on_leave)
+
     language_manager.register_widget(canvas, tag, item_id=btn_text)
+
     return btn_text
