@@ -260,66 +260,33 @@ def setup_game_page(self):
         Block(self, self.lang_manager, self.cmd, colour, col_x[col], row_centres[row], template=True, text=label)
 
 def create_button(self, canvas, language_manager, img, x, y, text, font_size, tag, command, text_offset_x=0, anchor="center"):
-    """
-    Creates image + text on a canvas, darkens on press and runs `command`
-    only on release if mouse was released over the button.
-    Returns the text item id (like before).
-    """
-    btn_img = canvas.create_image(x, y, image=img, tags=tag, anchor=anchor)
-    btn_text = canvas.create_text(x + text_offset_x, y, text=text,
-                                  font=(MAIN_FONT, font_size, 'bold'),
-                                  fill=BLACK, tags=tag)
 
-    dark_img = darken_img(img)
+    dark_img = darken_img(img)  
 
-    pressed = {"tag": None}
+    image_tag = f"{tag}_img"
+    text_tag = f"{tag}_text"
 
-    # FIXME: make it work with a touchscreen
-
-    def _is_inside(ev):
-        bbox = canvas.bbox(tag)
-        if not bbox:
-            return False
-        x0, y0, x1, y1 = bbox
-        return (x0 <= ev.x <= x1) and (y0 <= ev.y <= y1)
-
-    def on_press(ev):
-        # darken image immediately
-        try:
-            canvas.itemconfig(btn_img, image=dark_img)
-        except Exception:
-            pass
-        pressed["tag"] = tag
-
-    def on_release(ev):
-        # always restore the original image
-        try:
-            canvas.itemconfig(btn_img, image=img)
-        except Exception:
-            pass
-
-        # only execute command if mouse released while still over button
-        if pressed["tag"] == tag and _is_inside(ev):
-            if callable(command):
-                try:
-                    command(ev)
-                except TypeError:
-                    logger.warning("Call without event")
-                    command()
-        pressed["tag"] = None
-
-    def on_leave(ev):
-        # restore image while pointer leaves the button area while pressed
-        # but keep 'pressed' state so release outside won't trigger command
-        try:
-            canvas.itemconfig(btn_img, image=img)
-        except Exception:
-            pass
-
-    canvas.tag_bind(tag, "<ButtonPress-1>", on_press)
-    canvas.tag_bind(tag, "<ButtonRelease-1>", on_release)
-    canvas.tag_bind(tag, "<Leave>", on_leave)
+    canvas.create_image(x, y, image=img, tags=image_tag, anchor=anchor)
+    btn_text = canvas.create_text(
+        x + text_offset_x, y,
+        text=text,
+        font=(MAIN_FONT, font_size, 'bold'),
+        fill=BLACK,
+        tags=text_tag
+    )
 
     language_manager.register_widget(canvas, tag, item_id=btn_text)
+
+    def on_tap(event):
+        canvas.itemconfig(image_tag, image=dark_img)
+        canvas.update_idletasks()
+
+        canvas.after(120, lambda: (
+            canvas.itemconfig(image_tag, image=img),
+            command(event)
+        ))
+
+    canvas.tag_bind(image_tag, "<Button-1>", on_tap)
+    canvas.tag_bind(text_tag, "<Button-1>", on_tap)
 
     return btn_text
