@@ -165,8 +165,6 @@ def setup_game_page(self):
     self.cmd = CommandLine(self, self.canvas, self.self_w//2, cmd_y,
                         self.piece_w, self.piece_h, n_slots=9,
                         overlap=OVERLAP_FRAC)
-    
-    # TODO: rewrite all button actions on left mouse click release and add "animations"
 
     # BUTTONS w:380 h:51
     btn_h = (CMD_H_PAD + int(self.piece_h * CMD_BAR_HEIGHT_FRAC)) // 3

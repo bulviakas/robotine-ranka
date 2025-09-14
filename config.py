@@ -32,7 +32,7 @@ GAP_FROM_VIDEO      = 24 #px
 
 # TODO: import better fonts
 
-# Good fonts: Cascadia Code SemiBold, Segoe UI Black
+# Good default fonts: Cascadia Code SemiBold, Segoe UI Black
 MAIN_FONT = "Cascadia Code SemiBold"
 
 COLOUR_PALETTE = [
@@ -46,11 +46,11 @@ BLOCK_LABELS = [
 ]
 
 THE_CORRECT_SEQUENCE = [
-    "ŠALDYTUVO POZICIJA", "TESTAVIMO POZICIJA", "STIPRUS PAKRATYMAS", "SKENAVIMO POZICIJA",
-    "ILGA PAUZĖ", "TESTAVIMO POZICIJA", "GALUTINĖ POZICIJA", None
+    "fridge_pos_block", "test_pos_block", "strong_shake_block", "scan_pos_block",
+    "long_pause_block", "test_pos_block", "end_pos_block", None
 ]
 
 CONTEXT_VIDEO_SIZE = [480, 854] # Change when importing the actual video
 INSTRUCTIONS_VIDEO_SIZE = [360, 480]
 
-LANGUAGES = ["LT", "EN", "RU"]
+LANGUAGES = ["LT", "EN"]
