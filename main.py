@@ -14,6 +14,10 @@ class PuzzleApp:
         logger.info("Initializing PuzzleApp...")
         self.root = tk.Tk()
         self.root.attributes("-fullscreen", True)
+        #self.root.geometry("800x480+0+0")
+        self.root.lift();
+        self.root.attributes("-topmost", True);
+        self.root.after_idle(self.root.attributes, "-topmost", False);
         self.root.title("Puzzle Command Builder")
 
         self.self_w, self.self_h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
