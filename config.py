@@ -41,16 +41,28 @@ COLOUR_PALETTE = [
 ]
 
 BLOCK_LABELS = [
-    "test_pos_block", "weak_shake_block", "strong_shake_block", "fridge_pos_block",
-    "scan_pos_block", "short_pause_block", "long_pause_block", "end_pos_block"
+    "test_pos", "weak_shake", "strong_shake", "fridge_pos",
+    "scan_pos", "short_pause", "long_pause", "end_pos"
 ]
 
 THE_CORRECT_SEQUENCE = [
-    "fridge_pos_block", "test_pos_block", "strong_shake_block", "scan_pos_block",
-    "long_pause_block", "test_pos_block", "end_pos_block", None
+    "fridge_pos", "test_pos", "strong_shake", "scan_pos",
+    "long_pause", "test_pos", "end_pos", None
 ]
 
 CONTEXT_VIDEO_SIZE = [480, 854] # Change when importing the actual video
 INSTRUCTIONS_VIDEO_SIZE = [360, 480]
 
 LANGUAGES = ["LT", "EN"]
+
+# PIN LAYOUT
+FRIDGE_POS_PIN = 26
+TEST_POS_PIN = 6
+STRONG_SHAKE_PIN = 5
+SCAN_POS_PIN = 16
+LONG_PAUSE_PIN = 25
+END_POS_PIN = 24
+WEAK_SHAKE_PIN = 23
+SHORT_PAUSE_PIN = 22
+ERROR_LED_PIN = 27
+PASS_LED_PIN = 17

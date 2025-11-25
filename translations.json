@@ -8,14 +8,14 @@
     "clear_btn": "CLEAR",
     "submit_btn": "SUBMIT",
     "start_block": "START",
-    "test_pos_block": "TESTING\nPOSITION",
-    "weak_shake_block": "WEAK\nSHAKE",
-    "strong_shake_block": "STRONG\nSHAKE",
-    "fridge_pos_block": "FRIDGE\nPOSITION",
-    "scan_pos_block": "SCANNING\nPOSITION",
-    "short_pause_block": "SHORT\nPAUSE",
-    "long_pause_block": "LONG\nPAUSE",
-    "end_pos_block": "END\nPOSITION"
+    "test_pos": "TESTING\nPOSITION",
+    "weak_shake": "WEAK\nSHAKE",
+    "strong_shake": "STRONG\nSHAKE",
+    "fridge_pos": "FRIDGE\nPOSITION",
+    "scan_pos": "SCANNING\nPOSITION",
+    "short_pause": "SHORT\nPAUSE",
+    "long_pause": "LONG\nPAUSE",
+    "end_pos": "END\nPOSITION"
   },
   "LT": {
     "play_btn": "ŽAISTI",
@@ -26,13 +26,13 @@
     "clear_btn": "IŠVALYTI",
     "submit_btn": "PATEIKTI",
     "start_block": "PRADŽIA",
-    "test_pos_block": "TESTAVIMO\nPOZICIJA",
-    "weak_shake_block": "SILPNAS\nPAKRATYMAS",
-    "strong_shake_block": "STIPRUS\nPAKRATYMAS",
-    "fridge_pos_block": "ŠALDYTUVO\nPOZICIJA",
-    "scan_pos_block": "SKENAVIMO\nPOZICIJA",
-    "short_pause_block": "TRUMPA\nPAUZĖ",
-    "long_pause_block": "ILGA\nPAUZĖ",
-    "end_pos_block": "GALUTINĖ\nPOZICIJA"
+    "test_pos": "TESTAVIMO\nPOZICIJA",
+    "weak_shake": "SILPNAS\nPAKRATYMAS",
+    "strong_shake": "STIPRUS\nPAKRATYMAS",
+    "fridge_pos": "ŠALDYTUVO\nPOZICIJA",
+    "scan_pos": "SKENAVIMO\nPOZICIJA",
+    "short_pause": "TRUMPA\nPAUZĖ",
+    "long_pause": "ILGA\nPAUZĖ",
+    "end_pos": "GALUTINĖ\nPOZICIJA"
   }
 }
