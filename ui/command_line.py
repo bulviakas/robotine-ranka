@@ -86,12 +86,23 @@ class CommandLine():
         return
     
     def submit(self, event):
-        logger.info("Submited!")
-        logger.debug("-----------------")
+        logger.info("Block sequence submitted")
+
+        sequence = []
+
         for block in self.slots:
-            if block is None: 
-                logger.debug("---------------")
-                return
-            logger.debug(f"{block.text}")
-        logger.debug("-----------------")
-        return
+            if block.text.equals("start_block"):
+                continue
+            if block is None:
+                logger.debug("Empty slot detected - stopping")
+                logger.info(f"Final sequence: {sequence}")
+                return None
+
+            action_name = block.text.strip()
+
+            logger.debug(f"Adding action: {action_name}")
+            sequence.append(action_name)
+
+        logger.info(f"Final sequence: {sequence}")
+
+        return sequence

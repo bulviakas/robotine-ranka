@@ -6,7 +6,6 @@ logger = get_logger("Sequence Executor")
 
 class SequenceExecutor:
     def __init__(self):
-        self.logger = get_logger("Sequence Executor")
 
         self.pins = [
             FRIDGE_POS_PIN,
@@ -69,8 +68,6 @@ class SequenceExecutor:
 
     def right_sequence(self):
         """Runs the full correct robot workflow."""
-        self.logger.info("Starting RIGHT sequence")
-
         self.fridge_pos()
         self.test_pos()
         self.strong_shake()
@@ -79,10 +76,28 @@ class SequenceExecutor:
         self.end_pos()
         self.passed()
 
-        self.logger.info("RIGHT sequence completed")
-
     def cleanup(self):
         """Cleanup GPIO state."""
         GPIO.cleanup()
         self.logger.info("GPIO cleanup done")
 
+    def execute(self, sequence):
+        for action in sequence:
+            match action:
+                case "fridge_pos":
+                    self.fridge_pos()
+                case "test_pos":
+                    self.test_pos()
+                case "strong_shake":
+                    self.strong_shake()
+                case "scan_pos":
+                    self.scan_pos()
+                case "long_pause":
+                    self.long_pause()
+                case "end_pos":
+                    self.end_pos()
+                case "weak_shake":
+                    self.weak_shake()
+                case "short_pause":
+                    self.short_pause()
+            self.passed()
