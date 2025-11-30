@@ -1,6 +1,7 @@
 from config import *
 from utils import load_svg_img
 from logger import get_logger
+from sequence_executor import SequenceExecutor
 logger = get_logger("Command Line")
 
 class CommandLine():
@@ -8,6 +9,7 @@ class CommandLine():
         self.canvas, self.piece_w, self.piece_h, self.app, self.n_slots = canvas, piece_w, piece_h, app, n_slots
         self.slot_w  = int(piece_w * (1 - overlap))
         self.slots   = [None] * self.n_slots
+        self.sequence_executor = SequenceExecutor()
 
         total_w = self.slot_w * self.n_slots + int(piece_w * overlap)
         x0, self.x1  = canvas_x - total_w // 2, canvas_x + total_w // 2
@@ -91,12 +93,9 @@ class CommandLine():
         sequence = []
 
         for block in self.slots:
-            if block.text.equals("start_block"):
-                continue
             if block is None:
                 logger.debug("Empty slot detected - stopping")
-                logger.info(f"Final sequence: {sequence}")
-                return None
+                break
 
             action_name = block.text.strip()
 
@@ -104,5 +103,6 @@ class CommandLine():
             sequence.append(action_name)
 
         logger.info(f"Final sequence: {sequence}")
+        self.sequence_executor.execute(sequence)
 
         return sequence

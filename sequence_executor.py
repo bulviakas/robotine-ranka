@@ -50,7 +50,7 @@ class SequenceExecutor:
         self._run_action(SCAN_POS_PIN, 1)
 
     def long_pause(self):
-        self._run_action(LONG_PAUSE_PIN, 5)
+        self._run_action(LONG_PAUSE_PIN, 3)
 
     def short_pause(self):
         self._run_action(SHORT_PAUSE_PIN, 3)
@@ -59,7 +59,7 @@ class SequenceExecutor:
         self._run_action(END_POS_PIN, 1)
 
     def passed(self):
-        self._run_action(PASS_LED_PIN, 5)
+        self._run_action(PASS_LED_PIN, 3)
 
     def error(self):
         for i in range(3):
@@ -82,22 +82,33 @@ class SequenceExecutor:
         self.logger.info("GPIO cleanup done")
 
     def execute(self, sequence):
+        logger.info("Starting sequence execution...")
         for action in sequence:
             match action:
                 case "fridge_pos":
                     self.fridge_pos()
+                    continue
                 case "test_pos":
                     self.test_pos()
+                    continue
                 case "strong_shake":
                     self.strong_shake()
+                    continue
                 case "scan_pos":
                     self.scan_pos()
+                    continue
                 case "long_pause":
                     self.long_pause()
+                    continue
                 case "end_pos":
                     self.end_pos()
+                    continue
                 case "weak_shake":
                     self.weak_shake()
+                    continue
                 case "short_pause":
                     self.short_pause()
-            self.passed()
+                    continue
+        logger.info("Sequence executed successfully")
+        self.passed()
+        return
