@@ -46,9 +46,26 @@ BLOCK_LABELS = [
 ]
 
 THE_CORRECT_SEQUENCE = [
+    "start_pos",
     "fridge_pos", "test_pos", "strong_shake", "scan_pos",
     "long_pause", "test_pos", "end_pos", None
 ]
+
+POSITIONAL_ACTIONS = {
+    "fridge_pos", "test_pos", "scan_pos", "end_pos"
+}
+
+SOFT_ACTIONS = {
+    "strong_shake", "weak_shake",
+    "short_pause", "long_pause"
+}
+
+ROBOT_POSITIONS = {
+    "fridge_pos": "FRIDGE",
+    "test_pos": "TEST",
+    "scan_pos": "SCAN",
+    "end_pos": "HOME",
+}
 
 CONTEXT_VIDEO_SIZE = [480, 854] # Change when importing the actual video
 INSTRUCTIONS_VIDEO_SIZE = [360, 480]

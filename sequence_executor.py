@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO # type: ignore 
+#import RPi.GPIO as GPIO # type: ignore 
 from time import sleep
 from logger import get_logger
 from config import *
@@ -16,6 +16,9 @@ logger = get_logger("Sequence Executor")
 class SequenceExecutor:
     def __init__(self):
 
+        self.current_position = "HOME"
+        self.abort = False
+
         self.pins = [
             FRIDGE_POS_PIN,
             TEST_POS_PIN,
@@ -28,18 +31,20 @@ class SequenceExecutor:
             PASS_LED_PIN
         ]
 
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
+        #GPIO.setmode(GPIO.BCM)
+        #GPIO.setwarnings(False)
 
-        for pin in self.pins:
-            GPIO.setup(pin, GPIO.OUT)
-            GPIO.output(pin, GPIO.LOW)
+        #for pin in self.pins:
+            #GPIO.setup(pin, GPIO.OUT)
+            #GPIO.output(pin, GPIO.LOW)
 
     # Internal helper
     def _run_action(self, pin, duration):
-        GPIO.output(pin, GPIO.HIGH)
+        if self.abort:
+            return
+        #GPIO.output(pin, GPIO.HIGH)
         sleep(duration)
-        GPIO.output(pin, GPIO.LOW) # FIXME Set before sleeping when switching to relays
+        #GPIO.output(pin, GPIO.LOW) # FIXME Set before sleeping when switching to relays
 
     # Robot actions
     def fridge_pos(self):
@@ -68,6 +73,7 @@ class SequenceExecutor:
 
     def passed(self):
         self._run_action(PASS_LED_PIN, 3)
+        logger.info("Sequence passed")
     
     def error_fridge(self):
         self._run_action(ERR_FRIDGE_PIN, 2)
@@ -94,41 +100,114 @@ class SequenceExecutor:
         """Cleanup GPIO state."""
         GPIO.cleanup()
         logger.info("GPIO cleanup done")
+    
+    def _execute_action(self, action):
+        getattr(self, action)()
 
-    def execute(self, sequence):
-        logger.info("Starting sequence execution...")
+        if action in ROBOT_POSITIONS:
+            self.current_position = ROBOT_POSITIONS[action]
+            logger.debug(f"Position → {self.current_position}")
+
+
+    def recover(self, reason):
+        logger.error(f"Recovery triggered: {reason}")
+        self.abort = True
+
+        match self.current_position:
+            case "FRIDGE":
+                self.error_fridge()
+                self.end_pos()
+            case "TEST" | "SCAN":
+                self.error_test()
+                self.end_pos()
+            case _:
+                logger.warning("Unknown position → emergency stop")
+
+        self.general_error()
+
+
+    def execute(self, sequence, on_hard_error=None, on_soft_error=None):
+        logger.info("Starting sequence execution")
+
+        expected_index = 0
+        soft_errors = []
+
         for action in sequence:
-            logger.debug(f"Executing {action}")
-            match action:
-                case "fridge_pos":
-                    self.fridge_pos()
-                    continue
-                case "test_pos":
-                    self.test_pos()
-                    continue
-                case "strong_shake":
-                    self.strong_shake()
-                    continue
-                case "scan_pos":
-                    self.scan_pos()
-                    continue
-                case "long_pause":
-                    self.long_pause()
-                    continue
-                case "end_pos":
-                    self.end_pos()
-                    continue
-                case "weak_shake":
-                    self.weak_shake()
-                    continue
-                case "short_pause":
-                    self.short_pause()
-                    continue
-                case _:
-                    logger.error(f"Unknown action: {action}")
-                    self.general_error()
+            expected = THE_CORRECT_SEQUENCE[expected_index]
+
+            if action == "start_block":
+                if expected_index != 0:
+                    self.recover("Start block in invalid position")
+                    if on_hard_error:
+                        on_hard_error(
+                            title="Sequence Error",
+                            message="Start block can only appear at the beginning."
+                        )
                     return
 
-        logger.info("Sequence executed successfully")
-        self.passed()
-        return
+                logger.debug("Start block accepted")
+                expected_index += 1
+                continue
+
+            # ---- HARD POSITIONAL CHECK ----
+            if action in POSITIONAL_ACTIONS:
+                if action != expected:
+                    self.recover(
+                        f"Expected {expected}, got {action}"
+                    )
+                    if on_hard_error:
+                        on_hard_error(
+                            title="Positional Error",
+                            message=(
+                                f"Invalid movement.\n\n"
+                                f"Expected: {expected}\n"
+                                f"Got: {action}\n\n"
+                                f"Robot returned to HOME."
+                            )
+                        )
+                    return
+                expected_index += 1
+
+            if action in {"strong_shake", "weak_shake"}:
+                if self.current_position != "TEST":
+                    logger.error(f"Shake attempted outside TEST zone at {self.current_position}")
+                    self.recover(f"{action} attempted outside TEST zone")
+                    if on_hard_error:
+                        on_hard_error(
+                            title="Hardware Safety Error",
+                            message=(
+                                f"{action} attempted outside TEST zone.\n"
+                                f"Sequence aborted. Robot returned to HOME."
+                            )
+                        )
+                    return
+
+            # ---- SOFT CHECK ----
+            if action in SOFT_ACTIONS:
+                if action != THE_CORRECT_SEQUENCE[expected_index - 1]:
+                    soft_errors.append(action)
+
+            # ---- EXECUTION ----
+            try:
+                self._execute_action(action)
+            except Exception as e:
+                self.recover(str(e))
+                on_hard_error(
+                    title="Hardware Failure",
+                    message="Hardware error detected. Robot recovered."
+                )
+                return
+
+        # ---- FINAL RESULT ----
+        if soft_errors:
+            if on_soft_error:
+                on_soft_error(
+                    title="Faulty Result",
+                    message=(
+                        "Sequence completed, but issues were detected:\n\n"
+                        + "\n".join(f"- {e}" for e in soft_errors)
+                    )
+                )
+        else:
+            self.passed()
+
