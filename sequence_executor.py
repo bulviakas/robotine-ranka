@@ -116,9 +116,9 @@ class SequenceExecutor:
         match self.current_position:
             case "FRIDGE":
                 self.error_fridge()
-                self.end_pos()
-            case "TEST" | "SCAN":
+            case "TEST":
                 self.error_test()
+            case "SCAN":
                 self.end_pos()
             case _:
                 logger.warning("Unknown position → emergency stop")
@@ -131,6 +131,7 @@ class SequenceExecutor:
 
         expected_index = 0
         soft_errors = []
+        shake_performed = False
 
         for action in sequence:
             expected = THE_CORRECT_SEQUENCE[expected_index]
@@ -181,21 +182,30 @@ class SequenceExecutor:
                             )
                         )
                     return
+                if action == "strong_shake":
+                    self.strong_shake()
+                else:
+                    self.weak_shake()
 
-            # ---- SOFT CHECK ----
-            if action in SOFT_ACTIONS:
-                if action != THE_CORRECT_SEQUENCE[expected_index - 1]:
-                    soft_errors.append(action)
+                shake_performed = True
+                continue
 
-            # ---- EXECUTION ----
+            if action == "scan_pos" and not shake_performed:
+                logger.warning("Scan performed without prior shake")
+                soft_errors.append("Scan performed without shake")
+
+             # --- EXECUTE ACTION (atomic) ---
             try:
-                self._execute_action(action)
+                getattr(self, action)()
+                if action in ROBOT_POSITIONS:
+                    self.current_position = ROBOT_POSITIONS[action]
             except Exception as e:
                 self.recover(str(e))
-                on_hard_error(
-                    title="Hardware Failure",
-                    message="Hardware error detected. Robot recovered."
-                )
+                if on_hard_error:
+                    on_hard_error(
+                        title="Hardware Error",
+                        message="Hardware failure detected. Robot recovered."
+                    )
                 return
 
         # ---- FINAL RESULT ----

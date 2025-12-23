@@ -2,6 +2,7 @@ from config import *
 from utils import load_svg_img
 from logger import get_logger
 from sequence_executor import SequenceExecutor
+from ui.error_popup import ErrorPopup
 logger = get_logger("Command Line")
 
 class CommandLine():
@@ -103,6 +104,16 @@ class CommandLine():
             sequence.append(action_name)
 
         logger.info(f"Final sequence: {sequence}")
-        self.sequence_executor.execute(sequence)
+        self.sequence_executor.execute(
+            sequence=sequence,
+            on_hard_error=self.show_hard_error,
+            on_soft_error=self.show_soft_error
+        )
 
         return sequence
+    
+    def show_hard_error(self, title, message):
+        ErrorPopup(self.canvas, title, message, level="error")
+
+    def show_soft_error(self, title, message):
+        ErrorPopup(self.canvas, title, message, level="warning")
