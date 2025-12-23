@@ -129,33 +129,21 @@ class SequenceExecutor:
     def execute(self, sequence, on_hard_error=None, on_soft_error=None):
         logger.info("Starting sequence execution")
 
-        expected_index = 0
+        pos_index = 0
         soft_errors = []
         shake_performed = False
 
         for action in sequence:
-            expected = THE_CORRECT_SEQUENCE[expected_index]
 
             if action == "start_block":
-                if expected_index != 0:
-                    self.recover("Start block in invalid position")
-                    if on_hard_error:
-                        on_hard_error(
-                            title="Sequence Error",
-                            message="Start block can only appear at the beginning."
-                        )
-                    return
-
                 logger.debug("Start block accepted")
-                expected_index += 1
                 continue
 
-            # ---- HARD POSITIONAL CHECK ----
             if action in POSITIONAL_ACTIONS:
+                expected = POSITIONAL_ACTIONS[pos_index]
+
                 if action != expected:
-                    self.recover(
-                        f"Expected {expected}, got {action}"
-                    )
+                    self.recover(f"Expected {expected}, got {action}")
                     if on_hard_error:
                         on_hard_error(
                             title="Positional Error",
@@ -163,30 +151,26 @@ class SequenceExecutor:
                                 f"Invalid movement.\n\n"
                                 f"Expected: {expected}\n"
                                 f"Got: {action}\n\n"
-                                f"Robot returned to HOME."
+                                f"Robot recovered safely."
                             )
                         )
                     return
-                expected_index += 1
+
+                # execute positional move
+                self._execute_action(action)
+                pos_index += 1
+                continue
 
             if action in {"strong_shake", "weak_shake"}:
                 if self.current_position != "TEST":
-                    logger.error(f"Shake attempted outside TEST zone at {self.current_position}")
-                    self.recover(f"{action} attempted outside TEST zone")
+                    self.recover("Shake outside TEST zone")
                     if on_hard_error:
                         on_hard_error(
                             title="Hardware Safety Error",
-                            message=(
-                                f"{action} attempted outside TEST zone.\n"
-                                f"Sequence aborted. Robot returned to HOME."
-                            )
+                            message="Shake attempted outside TEST zone."
                         )
                     return
-                if action == "strong_shake":
-                    self.strong_shake()
-                else:
-                    self.weak_shake()
-
+                self._execute_action(action)
                 shake_performed = True
                 continue
 

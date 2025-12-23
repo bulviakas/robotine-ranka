@@ -113,7 +113,7 @@ class CommandLine():
         return sequence
     
     def show_hard_error(self, title, message):
-        ErrorPopup(self.canvas, title, message, level="error")
+        ErrorPopup(self.canvas, title, message, level="hard")
 
     def show_soft_error(self, title, message):
-        ErrorPopup(self.canvas, title, message, level="warning")
+        ErrorPopup(self.canvas, title, message, level="soft")

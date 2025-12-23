@@ -51,13 +51,19 @@ THE_CORRECT_SEQUENCE = [
     "long_pause", "test_pos", "end_pos", None
 ]
 
-POSITIONAL_ACTIONS = {
-    "fridge_pos", "test_pos", "scan_pos", "end_pos"
-}
+POSITIONAL_ACTIONS = [
+    "fridge_pos",
+    "test_pos",
+    "scan_pos",
+    "test_pos",
+    "end_pos"
+]
 
-SOFT_ACTIONS = {
-    "strong_shake", "weak_shake",
-    "short_pause", "long_pause"
+OPTIONAL_ACTIONS = {
+    "strong_shake",
+    "weak_shake",
+    "long_pause",
+    "short_pause"
 }
 
 ROBOT_POSITIONS = {
