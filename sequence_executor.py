@@ -46,10 +46,12 @@ class SequenceExecutor:
         #GPIO.output(pin, GPIO.LOW) # FIXME Set before sleeping when switching to relays
 
     def fridge_pos(self):
+        self.tasks_completed["fridge"] = True
         self._run_action(FRIDGE_POS_PIN, 1)
 
     def test_pos(self):
         self._run_action(TEST_POS_PIN, 1)
+        self.tasks_completed["test"] = True
 
     def strong_shake(self):
         self._run_action(SHAKE_PIN, 3)
@@ -59,6 +61,7 @@ class SequenceExecutor:
 
     def scan_pos(self):
         self._run_action(SCAN_POS_PIN, 1)
+        self.tasks_completed["scan"] = True
 
     def long_pause(self):
         sleep(3)
@@ -122,14 +125,21 @@ class SequenceExecutor:
                 logger.warning("Unknown position → emergency stop")
 
         self.general_error()
+    
+    def _record(self, event):
+        self.events.append(event)
 
-
-    def execute(self, sequence, on_hard_error=None, on_soft_error=None):
+    def execute(self, sequence, on_hard_error=None, on_soft_error=None, on_incomplete_task=None):
         logger.info("Starting sequence execution")
 
         pos_index = 0
         soft_errors = []
         shake_performed = False
+        self.tasks_completed = {
+            "fridge": False,
+            "test": False,
+            "scan": False
+        }
 
         for action in sequence:
 
@@ -192,6 +202,21 @@ class SequenceExecutor:
                         message="Hardware failure detected. Robot recovered."
                     )
                 return
+            
+        missing_tasks = [
+            name for name, done in self.tasks_completed.items() if not done
+        ]
+        if missing_tasks:
+            if on_incomplete_task:
+                on_incomplete_task(
+                    title="Incomplete Tasks",
+                    message=(
+                        "The sequence finished, but not all required tasks were completed:\n\n"
+                        + "\n".join(f"- {task.capitalize()} station not visited" for task in missing_tasks)
+                    )
+                )
+            return
+
 
         if soft_errors:
             if on_soft_error:
@@ -204,4 +229,3 @@ class SequenceExecutor:
                 )
         else:
             self.passed()
-

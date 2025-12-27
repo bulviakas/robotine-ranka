@@ -109,7 +109,8 @@ class CommandLine():
         self.sequence_executor.execute(
             sequence=sequence,
             on_hard_error=self.show_hard_error,
-            on_soft_error=self.show_soft_error
+            on_soft_error=self.show_soft_error,
+            on_incomplete_task=self.show_incomplete_tasks
         )
 
         return sequence
@@ -119,3 +120,6 @@ class CommandLine():
 
     def show_soft_error(self, title, message):
         ErrorPopup(self.canvas, title, message, level="soft")
+    
+    def show_incomplete_tasks(self, title, message):
+        ErrorPopup(self.canvas, title, message, level="incomplete")

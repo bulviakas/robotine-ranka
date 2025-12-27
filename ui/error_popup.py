@@ -1,4 +1,5 @@
 import tkinter as tk
+from config import COLOUR_PALETTE
 
 class ErrorPopup(tk.Toplevel):
     def __init__(self, parent, title, message, level="hard"):
@@ -20,9 +21,12 @@ class ErrorPopup(tk.Toplevel):
         if level == "hard":
             accent = "#b00020"
             title_text = "ERROR"
-        else:
+        elif level == "soft":
             accent = "#e6a700"
             title_text = "WARNING"
+        else:
+            accent = "#580054"
+            title_text = "INCOMPLETE"
 
         panel_bg = "#121212"
         border_outer = "#2a2a2a"
