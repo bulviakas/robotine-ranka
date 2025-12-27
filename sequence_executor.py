@@ -38,7 +38,6 @@ class SequenceExecutor:
             #GPIO.setup(pin, GPIO.OUT)
             #GPIO.output(pin, GPIO.LOW)
 
-    # Internal helper
     def _run_action(self, pin, duration):
         if self.abort:
             return
@@ -46,7 +45,6 @@ class SequenceExecutor:
         sleep(duration)
         #GPIO.output(pin, GPIO.LOW) # FIXME Set before sleeping when switching to relays
 
-    # Robot actions
     def fridge_pos(self):
         self._run_action(FRIDGE_POS_PIN, 1)
 
@@ -156,7 +154,6 @@ class SequenceExecutor:
                         )
                     return
 
-                # execute positional move
                 self._execute_action(action)
                 pos_index += 1
                 continue
@@ -178,7 +175,6 @@ class SequenceExecutor:
                 logger.warning("Scan performed without prior shake")
                 soft_errors.append("Scan performed without shake")
 
-             # --- EXECUTE ACTION (atomic) ---
             try:
                 getattr(self, action)()
                 if action in ROBOT_POSITIONS:
@@ -192,7 +188,6 @@ class SequenceExecutor:
                     )
                 return
 
-        # ---- FINAL RESULT ----
         if soft_errors:
             if on_soft_error:
                 on_soft_error(

@@ -7,10 +7,10 @@ class ErrorPopup(tk.Toplevel):
         self.parent = parent
         self.level = level
 
-        # --- Fullscreen dark overlay ---
+        # Fullscreen dark overlay
         self.overrideredirect(True)
         self.attributes("-topmost", True)
-        self.attributes("-alpha", 1)
+        self.attributes("-alpha", 0.9)
         self.configure(bg="#000000")
         self.grab_set()
 
@@ -18,18 +18,16 @@ class ErrorPopup(tk.Toplevel):
         sh = self.winfo_screenheight()
         self.geometry(f"{sw}x{sh}+0+0")
 
-        # --- Colors ---
         if level == "hard":
-            accent = "#b00020"   # red
+            accent = "#b00020"
             title_text = "ERROR"
         else:
-            accent = "#e6a700"   # amber
+            accent = "#e6a700"
             title_text = "WARNING"
 
         panel_bg = "#121212"
         border_outer = "#2a2a2a"
 
-        # --- Canvas ---
         canvas = tk.Canvas(
             self,
             width=sw,
@@ -39,20 +37,17 @@ class ErrorPopup(tk.Toplevel):
         )
         canvas.pack(fill="both", expand=True)
 
-        # --- Panel geometry ---
         pw, ph = 560, 340
         px = (sw - pw) // 2
         py = (sh - ph) // 2
 
-        # --- Darkened background ---
         canvas.create_rectangle(
             0, 0, sw, sh,
             fill="#000000",
             stipple="gray50",
-            outline=""
+            outline="",
         )
 
-        # --- Outer border ---
         canvas.create_rectangle(
             px - 6, py - 6,
             px + pw + 6, py + ph + 6,
@@ -60,7 +55,6 @@ class ErrorPopup(tk.Toplevel):
             outline=""
         )
 
-        # --- Main panel ---
         canvas.create_rectangle(
             px, py,
             px + pw, py + ph,
@@ -68,7 +62,6 @@ class ErrorPopup(tk.Toplevel):
             outline=""
         )
 
-        # --- Accent header ---
         canvas.create_rectangle(
             px, py,
             px + pw, py + 64,
@@ -76,7 +69,6 @@ class ErrorPopup(tk.Toplevel):
             outline=""
         )
 
-        # --- Title ---
         canvas.create_text(
             px + pw // 2,
             py + 32,
@@ -85,7 +77,6 @@ class ErrorPopup(tk.Toplevel):
             font=("Arial", 24, "bold")
         )
 
-        # --- Message ---
         canvas.create_text(
             px + pw // 2,
             py + 150,
@@ -96,7 +87,6 @@ class ErrorPopup(tk.Toplevel):
             justify="center"
         )
 
-        # --- Button ---
         btn_w, btn_h = 220, 56
         btn_x = px + pw // 2
         btn_y = py + ph - 70
