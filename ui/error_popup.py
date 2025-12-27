@@ -10,7 +10,6 @@ class ErrorPopup(tk.Toplevel):
         # Fullscreen dark overlay
         self.overrideredirect(True)
         self.attributes("-topmost", True)
-        self.attributes("-alpha", 0.9)
         self.configure(bg="#000000")
         self.grab_set()
 
@@ -40,14 +39,25 @@ class ErrorPopup(tk.Toplevel):
         pw, ph = 560, 340
         px = (sw - pw) // 2
         py = (sh - ph) // 2
-
+        
+        # Fullscreen semi-transparent background
         canvas.create_rectangle(
             0, 0, sw, sh,
             fill="#000000",
-            stipple="gray50",
+            stipple="gray25",
             outline="",
         )
 
+        # Popup shadow
+        canvas.create_rectangle(
+            px + 8, py + 8,
+            px + pw + 8, py + ph + 8,
+            fill="#000000",
+            stipple="gray50",
+            outline=""
+        )
+
+        # Block outline
         canvas.create_rectangle(
             px - 6, py - 6,
             px + pw + 6, py + ph + 6,
@@ -55,6 +65,7 @@ class ErrorPopup(tk.Toplevel):
             outline=""
         )
 
+        # Error block
         canvas.create_rectangle(
             px, py,
             px + pw, py + ph,
@@ -62,6 +73,7 @@ class ErrorPopup(tk.Toplevel):
             outline=""
         )
 
+        # Title background
         canvas.create_rectangle(
             px, py,
             px + pw, py + 64,
@@ -69,6 +81,7 @@ class ErrorPopup(tk.Toplevel):
             outline=""
         )
 
+        # Title
         canvas.create_text(
             px + pw // 2,
             py + 32,
@@ -77,6 +90,7 @@ class ErrorPopup(tk.Toplevel):
             font=("Arial", 24, "bold")
         )
 
+        # Message
         canvas.create_text(
             px + pw // 2,
             py + 150,
@@ -87,6 +101,7 @@ class ErrorPopup(tk.Toplevel):
             justify="center"
         )
 
+        # Button
         btn_w, btn_h = 220, 56
         btn_x = px + pw // 2
         btn_y = py + ph - 70

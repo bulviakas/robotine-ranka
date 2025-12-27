@@ -140,6 +140,10 @@ class SequenceExecutor:
             if action in POSITIONAL_ACTIONS:
                 expected = POSITIONAL_ACTIONS[pos_index]
 
+                if action == "scan_pos" and not shake_performed:
+                    logger.warning("Scan performed without prior shake")
+                    soft_errors.append("Scan performed without shake")
+
                 if action != expected:
                     self.recover(f"Expected {expected}, got {action}")
                     if on_hard_error:
@@ -169,11 +173,12 @@ class SequenceExecutor:
                     return
                 self._execute_action(action)
                 shake_performed = True
-                continue
 
-            if action == "scan_pos" and not shake_performed:
-                logger.warning("Scan performed without prior shake")
-                soft_errors.append("Scan performed without shake")
+                if action == "weak_shake":
+                    logger.warning("Shake too weak")
+                    soft_errors.append("Shake too weak")
+
+                continue
 
             try:
                 getattr(self, action)()

@@ -1,5 +1,7 @@
-from logger import get_logger
+from logger import get_logger, setLoggerLevel
+from logging import INFO
 logger = get_logger("Language Manager")
+setLoggerLevel(logger, INFO)
 import tkinter as tk
 import json
 

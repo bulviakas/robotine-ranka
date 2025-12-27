@@ -1,8 +1,10 @@
 from config import *
 import config
 from utils import load_svg_img
-from logger import get_logger
+from logger import get_logger, setLoggerLevel
+from logging import INFO
 logger = get_logger("Block")
+setLoggerLevel(logger, INFO)
 
 class Block():
     def __init__(self, app, lang_mngr, cmd, colour, x, y, template=False, start=False, text="", text_offset=7):

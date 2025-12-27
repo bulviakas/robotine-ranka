@@ -19,7 +19,8 @@ class ColorFormatter(logging.Formatter):
         "Video Player": "\033[95m",      # Bright Magenta
         "Command Line": "\033[33m",      # Yellow
         "Language Dropdown": "\033[94m", # Bright Red
-        "Language Manager": "\033[31m"   # Dark Red
+        "Language Manager": "\033[31m",  # Dark Red
+        "Sequence Executor": "\033[34m"
     }
 
     RESET = "\033[0m"
@@ -41,7 +42,7 @@ class ColorFormatter(logging.Formatter):
         return f"[{self.formatTime(record, '%H:%M:%S')}] [{name}] [{levelname}] {msg}"
 
 
-# --- Logger Factory ---
+# Logger Factory
 def get_logger(name: str, level=logging.DEBUG):
     logger = logging.getLogger(name)
     logger.setLevel(level)
@@ -54,8 +55,11 @@ def get_logger(name: str, level=logging.DEBUG):
 
     return logger
 
+def setLoggerLevel(logger, level):
+    logger.setLevel(level)
 
-# --- Usage ---
+
+# Usage 
 log_main = get_logger("Main")
 log_pages = get_logger("Pages")
 log_block = get_logger("Block")
@@ -63,7 +67,7 @@ log_video = get_logger("Video Player")
 log_cmd   = get_logger("Command Line")
 
 
-# --- Example ---
+# Example
 if __name__ == "__main__":
     log_main.info("App started")
     log_pages.debug("video width: 683 height: 512")
