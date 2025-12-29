@@ -48,14 +48,13 @@ BLOCK_LABELS = [
 THE_CORRECT_SEQUENCE = [
     "start_pos",
     "fridge_pos", "test_pos", "strong_shake", "scan_pos",
-    "long_pause", "test_pos", "end_pos", None
+    "long_pause", "end_pos", None
 ]
 
 POSITIONAL_ACTIONS = [
     "fridge_pos",
     "test_pos",
     "scan_pos",
-    "test_pos",
     "end_pos"
 ]
 
@@ -79,12 +78,21 @@ INSTRUCTIONS_VIDEO_SIZE = [360, 480]
 LANGUAGES = ["LT", "EN"]
 
 # PIN LAYOUT
-FRIDGE_POS_PIN = 26
-TEST_POS_PIN = 6
-SHAKE_PIN = 5
-SCAN_POS_PIN = 16
-ERR_FRIDGE_PIN = 25
-END_POS_PIN = 24
-ERR_TEST_PIN = 22
-ERROR_LED_PIN = 27
-PASS_LED_PIN = 17
+FRIDGE_POS_PIN  = 26
+TEST_POS_PIN    = 6
+SHAKE_PIN       = 5
+SCAN_POS_PIN    = 16
+ERR_FRIDGE_PIN  = 25
+END_POS_PIN     = 24
+ERR_TEST_PIN    = 22
+ERROR_LED_PIN   = 27
+PASS_LED_PIN    = 17
+
+# HARDWARE ACTION DURATIONS
+TO_FRIDGE_DURATION              = 3.8
+RECOVER_FROM_FRIDGE_DURATION    = 2.3
+TO_TEST_DURATION                = 4.8
+SHAKE_DURATION                  = 15.1
+RECOVER_FROM_TEST_DURATION      = 2.2
+TO_SCAN_DURATION                = 3.8
+RECOVER_FROM_SCAN_DURATION      = 2.3

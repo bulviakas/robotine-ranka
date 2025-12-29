@@ -47,40 +47,52 @@ class SequenceExecutor:
 
     def fridge_pos(self):
         self.tasks_completed["fridge"] = True
-        self._run_action(FRIDGE_POS_PIN, 1)
+        logger.info("Moving to Fridge position...")
+        self._run_action(FRIDGE_POS_PIN, TO_FRIDGE_DURATION)
 
     def test_pos(self):
-        self._run_action(TEST_POS_PIN, 1)
+        logger.info("Moving to Test position...")
+        self._run_action(TEST_POS_PIN, TO_TEST_DURATION)
         self.tasks_completed["test"] = True
 
     def strong_shake(self):
-        self._run_action(SHAKE_PIN, 3)
+        logger.info("Performing Strong Shanke...")
+        self._run_action(SHAKE_PIN, SHAKE_DURATION)
 
     def weak_shake(self):
-        self._run_action(SHAKE_PIN, 3)
+        logger.info("Performing Weak Shake...")
+        self._run_action(SHAKE_PIN, SHAKE_DURATION)
 
     def scan_pos(self):
-        self._run_action(SCAN_POS_PIN, 1)
+        logger.info("Moving to Scan position...")
+        self._run_action(SCAN_POS_PIN, TO_SCAN_DURATION)
         self.tasks_completed["scan"] = True
 
     def long_pause(self):
+        logger.info("Initiating Long pause...")
         sleep(3)
 
     def short_pause(self):
+        logger.info("Initiating Short pause...")
         sleep(1.5)
 
     def end_pos(self):
-        self._run_action(END_POS_PIN, 1)
+        logger.info("Moving to End position")
+        self._run_action(END_POS_PIN, RECOVER_FROM_SCAN_DURATION)
 
     def passed(self):
         self._run_action(PASS_LED_PIN, 3)
         logger.info("Sequence passed")
     
     def error_fridge(self):
-        self._run_action(ERR_FRIDGE_PIN, 2)
+        logger.info("Homing from Fridge position...")
+        self._run_action(ERR_FRIDGE_PIN, RECOVER_FROM_FRIDGE_DURATION)
+        self.current_position = "HOME"
 
     def error_test(self):
-        self._run_action(ERR_TEST_PIN, 1)
+        logger.info("Homing from Test Postion...")
+        self._run_action(ERR_TEST_PIN, RECOVER_FROM_TEST_DURATION)
+        self.current_position = "HOME"
 
     def general_error(self):
         for i in range(3):
@@ -121,6 +133,8 @@ class SequenceExecutor:
                 self.error_test()
             case "SCAN":
                 self.end_pos()
+            case "HOME":
+                logger.info("Already homed.")
             case _:
                 logger.warning("Unknown position → emergency stop")
 
