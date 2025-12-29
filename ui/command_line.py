@@ -122,4 +122,9 @@ class CommandLine():
         ErrorPopup(self.canvas, title, message, level="soft")
     
     def show_incomplete_tasks(self, title, message):
-        ErrorPopup(self.canvas, title, message, level="incomplete")
+        def on_ok():
+            logger.info("Popup closed")
+            self.sequence_executor.recover("Incomplete sequence")
+
+
+        ErrorPopup(self.canvas, title, message, level="incomplete", on_ok=on_ok)

@@ -1,12 +1,13 @@
 import tkinter as tk
-from config import COLOUR_PALETTE
+from config import COLOUR_PALETTE, WHITE, BLACK
 
 class ErrorPopup(tk.Toplevel):
-    def __init__(self, parent, title, message, level="hard"):
+    def __init__(self, parent, title, message, level="hard", on_ok=None):
         super().__init__(parent)
 
         self.parent = parent
         self.level = level
+        self.on_ok = on_ok
 
         # Fullscreen dark overlay
         self.overrideredirect(True)
@@ -28,14 +29,14 @@ class ErrorPopup(tk.Toplevel):
             accent = "#580054"
             title_text = "INCOMPLETE"
 
-        panel_bg = "#121212"
+        panel_bg = BLACK
         border_outer = "#2a2a2a"
 
         canvas = tk.Canvas(
             self,
             width=sw,
             height=sh,
-            bg="#000000",
+            bg=BLACK,
             highlightthickness=0
         )
         canvas.pack(fill="both", expand=True)
@@ -47,7 +48,7 @@ class ErrorPopup(tk.Toplevel):
         # Fullscreen semi-transparent background
         canvas.create_rectangle(
             0, 0, sw, sh,
-            fill="#000000",
+            fill=BLACK,
             stipple="gray25",
             outline="",
         )
@@ -56,7 +57,7 @@ class ErrorPopup(tk.Toplevel):
         canvas.create_rectangle(
             px + 8, py + 8,
             px + pw + 8, py + ph + 8,
-            fill="#000000",
+            fill=BLACK,
             stipple="gray50",
             outline=""
         )
@@ -90,7 +91,7 @@ class ErrorPopup(tk.Toplevel):
             px + pw // 2,
             py + 32,
             text=title_text,
-            fill="white",
+            fill=WHITE,
             font=("Arial", 24, "bold")
         )
 
@@ -99,7 +100,7 @@ class ErrorPopup(tk.Toplevel):
             px + pw // 2,
             py + 150,
             text=message,
-            fill="white",
+            fill=WHITE,
             width=pw - 80,
             font=("Arial", 15),
             justify="center"
@@ -115,7 +116,7 @@ class ErrorPopup(tk.Toplevel):
             btn_y - btn_h // 2 - 2,
             btn_x + btn_w // 2 + 2,
             btn_y + btn_h // 2 + 2,
-            fill="white",
+            fill=WHITE,
             outline=""
         )
 
@@ -132,7 +133,7 @@ class ErrorPopup(tk.Toplevel):
             btn_x,
             btn_y,
             text="OK",
-            fill="white",
+            fill=WHITE,
             font=("Arial", 14, "bold")
         )
 
@@ -142,3 +143,6 @@ class ErrorPopup(tk.Toplevel):
     def close(self, event=None):
         self.grab_release()
         self.destroy()
+
+        if self.on_ok:
+            self.on_ok()
