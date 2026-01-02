@@ -110,7 +110,8 @@ class CommandLine():
             sequence=sequence,
             on_hard_error=self.show_hard_error,
             on_soft_error=self.show_soft_error,
-            on_incomplete_task=self.show_incomplete_tasks
+            on_incomplete_task=self.show_incomplete_tasks,
+            on_passed=self.show_passed
         )
 
         return sequence
@@ -125,6 +126,10 @@ class CommandLine():
         def on_ok():
             logger.info("Popup closed")
             self.sequence_executor.recover("Incomplete sequence")
-
-
         ErrorPopup(self.canvas, title, message, level="incomplete", on_ok=on_ok)
+    
+    def show_passed(self):
+        def on_ok():
+            logger.info("Sequence done successfully")
+            self.sequence_executor.recover("Sequence passed. Restarting...")
+        ErrorPopup(self.canvas, title="Passed", message="All objectives completed. Good work!", level="Passed", on_ok=on_ok)

@@ -42,8 +42,9 @@ class SequenceExecutor:
         if self.abort:
             return
         #GPIO.output(pin, GPIO.HIGH)
-        sleep(duration)
+        sleep(1)
         #GPIO.output(pin, GPIO.LOW) # FIXME Set before sleeping when switching to relays
+        sleep(duration - 1)
 
     def fridge_pos(self):
         self.tasks_completed["fridge"] = True
@@ -56,7 +57,7 @@ class SequenceExecutor:
         self.tasks_completed["test"] = True
 
     def strong_shake(self):
-        logger.info("Performing Strong Shanke...")
+        logger.info("Performing Strong Shake...")
         self._run_action(SHAKE_PIN, SHAKE_DURATION)
 
     def weak_shake(self):
@@ -79,10 +80,14 @@ class SequenceExecutor:
     def end_pos(self):
         logger.info("Moving to End position")
         self._run_action(END_POS_PIN, RECOVER_FROM_SCAN_DURATION)
+        self.tasks_completed["end"] = True
 
-    def passed(self):
-        self._run_action(PASS_LED_PIN, 3)
+    def passed(self, on_passed=None):
+        #self._run_action(PASS_LED_PIN, 3)
         logger.info("Sequence passed")
+        if on_passed:
+            on_passed()
+            return
     
     def error_fridge(self):
         logger.info("Homing from Fridge position...")
@@ -143,7 +148,7 @@ class SequenceExecutor:
     def _record(self, event):
         self.events.append(event)
 
-    def execute(self, sequence, on_hard_error=None, on_soft_error=None, on_incomplete_task=None):
+    def execute(self, sequence, on_hard_error=None, on_soft_error=None, on_incomplete_task=None, on_passed=None):
         logger.info("Starting sequence execution")
 
         pos_index = 0
@@ -152,7 +157,8 @@ class SequenceExecutor:
         self.tasks_completed = {
             "fridge": False,
             "test": False,
-            "scan": False
+            "scan": False,
+            "end": False
         }
 
         for action in sequence:
@@ -182,7 +188,10 @@ class SequenceExecutor:
                         )
                     return
 
-                self._execute_action(action)
+                getattr(self, action)()
+                if action in ROBOT_POSITIONS:
+                    self.current_position = ROBOT_POSITIONS[action]
+                    logger.debug(f"Position → {self.current_position}")
                 pos_index += 1
                 continue
 
@@ -242,4 +251,4 @@ class SequenceExecutor:
                     )
                 )
         else:
-            self.passed()
+            self.passed(on_passed=on_passed)

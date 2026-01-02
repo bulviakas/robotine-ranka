@@ -25,9 +25,12 @@ class ErrorPopup(tk.Toplevel):
         elif level == "soft":
             accent = "#e6a700"
             title_text = "WARNING"
-        else:
+        elif level == "incomplete":
             accent = "#580054"
             title_text = "INCOMPLETE"
+        else:
+            accent = "#005819"
+            title_text = "PASSED"
 
         panel_bg = BLACK
         border_outer = "#2a2a2a"
