@@ -154,6 +154,7 @@ class SequenceExecutor:
         pos_index = 0
         soft_errors = []
         shake_performed = False
+        self.abort = False
         self.tasks_completed = {
             "fridge": False,
             "test": False,

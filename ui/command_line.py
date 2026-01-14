@@ -133,3 +133,4 @@ class CommandLine():
             logger.info("Sequence done successfully")
             self.sequence_executor.recover("Sequence passed. Restarting...")
         ErrorPopup(self.canvas, title="Passed", message="All objectives completed. Good work!", level="Passed", on_ok=on_ok)
+        self.clear()
