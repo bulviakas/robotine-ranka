@@ -1,4 +1,4 @@
-#import RPi.GPIO as GPIO # type: ignore 
+import RPi.GPIO as GPIO
 from time import sleep
 from logger import get_logger
 from config import *
@@ -31,20 +31,20 @@ class SequenceExecutor:
             PASS_LED_PIN
         ]
 
-        #GPIO.setmode(GPIO.BCM)
-        #GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
 
-        #for pin in self.pins:
-            #GPIO.setup(pin, GPIO.OUT)
-            #GPIO.output(pin, GPIO.LOW)
+        for pin in self.pins:
+            GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, GPIO.LOW)
 
     def _run_action(self, pin, duration):
         if self.abort:
             return
-        #GPIO.output(pin, GPIO.HIGH)
-        sleep(1)
-        #GPIO.output(pin, GPIO.LOW) # FIXME Set before sleeping when switching to relays
-        sleep(duration - 1)
+        GPIO.output(pin, GPIO.HIGH)
+        sleep(0.3)
+        GPIO.output(pin, GPIO.LOW)
+        sleep(duration)
 
     def fridge_pos(self):
         self.tasks_completed["fridge"] = True

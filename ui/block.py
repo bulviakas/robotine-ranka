@@ -13,7 +13,7 @@ class Block():
         self.home_x, self.home_y   = x, y
         self.slot = None
         self.locked = False
-        self.text, self.font_size = text, scale_font(12)
+        self.text, self.font_size = text, scale_font(10)
         self.tag = f"block_{id(self)}"
         self.cmd = cmd
         self.text_offset = text_offset
@@ -25,7 +25,7 @@ class Block():
 
         elif self.template:
             img = load_svg_img(app, BLOCK_TEMPLATE_PATH, (1.5*app.piece_w, 1.5*app.piece_h), colour)
-            self.font_size = int(self.font_size * 1.5)
+            self.font_size = int(self.font_size * 1.75)
             self.text_offset = 2
 
         else:

@@ -55,7 +55,7 @@ def setup_context_page(self):
         x=int(self.self_w * 0.9),
         y=int(self.self_h * 0.9),
         text="TOLIAU",
-        font_size=int(18 * BLOCK_SIZE_COEF),
+        font_size=int(18 * 1.25),
         tag=self.next_tag,
         command=lambda e: self.show_page(self.instructions_page),
         text_offset_x=7
@@ -92,7 +92,7 @@ def setup_instructions_page(self):
         x=int(self.self_w * 0.1), 
         y=int(self.self_h * 0.9),
         text="ATGAL",
-        font_size=int(18 * BLOCK_SIZE_COEF),
+        font_size=int(18 * 1.25),
         tag=self.back_tag,
         command=lambda e: self.show_page(self.context_page),
         text_offset_x=-7
@@ -109,7 +109,7 @@ def setup_instructions_page(self):
         x=int(self.self_w * 0.9),
         y=int(self.self_h * 0.9),
         text="TOLIAU",
-        font_size=int(18 * BLOCK_SIZE_COEF),
+        font_size=int(18 * 1.25),
         tag=self.play_tag,
         command=lambda e: self.show_page(self.game_page),
         text_offset_x=7
