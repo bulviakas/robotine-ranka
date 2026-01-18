@@ -1,5 +1,7 @@
 import tkinter as tk
-from config import COLOUR_PALETTE, WHITE, BLACK
+from config import WHITE, BLACK
+
+# TODO translate all popups
 
 class ErrorPopup(tk.Toplevel):
     def __init__(self, parent, title, message, level="hard", on_ok=None):
