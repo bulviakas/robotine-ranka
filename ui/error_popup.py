@@ -4,9 +4,10 @@ from config import WHITE, BLACK
 # TODO translate all popups
 
 class ErrorPopup(tk.Toplevel):
-    def __init__(self, parent, title, message, level="hard", on_ok=None):
+    def __init__(self, app, parent, message, level="hard", on_ok=None):
         super().__init__(parent)
 
+        self.app = app
         self.parent = parent
         self.level = level
         self.on_ok = on_ok
@@ -23,16 +24,16 @@ class ErrorPopup(tk.Toplevel):
 
         if level == "hard":
             accent = "#b00020"
-            title_text = "ERROR"
+            title_text = "popup_tt_error"
         elif level == "soft":
             accent = "#e6a700"
-            title_text = "WARNING"
+            title_text = "popup_tt_warning"
         elif level == "incomplete":
             accent = "#580054"
-            title_text = "INCOMPLETE"
+            title_text = "popup_tt_incomplete"
         else:
             accent = "#005819"
-            title_text = "PASSED"
+            title_text = "popup_tt_passed"
 
         panel_bg = BLACK
         border_outer = "#2a2a2a"
@@ -92,13 +93,14 @@ class ErrorPopup(tk.Toplevel):
         )
 
         # Title
-        canvas.create_text(
+        canvas.title = canvas.create_text(
             px + pw // 2,
             py + 32,
             text=title_text,
             fill=WHITE,
             font=("Arial", 24, "bold")
         )
+        self.app.lang_manager.register_widget(canvas, title_text, item_id=canvas.title)
 
         # Message
         canvas.create_text(

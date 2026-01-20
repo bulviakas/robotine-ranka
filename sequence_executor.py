@@ -179,7 +179,6 @@ class SequenceExecutor:
                     self.recover(f"Expected {expected}, got {action}")
                     if on_hard_error:
                         on_hard_error(
-                            title="Positional Error",
                             message=(
                                 f"Invalid movement.\n\n"
                                 f"Expected: {expected}\n"
@@ -201,7 +200,6 @@ class SequenceExecutor:
                     self.recover("Shake outside TEST zone")
                     if on_hard_error:
                         on_hard_error(
-                            title="Hardware Safety Error",
                             message="Shake attempted outside TEST zone."
                         )
                     return
@@ -222,7 +220,6 @@ class SequenceExecutor:
                 self.recover(str(e))
                 if on_hard_error:
                     on_hard_error(
-                        title="Hardware Error",
                         message="Hardware failure detected. Robot recovered."
                     )
                 return
@@ -233,7 +230,6 @@ class SequenceExecutor:
         if missing_tasks:
             if on_incomplete_task:
                 on_incomplete_task(
-                    title="Incomplete Tasks",
                     message=(
                         "The sequence finished, but not all required tasks were completed:\n\n"
                         + "\n".join(f"- {task.capitalize()} station not visited" for task in missing_tasks)
@@ -245,7 +241,6 @@ class SequenceExecutor:
         if soft_errors:
             if on_soft_error:
                 on_soft_error(
-                    title="Faulty Result",
                     message=(
                         "Sequence completed, but issues were detected:\n\n"
                         + "\n".join(f"- {e}" for e in soft_errors)

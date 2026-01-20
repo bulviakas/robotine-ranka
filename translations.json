@@ -7,6 +7,7 @@
     "instructions": "This is a chunk of text in which the instructions for the game will be displayed. The user will have to read them and not just glance over or skip because that would devalue my horrible writing skills even more and i would be very sad :(",
     "clear_btn": "CLEAR",
     "submit_btn": "SUBMIT",
+
     "start_block": "START",
     "test_pos": "TESTING\nPOSITION",
     "weak_shake": "WEAK\nSHAKE",
@@ -15,7 +16,12 @@
     "scan_pos": "SCANNING\nPOSITION",
     "short_pause": "SHORT\nPAUSE",
     "long_pause": "LONG\nPAUSE",
-    "end_pos": "END\nPOSITION"
+    "end_pos": "END\nPOSITION",
+
+    "popup_tt_warning": "WARNING",
+    "popup_tt_error": "ERROR",
+    "popup_tt_incomplete": "INCOMPLETE",
+    "popup_tt_passed": "PASSED"
   },
   "LT": {
     "play_btn": "ŽAISTI",
@@ -26,6 +32,7 @@
     "clear_btn": "IŠVALYTI",
     "submit_btn": "PATEIKTI",
     "start_block": "PRADŽIA",
+
     "test_pos": "TESTAVIMO\nPOZICIJA",
     "weak_shake": "SILPNAS\nPAKRATYMAS",
     "strong_shake": "STIPRUS\nPAKRATYMAS",
@@ -33,6 +40,11 @@
     "scan_pos": "SKENAVIMO\nPOZICIJA",
     "short_pause": "TRUMPA\nPAUZĖ",
     "long_pause": "ILGA\nPAUZĖ",
-    "end_pos": "GALUTINĖ\nPOZICIJA"
+    "end_pos": "GALUTINĖ\nPOZICIJA",
+
+    "popup_tt_warning": "ĮSPĖJIMAS",
+    "popup_tt_error": "KLAIDA",
+    "popup_tt_incomplete": "NEBAIGTA",
+    "popup_tt_passed": "ĮVYKDYTA"
   }
 }

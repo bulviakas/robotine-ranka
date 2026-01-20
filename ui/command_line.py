@@ -13,6 +13,7 @@ class CommandLine():
         self.slot_w  = int(piece_w * (1 - overlap))
         self.slots   = [None] * self.n_slots
         self.sequence_executor = SequenceExecutor()
+        self.app = app
 
         total_w = self.slot_w * self.n_slots + int(piece_w * overlap)
         x0, self.x1  = canvas_x - total_w // 2, canvas_x + total_w // 2
@@ -116,21 +117,21 @@ class CommandLine():
 
         return sequence
     
-    def show_hard_error(self, title, message):
-        ErrorPopup(self.canvas, title, message, level="hard")
+    def show_hard_error(self, message):
+        ErrorPopup(self.app, self.canvas, message, level="hard")
 
-    def show_soft_error(self, title, message):
-        ErrorPopup(self.canvas, title, message, level="soft")
+    def show_soft_error(self, message):
+        ErrorPopup(self.app, self.canvas, message, level="soft")
     
-    def show_incomplete_tasks(self, title, message):
+    def show_incomplete_tasks(self, message):
         def on_ok():
             logger.info("Popup closed")
             self.sequence_executor.recover("Incomplete sequence")
-        ErrorPopup(self.canvas, title, message, level="incomplete", on_ok=on_ok)
+        ErrorPopup(self.app, self.canvas, message, level="incomplete", on_ok=on_ok)
     
     def show_passed(self):
         def on_ok():
             logger.info("Sequence done successfully")
             self.sequence_executor.recover("Sequence passed. Restarting...")
-        ErrorPopup(self.canvas, title="Passed", message="All objectives completed. Good work!", level="Passed", on_ok=on_ok)
+        ErrorPopup(self.papp, self.canvas, message="All objectives completed. Good work!", level="Passed", on_ok=on_ok)
         self.clear()
