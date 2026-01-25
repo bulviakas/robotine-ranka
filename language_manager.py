@@ -62,3 +62,9 @@ class LanguageManager:
     def get(self, key, **kwargs):
         text = self.translations[self.lang].get(key, key)
         return text.format(**kwargs)
+        
+    def unregister_widget(self, widget):
+        self.widgets = [
+            (w, k, kw) for (w, k, kw) in self.widgets
+            if w != widget
+        ]

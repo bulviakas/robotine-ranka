@@ -1,7 +1,7 @@
 import threading
 from ui.error_popup import ErrorPopup
 
-def run_sequence(app, executor, sequence, lm):
+def run_sequence(app, executor, sequence, lang_manager):
     def worker():
         result = executor.execute(sequence)
 
@@ -9,31 +9,31 @@ def run_sequence(app, executor, sequence, lm):
             if result.status == "hard_error":
                 ErrorPopup(
                     app,
-                    lm.get("error_hard_body", reason=result.hard_error_reason),
+                    lang_manager.get("popup_error_hard_body", reason=result.hard_error_reason),
                     level="hard"
                 )
 
             elif result.status == "incomplete":
                 ErrorPopup(
                     app,
-                    lm.get(
+                    lang_manager.get(
                         "error_incomplete_body",
-                        tasks=", ".join(result.missing_tasks)
+                        tasks="\n".join(f"- {t.capitalize()} station not visited"
+                                        for t in result.missing_tasks)
                     ),
-                    level="incomplete",
-                    on_ok=lambda: executor.recover("Incomplete sequence")
+                    level="incomplete"
                 )
 
             elif result.status == "soft_error":
                 ErrorPopup(
                     app,
-                    lm.get("error_soft_body"),
+                    lang_manager.get("error_soft_body"),
                     level="soft"
                 )
             elif result.status == "passed":
                 ErrorPopup(
                     app, 
-                    lm.get("passed_body"),
+                    lang_manager.get("passed_body"),
                     level="passed"
                 )
 

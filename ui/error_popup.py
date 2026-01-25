@@ -37,21 +37,21 @@ class ErrorPopup(tk.Toplevel):
         panel_bg = BLACK
         border_outer = "#2a2a2a"
 
-        canvas = tk.Canvas(
+        self.canvas = tk.Canvas(
             self,
             width=sw,
             height=sh,
             bg=BLACK,
             highlightthickness=0
         )
-        canvas.pack(fill="both", expand=True)
+        self.canvas.pack(fill="both", expand=True)
 
         pw, ph = 560, 340
         px = (sw - pw) // 2
         py = (sh - ph) // 2
         
         # Fullscreen semi-transparent background
-        canvas.create_rectangle(
+        self.canvas.create_rectangle(
             0, 0, sw, sh,
             fill=BLACK,
             stipple="gray25",
@@ -59,7 +59,7 @@ class ErrorPopup(tk.Toplevel):
         )
 
         # Popup shadow
-        canvas.create_rectangle(
+        self.canvas.create_rectangle(
             px + 8, py + 8,
             px + pw + 8, py + ph + 8,
             fill=BLACK,
@@ -68,7 +68,7 @@ class ErrorPopup(tk.Toplevel):
         )
 
         # Block outline
-        canvas.create_rectangle(
+        self.canvas.create_rectangle(
             px - 6, py - 6,
             px + pw + 6, py + ph + 6,
             fill=border_outer,
@@ -76,7 +76,7 @@ class ErrorPopup(tk.Toplevel):
         )
 
         # Error block
-        canvas.create_rectangle(
+        self.canvas.create_rectangle(
             px, py,
             px + pw, py + ph,
             fill=panel_bg,
@@ -84,7 +84,7 @@ class ErrorPopup(tk.Toplevel):
         )
 
         # Title background
-        canvas.create_rectangle(
+        self.canvas.create_rectangle(
             px, py,
             px + pw, py + 64,
             fill=accent,
@@ -92,17 +92,17 @@ class ErrorPopup(tk.Toplevel):
         )
 
         # Title
-        canvas.title = canvas.create_text(
+        self.canvas.title = self.canvas.create_text(
             px + pw // 2,
             py + 32,
             text=title_text,
             fill=WHITE,
             font=("Arial", 24, "bold")
         )
-        self.app.lang_manager.register_widget(canvas, title_text, item_id=canvas.title)
+        self.app.lang_manager.register_widget(self.canvas, title_text, item_id=self.canvas.title)
 
         # Message
-        canvas.create_text(
+        self.canvas.create_text(
             px + pw // 2,
             py + 150,
             text=message,
@@ -117,7 +117,7 @@ class ErrorPopup(tk.Toplevel):
         btn_x = px + pw // 2
         btn_y = py + ph - 70
 
-        btn_border = canvas.create_rectangle(
+        btn_border = self.canvas.create_rectangle(
             btn_x - btn_w // 2 - 2,
             btn_y - btn_h // 2 - 2,
             btn_x + btn_w // 2 + 2,
@@ -126,7 +126,7 @@ class ErrorPopup(tk.Toplevel):
             outline=""
         )
 
-        btn_rect = canvas.create_rectangle(
+        btn_rect = self.canvas.create_rectangle(
             btn_x - btn_w // 2,
             btn_y - btn_h // 2,
             btn_x + btn_w // 2,
@@ -135,7 +135,7 @@ class ErrorPopup(tk.Toplevel):
             outline=""
         )
 
-        btn_text = canvas.create_text(
+        btn_text = self.canvas.create_text(
             btn_x,
             btn_y,
             text="OK",
@@ -144,9 +144,12 @@ class ErrorPopup(tk.Toplevel):
         )
 
         for item in (btn_border, btn_rect, btn_text):
-            canvas.tag_bind(item, "<Button-1>", self.close)
+            self.canvas.tag_bind(item, "<Button-1>", self.close)
 
     def close(self, event=None):
+
+        self.app.lang_manager.unregister_widget(self.canvas)
+
         self.grab_release()
         self.destroy()
 
