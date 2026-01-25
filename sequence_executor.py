@@ -3,6 +3,8 @@ from time import sleep
 from logger import get_logger
 from config import *
 logger = get_logger("Sequence Executor")
+from dataclasses import dataclass
+from typing import Literal, Optional
 
 # All possible hardware paths:
 # 1. Fridge - Home->fridge
@@ -12,6 +14,13 @@ logger = get_logger("Sequence Executor")
 # 5. End    - Scan->home
 # 6. Err_f  - Fridge->home
 # 7. Err_t  - Test->home
+
+@dataclass
+class ExecutionResult:
+    status: Literal["passed", "soft_error", "incomplete", "hard_error"]
+    soft_errors: list[str]
+    missing_tasks: list[str]
+    hard_error_reason: Optional[str] = None
 
 class SequenceExecutor:
     def __init__(self):
@@ -177,16 +186,12 @@ class SequenceExecutor:
 
                 if action != expected:
                     self.recover(f"Expected {expected}, got {action}")
-                    if on_hard_error:
-                        on_hard_error(
-                            message=(
-                                f"Invalid movement.\n\n"
-                                f"Expected: {expected}\n"
-                                f"Got: {action}\n\n"
-                                f"Robot recovered safely."
-                            )
-                        )
-                    return
+                    return ExecutionResult(
+                        status="hard_error",
+                        soft_errors=soft_errors,
+                        missing_tasks=[],
+                        hard_error_reason=f"{expected} → {action}"
+                    )
 
                 getattr(self, action)()
                 if action in ROBOT_POSITIONS:
@@ -198,11 +203,12 @@ class SequenceExecutor:
             if action in {"strong_shake", "weak_shake"}:
                 if self.current_position != "TEST":
                     self.recover("Shake outside TEST zone")
-                    if on_hard_error:
-                        on_hard_error(
-                            message="Shake attempted outside TEST zone."
-                        )
-                    return
+                    return ExecutionResult(
+                        status="hard_error",
+                        soft_errors=soft_errors,
+                        missing_tasks=[],
+                        hard_error_reason="shake_outside_test"
+                    )
                 self._execute_action(action)
                 shake_performed = True
 
@@ -228,23 +234,18 @@ class SequenceExecutor:
             name for name, done in self.tasks_completed.items() if not done
         ]
         if missing_tasks:
-            if on_incomplete_task:
-                on_incomplete_task(
-                    message=(
-                        "The sequence finished, but not all required tasks were completed:\n\n"
-                        + "\n".join(f"- {task.capitalize()} station not visited" for task in missing_tasks)
-                    )
-                )
-            return
+            return ExecutionResult(
+                status="incomplete",
+                soft_errors=soft_errors,
+                missing_tasks=missing_tasks
+            )
 
 
         if soft_errors:
-            if on_soft_error:
-                on_soft_error(
-                    message=(
-                        "Sequence completed, but issues were detected:\n\n"
-                        + "\n".join(f"- {e}" for e in soft_errors)
-                    )
-                )
+            return ExecutionResult(
+                status="soft_error",
+                soft_errors=soft_errors,
+                missing_tasks=[]
+            )
         else:
-            self.passed(on_passed=on_passed)
+            return ExecutionResult("passed", [], [])

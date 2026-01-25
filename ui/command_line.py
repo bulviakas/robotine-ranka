@@ -2,8 +2,10 @@ from config import *
 from utils import load_svg_img
 from logger import get_logger, setLoggerLevel
 from logging import INFO
-from sequence_executor import SequenceExecutor
+from sequence_executor import SequenceExecutor, ExecutionResult
 from ui.error_popup import ErrorPopup
+from ui.result_handler import run_sequence
+import threading
 logger = get_logger("Command Line")
 setLoggerLevel(logger, INFO)
 
@@ -14,6 +16,7 @@ class CommandLine():
         self.slots   = [None] * self.n_slots
         self.sequence_executor = SequenceExecutor()
         self.app = app
+        self.lang_manager = app.lang_manager
 
         total_w = self.slot_w * self.n_slots + int(piece_w * overlap)
         x0, self.x1  = canvas_x - total_w // 2, canvas_x + total_w // 2
@@ -107,31 +110,6 @@ class CommandLine():
             sequence.append(action_name)
 
         logger.info(f"Final sequence: {sequence}")
-        self.sequence_executor.execute(
-            sequence=sequence,
-            on_hard_error=self.show_hard_error,
-            on_soft_error=self.show_soft_error,
-            on_incomplete_task=self.show_incomplete_tasks,
-            on_passed=self.show_passed
-        )
+        run_sequence(self.app, self.sequence_executor, sequence, self.lang_manager)
 
         return sequence
-    
-    def show_hard_error(self, message):
-        ErrorPopup(self.app, self.canvas, message, level="hard")
-
-    def show_soft_error(self, message):
-        ErrorPopup(self.app, self.canvas, message, level="soft")
-    
-    def show_incomplete_tasks(self, message):
-        def on_ok():
-            logger.info("Popup closed")
-            self.sequence_executor.recover("Incomplete sequence")
-        ErrorPopup(self.app, self.canvas, message, level="incomplete", on_ok=on_ok)
-    
-    def show_passed(self):
-        def on_ok():
-            logger.info("Sequence done successfully")
-            self.sequence_executor.recover("Sequence passed. Restarting...")
-        ErrorPopup(self.papp, self.canvas, message="All objectives completed. Good work!", level="Passed", on_ok=on_ok)
-        self.clear()

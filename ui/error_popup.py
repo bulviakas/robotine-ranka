@@ -4,11 +4,10 @@ from config import WHITE, BLACK
 # TODO translate all popups
 
 class ErrorPopup(tk.Toplevel):
-    def __init__(self, app, parent, message, level="hard", on_ok=None):
-        super().__init__(parent)
+    def __init__(self, app, message, *, level="hard", on_ok=None):
+        super().__init__(app.root)
 
         self.app = app
-        self.parent = parent
         self.level = level
         self.on_ok = on_ok
 

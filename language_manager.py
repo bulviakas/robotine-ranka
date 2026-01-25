@@ -58,3 +58,7 @@ class LanguageManager:
 
         else:
             logger.error(f"Unsupported widget type for {widget} with key {key}")
+
+    def get(self, key, **kwargs):
+        text = self.translations[self.lang].get(key, key)
+        return text.format(**kwargs)
