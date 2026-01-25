@@ -9,6 +9,7 @@ def run_sequence(app, executor, sequence, lang_manager):
             if result.status == "hard_error":
                 ErrorPopup(
                     app,
+                    # TODO fix the reason output
                     lang_manager.get("popup_error_hard_body", reason=result.hard_error_reason),
                     level="hard"
                 )
@@ -16,8 +17,9 @@ def run_sequence(app, executor, sequence, lang_manager):
             elif result.status == "incomplete":
                 ErrorPopup(
                     app,
+                    # FIXME "station not visited" translation
                     lang_manager.get(
-                        "error_incomplete_body",
+                        "popup_error_incomplete_body",
                         tasks="\n".join(f"- {t.capitalize()} station not visited"
                                         for t in result.missing_tasks)
                     ),
@@ -27,13 +29,14 @@ def run_sequence(app, executor, sequence, lang_manager):
             elif result.status == "soft_error":
                 ErrorPopup(
                     app,
-                    lang_manager.get("error_soft_body"),
+                    # TODO display the list of missing tasks
+                    lang_manager.get("popup_error_soft_body"),
                     level="soft"
                 )
             elif result.status == "passed":
                 ErrorPopup(
                     app, 
-                    lang_manager.get("passed_body"),
+                    lang_manager.get("popup_passed_body"),
                     level="passed"
                 )
 
