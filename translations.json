@@ -24,9 +24,14 @@
     "popup_tt_passed": "PASSED",
 
     "popup_error_hard_body": "The robot detected an invalid or unsafe operation.\n\nReason:\n{reason}\n\nThe system has recovered to a safe state.",
-    "popup_error_incomplete_body": "Seka baigta, tačiau ne visos būtinos užduotys buvo atliktos:\n\n{tasks}",
+    "popup_error_incomplete_body": "The sequence finished, but not all required tasks were completed:\n\n{tasks}",
     "popup_error_soft_body": "The sequence completed, but issues were detected that may affect the result.",
-    "popup_passed_body": "All objectives were completed successfully.\nGood work."
+    "popup_passed_body": "All objectives were completed successfully.\nGood work.",
+
+    "incomplete_task_fridge": "Fridge station not visited",
+    "incomplete_task_test": "Testing station not visited",
+    "incomplete_task_scan": "Scanning station not visited",
+    "incomplete_task_end": "End position not reached"
   },
   "LT": {
     "play_btn": "ŽAISTI",
@@ -55,6 +60,11 @@
     "popup_error_hard_body": "Aptiktas neteisingas judesys ir robotas sustabdytas saugumo sumetimais.\n\nInformacija:\n{reason}",
     "popup_error_incomplete_body": "Seka baigta, tačiau ne visos būtinos užduotys buvo atliktos:\n\n{tasks}",
     "popup_error_soft_body": "Seka buvo įvykdyta, tačiau aptikti neatitikimai, galintys paveikti rezultatą.",
-    "popup_passed_body": "Visi tikslai sėkmingai įvykdyti.\nPuikus darbas."
+    "popup_passed_body": "Visi tikslai sėkmingai įvykdyti.\nPuikus darbas.",
+
+    "incomplete_task_fridge": "Neaplankytas Šaldytuvas",
+    "incomplete_task_test": "Praleista Testavimo zona",
+    "incomplete_task_scan": "Neaplankyta Skenavimo zona",
+    "incomplete_task_end": "Nepasiekta Galutinė pozicija"
   }
 }

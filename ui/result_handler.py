@@ -15,13 +15,15 @@ def run_sequence(app, executor, sequence, lang_manager):
                 )
 
             elif result.status == "incomplete":
+                tasks_text = "\n".join(
+                    f"- {lang_manager.get(f'incomplete_task_{task}')}"
+                    for task in result.missing_tasks
+)
                 ErrorPopup(
                     app,
-                    # FIXME "station not visited" translation
                     lang_manager.get(
                         "popup_error_incomplete_body",
-                        tasks="\n".join(f"- {t.capitalize()} station not visited"
-                                        for t in result.missing_tasks)
+                        tasks=tasks_text
                     ),
                     level="incomplete"
                 )
