@@ -2,9 +2,9 @@ from config import *
 from utils import load_svg_img
 from logger import get_logger, setLoggerLevel
 from logging import INFO
-from sequence_executor import SequenceExecutor, ExecutionResult
+from hardware.sequence_executor import SequenceExecutor, ExecutionResult
 from ui.error_popup import ErrorPopup
-from ui.result_handler import run_sequence
+from hardware.result_handler import run_sequence
 import threading
 logger = get_logger("Command Line")
 setLoggerLevel(logger, INFO)

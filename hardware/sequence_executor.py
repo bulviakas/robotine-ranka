@@ -2,9 +2,8 @@ import RPi.GPIO as GPIO
 from time import sleep
 from logger import get_logger
 from config import *
+from hardware.result_handler import ExecutionResult
 logger = get_logger("Sequence Executor")
-from dataclasses import dataclass
-from typing import Literal, Optional
 
 # All possible hardware paths:
 # 1. Fridge - Home->fridge
@@ -14,13 +13,6 @@ from typing import Literal, Optional
 # 5. End    - Scan->home
 # 6. Err_f  - Fridge->home
 # 7. Err_t  - Test->home
-
-@dataclass
-class ExecutionResult:
-    status: Literal["passed", "soft_error", "incomplete", "hard_error"]
-    soft_errors: list[str]
-    missing_tasks: list[str]
-    hard_error_reason: Optional[str] = None
 
 class SequenceExecutor:
     def __init__(self):
@@ -92,7 +84,6 @@ class SequenceExecutor:
         self.tasks_completed["end"] = True
 
     def passed(self, on_passed=None):
-        #self._run_action(PASS_LED_PIN, 3)
         logger.info("Sequence passed")
         if on_passed:
             on_passed()
@@ -157,7 +148,7 @@ class SequenceExecutor:
     def _record(self, event):
         self.events.append(event)
 
-    def execute(self, sequence, on_hard_error=None, on_soft_error=None, on_incomplete_task=None, on_passed=None):
+    def execute(self, sequence, on_hard_error=None):
         logger.info("Starting sequence execution")
 
         pos_index = 0
