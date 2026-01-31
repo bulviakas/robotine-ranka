@@ -42,6 +42,8 @@ class SequenceExecutor:
     def _run_action(self, pin, duration):
         if self.abort:
             return
+        GPIO.output(pin, GPIO.LOW)
+        sleep(0.3)
         GPIO.output(pin, GPIO.HIGH)
         sleep(duration)
 
