@@ -14,7 +14,7 @@ TT_ICON_PATH = Path("assets/tutorial_icon.svg")
 HOME_ICON_PATH = Path("assets/home_icon.svg")
 START_BTN_PATH = Path("assets/start_btn.svg")
 CONTEXT_VIDEO_PATH = Path("assets/Fish-spinning.mp4")
-INSTRUCTIONS_VIDEO_PATH = Path("assets/roach.gif")
+INSTRUCTIONS_VIDEO_PATH = Path("assets/Puzzle_app_tutorial_video.mp4")
 
 # CONSTANTS
 OVERLAP_FRAC        = 0.2
@@ -73,7 +73,7 @@ ROBOT_POSITIONS = {
 }
 
 CONTEXT_VIDEO_SIZE = [480, 854] # Change when importing the actual video
-INSTRUCTIONS_VIDEO_SIZE = [360, 480]
+INSTRUCTIONS_VIDEO_SIZE = [720, 1280]
 
 LANGUAGES = ["LT", "EN"]
 
