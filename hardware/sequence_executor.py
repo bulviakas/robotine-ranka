@@ -50,17 +50,18 @@ class SequenceExecutor:
             if time() - start > timeout:
                 raise TimeoutError("Robot did not signal completion")
             sleep(0.01)
+        logger.info("Feedback received")
+        return
 
     def _run_action(self, pin, min_delay=0.1):
         if self.abort:
             return
+        
+        GPIO.output(pin, GPIO.LOW)
+        sleep(min_delay)
         GPIO.output(pin, GPIO.HIGH)
 
-        sleep(min_delay)
-
         self._wait_for_done()
-
-        GPIO.output(pin, GPIO.LOW)
 
         sleep(0.05)
 
