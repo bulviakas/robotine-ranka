@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from time import sleep
+from time import sleep, time
 from logger import get_logger
 from config import *
 from hardware.result_handler import ExecutionResult
@@ -39,35 +39,52 @@ class SequenceExecutor:
             GPIO.setup(pin, GPIO.OUT)
             GPIO.output(pin, GPIO.HIGH)
 
-    def _run_action(self, pin, duration):
+        GPIO.setup(IS_ACTION_FINISHED_PIN, GPIO.IN)
+
+    def _wait_for_done(self, timeout=1000):
+        start = time()
+        logger.info("Waiting for feedback...")
+        while not GPIO.input(IS_ACTION_FINISHED_PIN):
+            if self.abort:
+                raise RuntimeError("Execution aborted")
+            if time() - start > timeout:
+                raise TimeoutError("Robot did not signal completion")
+            sleep(0.01)
+
+    def _run_action(self, pin, min_delay=0.1):
         if self.abort:
             return
-        GPIO.output(pin, GPIO.LOW)
-        sleep(0.3)
         GPIO.output(pin, GPIO.HIGH)
-        sleep(duration)
+
+        sleep(min_delay)
+
+        self._wait_for_done()
+
+        GPIO.output(pin, GPIO.LOW)
+
+        sleep(0.05)
 
     def fridge_pos(self):
         self.tasks_completed["fridge"] = True
         logger.info("Moving to Fridge position...")
-        self._run_action(FRIDGE_POS_PIN, TO_FRIDGE_DURATION)
+        self._run_action(FRIDGE_POS_PIN)
 
     def test_pos(self):
         logger.info("Moving to Test position...")
-        self._run_action(TEST_POS_PIN, TO_TEST_DURATION)
+        self._run_action(TEST_POS_PIN)
         self.tasks_completed["test"] = True
 
     def strong_shake(self):
         logger.info("Performing Strong Shake...")
-        self._run_action(SHAKE_PIN, SHAKE_DURATION)
+        self._run_action(SHAKE_PIN)
 
     def weak_shake(self):
         logger.info("Performing Weak Shake...")
-        self._run_action(SHAKE_PIN, SHAKE_DURATION)
+        self._run_action(SHAKE_PIN)
 
     def scan_pos(self):
         logger.info("Moving to Scan position...")
-        self._run_action(SCAN_POS_PIN, TO_SCAN_DURATION)
+        self._run_action(SCAN_POS_PIN)
         self.tasks_completed["scan"] = True
 
     def long_pause(self):
@@ -80,7 +97,7 @@ class SequenceExecutor:
 
     def end_pos(self):
         logger.info("Moving to End position")
-        self._run_action(END_POS_PIN, RECOVER_FROM_SCAN_DURATION)
+        self._run_action(END_POS_PIN)
         self.tasks_completed["end"] = True
 
     def passed(self, on_passed=None):
@@ -91,18 +108,13 @@ class SequenceExecutor:
     
     def error_fridge(self):
         logger.info("Homing from Fridge position...")
-        self._run_action(ERR_FRIDGE_PIN, RECOVER_FROM_FRIDGE_DURATION)
+        self._run_action(ERR_FRIDGE_PIN)
         self.current_position = "HOME"
 
     def error_test(self):
         logger.info("Homing from Test Postion...")
-        self._run_action(ERR_TEST_PIN, RECOVER_FROM_TEST_DURATION)
+        self._run_action(ERR_TEST_PIN)
         self.current_position = "HOME"
-
-    def general_error(self):
-        for i in range(3):
-            self._run_action(ERROR_LED_PIN, 0.5)
-            sleep(0.5)
 
     def right_sequence(self):
         """Runs the full correct robot workflow."""
