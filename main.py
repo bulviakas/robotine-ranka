@@ -14,7 +14,6 @@ class PuzzleApp:
         logger.info("Initializing PuzzleApp...")
         self.root = tk.Tk()
         self.root.attributes("-fullscreen", True)
-        #self.root.geometry("800x480+0+0")
         self.root.lift()
         self.root.attributes("-topmost", True)
         self.root.after_idle(self.root.attributes, "-topmost", False)
@@ -69,10 +68,6 @@ class PuzzleApp:
 
     def show_page(self, page):
         """Raise the specified page to the front."""
-        if page == self.context_page:
-            self.context_video.restart()
-        else:
-            self.context_video.stop()
         if page == self.instructions_page:
             self.instructions_video.restart()
         else:

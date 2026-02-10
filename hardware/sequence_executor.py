@@ -116,21 +116,6 @@ class SequenceExecutor:
         logger.info("Homing from Test Postion...")
         self._run_action(ERR_TEST_PIN)
         self.current_position = "HOME"
-
-    def right_sequence(self):
-        """Runs the full correct robot workflow."""
-        self.fridge_pos()
-        self.test_pos()
-        self.strong_shake()
-        self.scan_pos()
-        self.long_pause()
-        self.end_pos()
-        self.passed()
-
-    def cleanup(self):
-        """Cleanup GPIO state."""
-        GPIO.cleanup()
-        logger.info("GPIO cleanup done")
     
     def _execute_action(self, action):
         getattr(self, action)()

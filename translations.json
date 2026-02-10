@@ -7,6 +7,7 @@
     "instructions": "Drag blocks from the palette into the empty slots to build a sequence. \n\nBlocks are executed from top to bottom, exactly in the order you place them. \n\nSome actions only work in specific zones — if something doesn’t make sense, the system will warn you.",
     "clear_btn": "CLEAR",
     "submit_btn": "SUBMIT",
+    "context": "You are operating an automated testing station inside an industrial production facility.\nThe robotic arm in front of you is part of a controlled workflow designed to move, test, and verify components with precision.\n\nEach action must be executed in the correct order.\nSome steps affect the quality of the final result, while others are critical for safe operation.\nIncorrect sequences can lead to faulty outcomes, interruptions, or forced recovery procedures.\n\nYour task is to construct a valid command sequence and supervise its execution.\nPay attention to the process — the system will respond to both correct and incorrect decisions.",
 
     "start_block": "START",
     "test_pos": "TESTING\nPOSITION",
@@ -42,6 +43,7 @@
     "clear_btn": "IŠVALYTI",
     "submit_btn": "PATEIKTI",
     "start_block": "PRADŽIA",
+    "context_text": "Jūs valdote automatizuotą testavimo stotį pramoninėje gamybos aplinkoje.\nPrieš jus esanti roboto ranka yra dalis kontroliuojamo proceso, skirto komponentų perkėlimui, testavimui ir patikrai.\n\nKiekvienas veiksmas turi būti atliekamas teisinga tvarka.\nKai kurie žingsniai daro įtaką galutinei kokybei, kiti yra būtini saugiam darbui.\nNetinkamos sekos gali sukelti neteisingus rezultatus, proceso nutraukimą arba priverstines atkūrimo procedūras.\n\nJūsų užduotis — sudaryti teisingą komandų seką ir stebėti jos vykdymą.\nSistema reaguos tiek į teisingus, tiek į klaidingus sprendimus.",
 
     "test_pos": "TESTAVIMO\nPOZICIJA",
     "weak_shake": "SILPNAS\nPAKRATYMAS",

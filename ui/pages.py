@@ -21,7 +21,7 @@ def setup_start_page(self):
     play_tag = "play_btn"
     play_img = load_svg_img(self, START_BTN_PATH, (self.self_w / 2, self.self_h / 5), COLOUR_PALETTE[2])
 
-    play_btn = create_button(
+    create_button(
         self, canvas,
         self.lang_manager, 
         img=play_img, 
@@ -32,7 +32,7 @@ def setup_start_page(self):
         command=lambda e: self.show_page(self.context_page)
         )
     
-    lang_dd = LanguageDropdown(canvas, languages=LANGUAGES, x=self.self_w * 0.95, y=self.self_h * MENU_TOP_FRAC - 5, command=lambda lang: self.lang_manager.set_language(lang))
+    LanguageDropdown(canvas, languages=LANGUAGES, x=self.self_w * 0.95, y=self.self_h * MENU_TOP_FRAC - 5, command=lambda lang: self.lang_manager.set_language(lang))
 
 def setup_context_page(self):
 
@@ -65,14 +65,17 @@ def setup_context_page(self):
     video_h = self.self_h * 0.75
     video_w = CONTEXT_VIDEO_SIZE[1] * (video_h / CONTEXT_VIDEO_SIZE[0])
 
-    self.context_video = VideoPlayer(
-        self.context_video_frame,
-        video_path=CONTEXT_VIDEO_PATH,
-        width=int(video_w),
-        height=int(video_h)
+    # TEXT BLOCK
+    canvas.context_block = canvas.create_text(
+        int(self.self_w / 2), 
+        int(self.self_h * 0.425), 
+        anchor="center", 
+        fill=WHITE, 
+        font=(MAIN_FONT, 16), 
+        text="", 
+        width=video_w
         )
-
-    self.context_video.label.pack()
+    self.lang_manager.register_widget(canvas, "context_text", item_id=canvas.context_block)
 
 def setup_instructions_page(self):
 
@@ -96,7 +99,7 @@ def setup_instructions_page(self):
         tag=self.back_tag,
         command=lambda e: self.show_page(self.context_page),
         text_offset_x=-7
-    )
+    )   
 
     # NEXT Button
     self.play_tag = 'next_btn'
@@ -147,7 +150,7 @@ def setup_instructions_page(self):
         int(self.self_h * 0.425), 
         anchor="w", 
         fill=WHITE, 
-        font=(MAIN_FONT, 14), 
+        font=(MAIN_FONT, 16), 
         text="", 
         width=text_w
         )
