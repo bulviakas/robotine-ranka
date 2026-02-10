@@ -4,7 +4,7 @@
     "start_title": "Explore the World of Robotics!",
     "next_btn": "NEXT",
     "back_btn": "BACK",
-    "instructions": "This is a chunk of text in which the instructions for the game will be displayed. The user will have to read them and not just glance over or skip because that would devalue my horrible writing skills even more and i would be very sad :(",
+    "instructions": "Drag blocks from the palette into the empty slots to build a sequence. \n\nBlocks are executed from top to bottom, exactly in the order you place them. \n\nSome actions only work in specific zones — if something doesn’t make sense, the system will warn you.",
     "clear_btn": "CLEAR",
     "submit_btn": "SUBMIT",
 
@@ -38,7 +38,7 @@
     "start_title": "Pažink Robotikos Pasaulį!",
     "next_btn": "TOLIAU",
     "back_btn": "ATGAL",
-    "instructions": "Čia yra teksto blokas, kuriame bus surašytos trumpos žaidimo instrukcijos. Žaidėjas turės visas jas perskaityti, o ne šiaip peržvelgti ar praleisti, nes tai nuvertintų jau ir taip skurdžius mano rašymo sugebėjimus ir man būtų baisiai liūdna :(",
+    "instructions": "Tempkite blokus iš paletės į tuščias vietas ir sudarykite seką.\n\nBlokai vykdomi iš viršaus į apačią, tokia tvarka, kokia juos sudėsite. \n\nKai kurie veiksmai galimi tik tam tikrose zonose — jei seka neteisinga, sistema apie tai praneš.",
     "clear_btn": "IŠVALYTI",
     "submit_btn": "PATEIKTI",
     "start_block": "PRADŽIA",
