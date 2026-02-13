@@ -43,7 +43,7 @@ class ColorFormatter(logging.Formatter):
 
 
 # Logger Factory
-def get_logger(name: str, level=logging.DEBUG):
+def get_logger(name: str, level=logging.INFO): # Set to DEBUG for testing
     logger = logging.getLogger(name)
     logger.setLevel(level)
     logger.propagate = False
