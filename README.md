@@ -35,3 +35,39 @@ sudo apt install python3-pil python3-pil.imagetk
 sudo apt install python3-opencv
 sudo apt install python3-cairosvg
 ```
+
+## Key Features
+### Hardware-Aware Execution
+
+* Every robot action includes hardware-tuned delays
+
+* A dedicated robot output pin signals when an action is finished
+
+* Prevents command stacking and timing drift
+
+* Designed to work even when robot feedback is temporarily unavailable
+
+### Structured Error System
+
+The executor classifies outcomes into three distinct levels:
+
+* __Hard errors__  -  unsafe or invalid actions (wrong position, illegal shake, hardware failure).
+Execution stops immediately and the robot recovers safely.
+
+* __Soft errors__ - execution completes, but quality is reduced
+(e.g. weak shake, scanning without shaking).
+
+* __Incomplete tasks__ - the sequence ran, but required stations were skipped.
+This state overrides soft errors and prompts the user to acknowledge before the robot homes.
+
+### Gamified Task Logic
+
+Rather than free-form motion:
+
+* The robot must visit required stations
+
+* Certain actions only make sense in specific zones
+
+* Users are subtly guided toward correct behavior through feedback instead of hard restrictions
+
+This makes the system suitable for training, demonstrations, and evaluation scenarios.
