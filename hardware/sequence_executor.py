@@ -41,10 +41,10 @@ class SequenceExecutor:
 
         GPIO.setup(IS_ACTION_FINISHED_PIN, GPIO.IN)
 
-    def _wait_for_done(self, timeout=1000):
+    def _wait_for_done(self, timeout=100):
         start = time()
         logger.info("Waiting for feedback...")
-        while not GPIO.input(IS_ACTION_FINISHED_PIN):
+        while not GPIO.input(IS_ACTION_FINISHED_PIN) or time() - start < 2.1:
             if self.abort:
                 raise RuntimeError("Execution aborted")
             if time() - start > timeout:
