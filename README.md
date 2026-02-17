@@ -71,3 +71,13 @@ Rather than free-form motion:
 * Users are subtly guided toward correct behavior through feedback instead of hard restrictions
 
 This makes the system suitable for training, demonstrations, and evaluation scenarios.
+
+## Visuals
+### Game page:
+![Puzzle App Game Page](./assets/readme/game_page.png)
+
+### Tutorial page:
+![Tutorial Page](./assets/readme/tutorial_page.png)
+
+### Terminal logs (Colour-coded for an enjoyable development process :)):
+![Application Terminal Logs](./assets/readme/terminal_logs.png) 
