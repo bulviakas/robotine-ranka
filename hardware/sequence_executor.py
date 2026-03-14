@@ -3,6 +3,7 @@ from time import sleep, time
 from logger import get_logger
 from config import *
 from hardware.result_handler import ExecutionResult
+import serial
 logger = get_logger("Sequence Executor")
 
 # All possible hardware paths:
@@ -41,6 +42,13 @@ class SequenceExecutor:
 
         GPIO.setup(IS_ACTION_FINISHED_PIN, GPIO.IN)
 
+        self.ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+        sleep(2)
+        self.ser.reset_input_buffer()
+
+    def send_serial_message(self, msg: str):
+        self.ser.write((msg + '\n').encode('utf-8'))
+
     def _wait_for_done(self, timeout=100):
         start = time()
         logger.info("Waiting for feedback...")
@@ -53,7 +61,7 @@ class SequenceExecutor:
         logger.info("Feedback received")
         return
 
-    def _run_action(self, pin, min_delay=0.1):
+    def _run_action(self, pin, led_cmd: str, min_delay=0.1):
         if self.abort:
             return
         
@@ -62,13 +70,14 @@ class SequenceExecutor:
         GPIO.output(pin, GPIO.HIGH)
 
         self._wait_for_done()
+        self.send_serial_message(led_cmd)
 
         sleep(0.05)
 
     def fridge_pos(self):
         self.tasks_completed["fridge"] = True
         logger.info("Moving to Fridge position...")
-        self._run_action(FRIDGE_POS_PIN)
+        self._run_action(FRIDGE_POS_PIN, "FRIDGE")
 
     def test_pos(self):
         logger.info("Moving to Test position...")
@@ -77,28 +86,20 @@ class SequenceExecutor:
 
     def strong_shake(self):
         logger.info("Performing Strong Shake...")
-        self._run_action(SHAKE_PIN)
+        self._run_action(SHAKE_PIN, "STRONG SHAKE")
 
     def weak_shake(self):
         logger.info("Performing Weak Shake...")
-        self._run_action(SHAKE_PIN)
+        self._run_action(SHAKE_PIN, "WEAK SHAKE")
 
     def scan_pos(self):
         logger.info("Moving to Scan position...")
         self._run_action(SCAN_POS_PIN)
         self.tasks_completed["scan"] = True
 
-    def long_pause(self):
-        logger.info("Initiating Long pause...")
-        sleep(3)
-
-    def short_pause(self):
-        logger.info("Initiating Short pause...")
-        sleep(1.5)
-
     def end_pos(self):
         logger.info("Moving to End position")
-        self._run_action(END_POS_PIN)
+        self._run_action(END_POS_PIN, "FINAL")
         self.tasks_completed["end"] = True
 
     def passed(self, on_passed=None):
@@ -141,7 +142,8 @@ class SequenceExecutor:
             case _:
                 logger.warning("Unknown position → emergency stop")
 
-        self.general_error()
+        self._wait_for_done()
+        self.send_serial_message("RESET")
     
     def _record(self, event):
         self.events.append(event)
@@ -174,6 +176,7 @@ class SequenceExecutor:
                     soft_errors.append("Scan performed without shake")
 
                 if action != expected:
+                    self.send_serial_message("ERROR")
                     self.recover(f"Expected {expected}, got {action}")
                     return ExecutionResult(
                         status="hard_error",
