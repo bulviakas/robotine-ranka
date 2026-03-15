@@ -2,10 +2,10 @@
 
 #define NUM_LEDS 20
 #define BRIGHTNESS 200
-#define FRIDGE_PIN 6
+#define FRIDGE_PIN 5
 #define TEST_PIN 7
-#define FINAL_PIN 8
-#define ROBOT_PIN 9
+#define FINAL_PIN 9
+#define ROBOT_PIN 11
 
 CRGB fridge[NUM_LEDS];
 CRGB test_strip[NUM_LEDS];
