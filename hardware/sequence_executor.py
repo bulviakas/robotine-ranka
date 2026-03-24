@@ -42,7 +42,7 @@ class SequenceExecutor:
 
         GPIO.setup(IS_ACTION_FINISHED_PIN, GPIO.IN)
 
-        self.ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+        self.ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
         sleep(2)
         self.ser.reset_input_buffer()
 
@@ -61,7 +61,7 @@ class SequenceExecutor:
         logger.info("Feedback received")
         return
 
-    def _run_action(self, pin, led_cmd: str, min_delay=0.1):
+    def _run_action(self, pin, led_cmd=None, min_delay=0.1):
         if self.abort:
             return
         
@@ -70,7 +70,8 @@ class SequenceExecutor:
         GPIO.output(pin, GPIO.HIGH)
 
         self._wait_for_done()
-        self.send_serial_message(led_cmd)
+        if led_cmd:
+            self.send_serial_message(led_cmd)
 
         sleep(0.05)
 
