@@ -30,8 +30,6 @@ CMD_H_PAD           = 16
 MENU_TOP_FRAC       = 0.08
 GAP_FROM_VIDEO      = 24 #px
 
-# TODO: import better fonts
-
 # Good default fonts: Cascadia Code SemiBold, Segoe UI Black
 MAIN_FONT = "Cascadia Code SemiBold"
 

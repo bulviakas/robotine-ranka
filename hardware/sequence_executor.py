@@ -49,7 +49,7 @@ class SequenceExecutor:
     def send_serial_message(self, msg: str):
         self.ser.write((msg + '\n').encode('utf-8'))
 
-    def _wait_for_done(self, timeout=100):
+    def wait_for_done(self, timeout=100):
         start = time()
         logger.info("Waiting for feedback...")
         while not GPIO.input(IS_ACTION_FINISHED_PIN) or time() - start < 2.1:
@@ -61,7 +61,7 @@ class SequenceExecutor:
         logger.info("Feedback received")
         return
 
-    def _run_action(self, pin, led_cmd=None, min_delay=0.1):
+    def run_action(self, pin, led_cmd=None, min_delay=0.1):
         if self.abort:
             return
         
@@ -69,7 +69,7 @@ class SequenceExecutor:
         sleep(min_delay)
         GPIO.output(pin, GPIO.HIGH)
 
-        self._wait_for_done()
+        self.wait_for_done()
         if led_cmd:
             self.send_serial_message(led_cmd)
 
@@ -78,29 +78,29 @@ class SequenceExecutor:
     def fridge_pos(self):
         self.tasks_completed["fridge"] = True
         logger.info("Moving to Fridge position...")
-        self._run_action(FRIDGE_POS_PIN, "FRIDGE")
+        self.run_action(FRIDGE_POS_PIN, "FRIDGE")
 
     def test_pos(self):
         logger.info("Moving to Test position...")
-        self._run_action(TEST_POS_PIN)
+        self.run_action(TEST_POS_PIN)
         self.tasks_completed["test"] = True
 
     def strong_shake(self):
         logger.info("Performing Strong Shake...")
-        self._run_action(SHAKE_PIN, "STRONG SHAKE")
+        self.run_action(SHAKE_PIN, "STRONG SHAKE")
 
     def weak_shake(self):
         logger.info("Performing Weak Shake...")
-        self._run_action(SHAKE_PIN, "WEAK SHAKE")
+        self.run_action(SHAKE_PIN, "WEAK SHAKE")
 
     def scan_pos(self):
         logger.info("Moving to Scan position...")
-        self._run_action(SCAN_POS_PIN)
+        self.run_action(SCAN_POS_PIN)
         self.tasks_completed["scan"] = True
 
     def end_pos(self):
         logger.info("Moving to End position")
-        self._run_action(END_POS_PIN, "FINAL")
+        self.run_action(END_POS_PIN, "FINAL")
         self.tasks_completed["end"] = True
 
     def passed(self, on_passed=None):
@@ -111,21 +111,20 @@ class SequenceExecutor:
     
     def error_fridge(self):
         logger.info("Homing from Fridge position...")
-        self._run_action(ERR_FRIDGE_PIN)
+        self.run_action(ERR_FRIDGE_PIN)
         self.current_position = "HOME"
 
     def error_test(self):
         logger.info("Homing from Test Postion...")
-        self._run_action(ERR_TEST_PIN)
+        self.run_action(ERR_TEST_PIN)
         self.current_position = "HOME"
     
-    def _execute_action(self, action):
+    def execute_action(self, action):
         getattr(self, action)()
 
         if action in ROBOT_POSITIONS:
             self.current_position = ROBOT_POSITIONS[action]
             logger.debug(f"Position → {self.current_position}")
-
 
     def recover(self, reason):
         logger.error(f"Recovery triggered: {reason}")
@@ -143,13 +142,10 @@ class SequenceExecutor:
             case _:
                 logger.warning("Unknown position → emergency stop")
 
-        self._wait_for_done()
+        self.wait_for_done()
         self.send_serial_message("RESET")
-    
-    def _record(self, event):
-        self.events.append(event)
 
-    def execute(self, sequence, on_hard_error=None):
+    def run(self, sequence, on_hard_error=None):
         logger.info("Starting sequence execution")
 
         pos_index = 0
@@ -207,7 +203,7 @@ class SequenceExecutor:
                         missing_tasks=[],
                         hard_error_reason="shake_outside_test"
                     )
-                self._execute_action(action)
+                self.execute_action(action)
                 shake_performed = True
 
                 if action == "weak_shake":
@@ -216,7 +212,7 @@ class SequenceExecutor:
                 continue
 
             if action in {"long_pause", "short_pause"} and self.current_position == "SCAN":
-                self._execute_action(action)
+                self.execute_action(action)
                 if action == "short_pause" and not scan_pause_performed:
                     logger.warning("Scan break too short")
                     soft_errors.append("short_pause")
@@ -239,13 +235,13 @@ class SequenceExecutor:
         missing_tasks = [
             name for name, done in self.tasks_completed.items() if not done
         ]
+        
         if missing_tasks:
             return ExecutionResult(
                 status="incomplete",
                 soft_errors=soft_errors,
                 missing_tasks=missing_tasks
             )
-
 
         if soft_errors:
             return ExecutionResult(

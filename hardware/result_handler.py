@@ -27,7 +27,7 @@ def run_sequence(app, executor, sequence, lang_manager):
                 tasks_text = "\n".join(
                     f"- {lang_manager.get(f'incomplete_task_{task}')}"
                     for task in result.missing_tasks
-)
+                    )
                 ErrorPopup(
                     app,
                     lang_manager.get(
@@ -44,7 +44,6 @@ def run_sequence(app, executor, sequence, lang_manager):
                 )
                 ErrorPopup(
                     app,
-                    # TODO display the list of soft errors
                     lang_manager.get(
                         "popup_error_soft_body",
                         issues=soft_error_text
