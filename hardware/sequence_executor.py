@@ -155,6 +155,7 @@ class SequenceExecutor:
         pos_index = 0
         soft_errors = []
         shake_performed = False
+        scan_pause_performed = False
         self.abort = False
         self.tasks_completed = {
             "fridge": False,
@@ -174,7 +175,11 @@ class SequenceExecutor:
 
                 if action == "scan_pos" and not shake_performed:
                     logger.warning("Scan performed without prior shake")
-                    soft_errors.append("Scan performed without shake")
+                    soft_errors.append("no_shake")
+
+                if action == "end_pos" and not scan_pause_performed:
+                    logger.warning("No scaning break")
+                    soft_errors.append("no_scan_pause")
 
                 if action != expected:
                     self.send_serial_message("ERROR")
@@ -207,9 +212,17 @@ class SequenceExecutor:
 
                 if action == "weak_shake":
                     logger.warning("Shake too weak")
-                    soft_errors.append("Shake too weak")
-
+                    soft_errors.append("weak_shake")
                 continue
+
+            if action in {"long_pause", "short_pause"} and self.current_position == "SCAN":
+                self._execute_action(action)
+                if action == "short_pause" and not scan_pause_performed:
+                    logger.warning("Scan break too short")
+                    soft_errors.append("short_pause")
+
+                scan_pause_performed = True
+                continue                
 
             try:
                 getattr(self, action)()

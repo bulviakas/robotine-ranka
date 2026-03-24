@@ -32,7 +32,12 @@
     "incomplete_task_fridge": "Fridge station not visited",
     "incomplete_task_test": "Testing station not visited",
     "incomplete_task_scan": "Scanning station not visited",
-    "incomplete_task_end": "End position not reached"
+    "incomplete_task_end": "End position not reached",
+
+    "soft_error_no_shake": "Unmixed samples",
+    "soft_error_weak_shake": "Samples not fully mixed",
+    "soft_error_no_scan_pause": "Specimens moved before starting scan",
+    "soft_error_short_pause": "Failed to scan swatches fully"
   },
   "LT": {
     "play_btn": "ŽAISTI",
@@ -67,6 +72,11 @@
     "incomplete_task_fridge": "Neaplankytas Šaldytuvas",
     "incomplete_task_test": "Praleista Testavimo zona",
     "incomplete_task_scan": "Neaplankyta Skenavimo zona",
-    "incomplete_task_end": "Nepasiekta Galutinė pozicija"
+    "incomplete_task_end": "Nepasiekta Galutinė pozicija",
+
+    "soft_error_no_shake": "Neišmaišyti mėginiai",
+    "soft_error_weak_shake": "Nepakankamai sumaišyti mėginiai",
+    "soft_error_no_scan_pause": "Paletė patraukta prieš skenavimo pradžią",
+    "soft_error_short_pause": "Nespėta pabaigti skenavimo"
   }
 }
