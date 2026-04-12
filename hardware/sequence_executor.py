@@ -29,8 +29,7 @@ class SequenceExecutor:
             ERR_FRIDGE_PIN,
             END_POS_PIN,
             ERR_TEST_PIN,
-            ERROR_LED_PIN,
-            PASS_LED_PIN
+            ERROR_LED_PIN
         ]
 
         GPIO.setmode(GPIO.BCM)
@@ -39,6 +38,9 @@ class SequenceExecutor:
         for pin in self.pins:
             GPIO.setup(pin, GPIO.OUT)
             GPIO.output(pin, GPIO.HIGH)
+
+        sleep(3)
+        GPIO.output(ERROR_LED_PIN, GPIO.LOW)
 
         GPIO.setup(IS_ACTION_FINISHED_PIN, GPIO.IN)
 
