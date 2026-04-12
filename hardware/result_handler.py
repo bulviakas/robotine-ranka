@@ -20,7 +20,8 @@ def run_sequence(app, executor, sequence, lang_manager):
                     app,
                     # TODO fix the reason output
                     lang_manager.get("popup_error_hard_body", reason=result.hard_error_reason),
-                    level="hard"
+                    level="hard",
+                    on_ok=executor.recover("Hard Error")
                 )
 
             elif result.status == "incomplete":
@@ -34,7 +35,8 @@ def run_sequence(app, executor, sequence, lang_manager):
                         "popup_error_incomplete_body",
                         tasks=tasks_text
                     ),
-                    level="incomplete"
+                    level="incomplete",
+                    on_ok=executor.recover("Incomplete sequence")
                 )
 
             elif result.status == "soft_error":
@@ -48,13 +50,15 @@ def run_sequence(app, executor, sequence, lang_manager):
                         "popup_error_soft_body",
                         issues=soft_error_text
                         ),
-                    level="soft"
+                    level="soft",
+                    on_ok=executor.recover("End of execution")
                 )
             elif result.status == "passed":
                 ErrorPopup(
                     app, 
                     lang_manager.get("popup_passed_body"),
-                    level="passed"
+                    level="passed",
+                    on_ok=executor.recover("End of execution")
                 )
 
         app.root.after(0, handle)
