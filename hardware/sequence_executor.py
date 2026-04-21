@@ -54,14 +54,18 @@ class SequenceExecutor:
     def wait_for_done(self, timeout=100):
         start = time()
         logger.info("Waiting for feedback...")
-        while not GPIO.input(IS_ACTION_FINISHED_PIN) or time() - start < 2.1:
+
+        while not GPIO.input(IS_ACTION_FINISHED_PIN):
             if self.abort:
                 raise RuntimeError("Execution aborted")
             if time() - start > timeout:
                 raise TimeoutError("Robot did not signal completion")
             sleep(0.01)
+
         logger.info("Feedback received")
-        return
+
+        while GPIO.input(IS_ACTION_FINISHED_PIN):
+            sleep(0.01)
 
     def run_action(self, pin, led_cmd=None, min_delay=0.1):
         if self.abort:
