@@ -57,8 +57,10 @@ class SequenceExecutor:
 
         while GPIO.input(IS_ACTION_FINISHED_PIN):
             if self.abort:
+                self.recover('Execution aborted')
                 raise RuntimeError("Execution aborted")
             if time() - start > timeout:
+                self.recover('Timeout')
                 raise TimeoutError("Robot did not signal completion")
             sleep(0.01)
 
@@ -140,7 +142,7 @@ class SequenceExecutor:
 
     def recover(self, reason):
         logger.error(f"Recovery triggered: {reason}")
-        self.abort = True
+        self.abort = False
 
         match self.current_position:
             case "FRIDGE":
@@ -154,7 +156,6 @@ class SequenceExecutor:
             case _:
                 logger.warning("Unknown position → emergency stop")
 
-        self.wait_for_done()
         self.send_serial_message("RESET")
 
     def run(self, sequence, on_hard_error=None):
@@ -165,6 +166,7 @@ class SequenceExecutor:
         shake_performed = False
         scan_pause_performed = False
         self.abort = False
+        self.current_position = "HOME"
         self.tasks_completed = {
             "fridge": False,
             "test": False,
