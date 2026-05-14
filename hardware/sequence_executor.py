@@ -42,7 +42,7 @@ class SequenceExecutor:
         sleep(3)
         GPIO.output(ERROR_LED_PIN, GPIO.LOW)
 
-        GPIO.setup(IS_ACTION_FINISHED_PIN, GPIO.IN)
+        GPIO.setup(IS_ACTION_FINISHED_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         self.ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
         sleep(2)
@@ -55,7 +55,7 @@ class SequenceExecutor:
         start = time()
         logger.info("Waiting for feedback...")
 
-        while not GPIO.input(IS_ACTION_FINISHED_PIN):
+        while GPIO.input(IS_ACTION_FINISHED_PIN):
             if self.abort:
                 raise RuntimeError("Execution aborted")
             if time() - start > timeout:
@@ -64,7 +64,7 @@ class SequenceExecutor:
 
         logger.info("Feedback received")
 
-        while GPIO.input(IS_ACTION_FINISHED_PIN):
+        while not GPIO.input(IS_ACTION_FINISHED_PIN):
             sleep(0.01)
 
     def run_action(self, pin, led_cmd=None, min_delay=0.1):
@@ -90,6 +90,12 @@ class SequenceExecutor:
         logger.info("Moving to Test position...")
         self.run_action(TEST_POS_PIN)
         self.tasks_completed["test"] = True
+    
+    def long_pause(self):
+        logger.info("Performing Long Pause...")
+
+    def short_pause(self):
+        logger.info("Performing Short Pause...")
 
     def strong_shake(self):
         logger.info("Performing Strong Shake...")

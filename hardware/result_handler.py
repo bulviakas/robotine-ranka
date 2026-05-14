@@ -12,7 +12,7 @@ class ExecutionResult:
 
 def run_sequence(app, executor, sequence, lang_manager):
     def worker():
-        result = executor.execute(sequence)
+        result = executor.run(sequence)
 
         def handle():
             if result.status == "hard_error":
