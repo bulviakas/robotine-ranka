@@ -1,5 +1,6 @@
 import threading
 from ui.error_popup import ErrorPopup
+from ui.submission_overlay import SubmissionOverlay
 from dataclasses import dataclass
 from typing import Literal, Optional
 
@@ -11,6 +12,15 @@ class ExecutionResult:
     hard_error_reason: Optional[str] = None
 
 def run_sequence(app, executor, sequence, lang_manager):
+    overlay = SubmissionOverlay(app)
+
+    def wrap_ok(recover_fn):
+        def on_ok():
+            overlay.close()
+            if recover_fn:
+                recover_fn()
+        return on_ok
+
     def worker():
         result = executor.run(sequence)
 
@@ -21,7 +31,7 @@ def run_sequence(app, executor, sequence, lang_manager):
                     # TODO fix the reason output
                     lang_manager.get("popup_error_hard_body", reason=result.hard_error_reason),
                     level="hard",
-                    on_ok=executor.recover("Hard Error")
+                    on_ok=wrap_ok(executor.recover("Hard Error"))
                 )
 
             elif result.status == "incomplete":
@@ -36,7 +46,7 @@ def run_sequence(app, executor, sequence, lang_manager):
                         tasks=tasks_text
                     ),
                     level="incomplete",
-                    on_ok=executor.recover("Incomplete sequence")
+                    on_ok=wrap_ok(executor.recover("Incomplete sequence"))
                 )
 
             elif result.status == "soft_error":
@@ -51,14 +61,14 @@ def run_sequence(app, executor, sequence, lang_manager):
                         issues=soft_error_text
                         ),
                     level="soft",
-                    on_ok=executor.recover("End of execution")
+                    on_ok=wrap_ok(executor.recover("End of execution"))
                 )
             elif result.status == "passed":
                 ErrorPopup(
-                    app, 
+                    app,
                     lang_manager.get("popup_passed_body"),
                     level="passed",
-                    on_ok=executor.recover("End of execution")
+                    on_ok=wrap_ok(executor.recover("End of execution"))
                 )
 
         app.root.after(0, handle)
