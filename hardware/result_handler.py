@@ -21,7 +21,7 @@ def run_sequence(app, executor, sequence, lang_manager):
                     # TODO fix the reason output
                     lang_manager.get("popup_error_hard_body", reason=result.hard_error_reason),
                     level="hard",
-                    on_ok=executor.recover("Hard Error")
+                    on_ok=None
                 )
 
             elif result.status == "incomplete":

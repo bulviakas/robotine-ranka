@@ -64,10 +64,15 @@ class SequenceExecutor:
                 raise TimeoutError("Robot did not signal completion")
             sleep(0.01)
 
+        start = time()
         logger.info("Feedback received")
 
         while not GPIO.input(IS_ACTION_FINISHED_PIN):
             sleep(0.01)
+            
+        if (time() - start < 0.5):
+            logger.info("False alarm: random voltage drop")
+            self.wait_for_done()
 
     def run_action(self, pin, led_cmd=None, min_delay=0.1):
         if self.abort:
