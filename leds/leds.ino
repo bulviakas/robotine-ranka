@@ -1,16 +1,16 @@
 #include <FastLED.h>
 
-#define NUM_LEDS 20
+#define ROBOT_NUM_LEDS 40
+#define TABLE_NUM_LEDS 70 // All zone LED number
+#define TEST_NUM_LEDS 20
+#define FRIDGE_NUM_LEDS 30
+#define SCAN_NUM_LEDS 20
 #define BRIGHTNESS 200
-#define FRIDGE_PIN 5
-#define TEST_PIN 7
-#define FINAL_PIN 9
+#define TABLE_PIN 5
 #define ROBOT_PIN 11
 
-CRGB fridge[NUM_LEDS];
-CRGB test_strip[NUM_LEDS];
-CRGB final_strip[NUM_LEDS];
-CRGB robot[NUM_LEDS];
+CRGB tables[TABLE_NUM_LEDS];
+CRGB robot[ROBOT_NUM_LEDS];
 
 String command = "";
 bool errorMode = false;
@@ -22,10 +22,8 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
-  FastLED.addLeds<WS2811, FRIDGE_PIN, BRG>(fridge, NUM_LEDS);
-  FastLED.addLeds<WS2811, TEST_PIN, BRG>(test_strip, NUM_LEDS);
-  FastLED.addLeds<WS2811, FINAL_PIN, BRG>(final_strip, NUM_LEDS);
-  FastLED.addLeds<WS2811, ROBOT_PIN, BRG>(robot, NUM_LEDS);
+  FastLED.addLeds<WS2811, TABLE_PIN, BRG>(tables, TABLE_NUM_LEDS);
+  FastLED.addLeds<WS2811, ROBOT_PIN, BRG>(robot, ROBOT_NUM_LEDS);
   FastLED.setBrightness(BRIGHTNESS);
 
   resetToIdle();
@@ -38,6 +36,21 @@ void loop() {
   if (errorMode) {
     handleErrorBlink();
   }
+}
+
+void setRobotColor(CRGB color) {
+  for (int i = 0; i < ROBOT_NUM_LEDS; i++) robot[i] = color;
+}
+
+void setZoneColor(String zone, CRGB color) {
+  int start, end;
+
+    if (zone =="TEST") { start = 0; end = TEST_NUM_LEDS; }
+    else if (zone == "FRIDGE") { start = TEST_NUM_LEDS; end = FRIDGE_NUM_LEDS + start; }
+    else if (zone == "SCAN") { start = FRIDGE_NUM_LEDS + TEST_NUM_LEDS; end = SCAN_NUM_LEDS + start; }
+    else { start = 0; end = TABLE_NUM_LEDS; }
+
+  for (int i = start; i < end; i++) tables[i] = color;
 }
 
 void readSerial() {
@@ -55,10 +68,10 @@ void readSerial() {
 }
 
 void resetToIdle() {
-  setStrip(fridge, CRGB::Blue);
-  setStrip(test_strip, CRGB::Yellow);
-  setStrip(final_strip, CRGB::Red);
-  setStrip(robot, CRGB(40, 40, 40));
+  setZoneColor("FRIDGE", CRGB::Blue);
+  setZoneColor("TEST", CRGB::Yellow);
+  setZoneColor("SCAN", CRGB::Red);
+  setRobotColor(CRGB(40, 40, 40));
   FastLED.show();
 }
 
@@ -73,29 +86,28 @@ void handleCommand(String cmd) {
   errorMode = false;
 
   if (cmd == "IDLE") {
-    setStrip(fridge, CRGB::Blue);
-    setStrip(test_strip, CRGB::Yellow);
-    setStrip(final_strip, CRGB::Red);
-    setStrip(robot, CRGB(40, 40, 40));
+    setZoneColor("FRIDGE", CRGB::Blue);
+    setZoneColor("TEST", CRGB::Yellow);
+    setZoneColor("SCAN", CRGB::Red);
+    setRobotColor(CRGB(40, 40, 40));
   }
   else if (cmd == "FRIDGE") {
-    setStrip(fridge, CRGB::Blue);
-    setStrip(test_strip, CRGB::Yellow);
-    setStrip(final_strip, CRGB::Red);
-    setStrip(robot, CRGB::Blue);
+    setZoneColor("FRIDGE", CRGB::Blue);
+    setZoneColor("TEST", CRGB::Yellow);
+    setZoneColor("SCAN", CRGB::Red);
+    setRobotColor(CRGB::Blue);
   }
   else if (cmd == "STRONG SHAKE") {
-    // setStrip(test_strip, CRGB::Yellow);    // return test to yellow
-    setStrip(robot, CRGB(180, 40, 0));     // dark reddish-orange
+    setRobotColor(CRGB(180, 40, 0));     // dark reddish-orange
   }
   else if (cmd == "WEAK SHAKE") {
-    setStrip(robot, CRGB(60, 40, 0));
+    setRobotColor(CRGB(60, 40, 0));
   }
   else if (cmd == "FINAL") {
-    setStrip(fridge, CRGB::Blue);
-    setStrip(test_strip, CRGB::Yellow);
-    setStrip(final_strip, CRGB::Green);
-    setStrip(robot, CRGB::Green);
+    setZoneColor("FRIDGE", CRGB::Blue);
+    setZoneColor("TEST", CRGB::Yellow);
+    setZoneColor("SCAN", CRGB::Green);
+    setRobotColor(CRGB::Green);
   }
   else if (cmd == "RESET") {
     resetToIdle();
@@ -118,14 +130,10 @@ void handleErrorBlink() {
     lastBlink = now;
     blinkState = !blinkState;
     CRGB color = blinkState ? CRGB::Red : CRGB::Black;
-    setStrip(fridge, color);
-    setStrip(test_strip, color);
-    setStrip(final_strip, color);
-    setStrip(robot, color);
+    setZoneColor("FRIDGE", color);
+    setZoneColor("TEST", color);
+    setZoneColor("SCAN", color);
+    setRobotColor(color);
     FastLED.show();
   }
-}
-
-void setStrip(CRGB strip[], CRGB color) {
-  for (int i = 0; i < NUM_LEDS; i++) strip[i] = color;
 }
