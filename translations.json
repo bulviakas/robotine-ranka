@@ -37,7 +37,9 @@
     "soft_error_no_shake": "Unmixed samples",
     "soft_error_weak_shake": "Samples not fully mixed",
     "soft_error_no_scan_pause": "Specimens moved before starting scan",
-    "soft_error_short_pause": "Failed to scan swatches fully"
+    "soft_error_short_pause": "Failed to scan swatches fully",
+
+    "hard_error_shake_outside_test": "Sample shake cannot be executed outside the Test zone"
   },
   "LT": {
     "play_btn": "ŽAISTI",
@@ -77,6 +79,8 @@
     "soft_error_no_shake": "Neišmaišyti mėginiai",
     "soft_error_weak_shake": "Nepakankamai sumaišyti mėginiai",
     "soft_error_no_scan_pause": "Paletė patraukta prieš skenavimo pradžią",
-    "soft_error_short_pause": "Nespėta pabaigti skenavimo"
+    "soft_error_short_pause": "Nespėta pabaigti skenavimo",
+
+    "hard_error_shake_outside_test": "Negalimas pakratymas už Testavimo stoties ribų!"
   }
 }

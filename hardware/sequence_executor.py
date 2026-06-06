@@ -162,6 +162,7 @@ class SequenceExecutor:
                 logger.warning("Unknown position → emergency stop")
 
         self.send_serial_message("RESET")
+        self.current_position = "HOME"
 
     def run(self, sequence, on_hard_error=None):
         logger.info("Starting sequence execution")
@@ -220,7 +221,7 @@ class SequenceExecutor:
                         status="hard_error",
                         soft_errors=soft_errors,
                         missing_tasks=[],
-                        hard_error_reason="shake_outside_test"
+                        hard_error_reason="hard_error_shake_outside_test"
                     )
                 self.execute_action(action)
                 shake_performed = True
