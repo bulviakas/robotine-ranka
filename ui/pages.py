@@ -71,7 +71,7 @@ def setup_context_page(self):
         int(self.self_h * 0.425), 
         anchor="center", 
         fill=WHITE, 
-        font=(MAIN_FONT, 16), 
+        font=(MAIN_FONT, 28), 
         text="", 
         width=video_w
         )
@@ -150,7 +150,7 @@ def setup_instructions_page(self):
         int(self.self_h * 0.425), 
         anchor="w", 
         fill=WHITE, 
-        font=(MAIN_FONT, 16), 
+        font=(MAIN_FONT, 28), 
         text="", 
         width=text_w
         )

@@ -44,7 +44,7 @@
     "start_title": "Pažink Robotikos Pasaulį!",
     "next_btn": "TOLIAU",
     "back_btn": "ATGAL",
-    "instructions": "Tempkite blokus iš paletės į tuščias vietas ir sudarykite seką.\n\nBlokai vykdomi iš viršaus į apačią, tokia tvarka, kokia juos sudėsite. \n\nKai kurie veiksmai galimi tik tam tikrose zonose — jei seka neteisinga, sistema apie tai praneš.",
+    "instructions": "Tempkite blokus iš paletės į tuščias vietas ir sudarykite seką.\n\nBlokai vykdomi iš kairės dešinėn, tokia tvarka, kokia juos sudėsite. \n\nKai kurie veiksmai galimi tik tam tikrose zonose — jei seka neteisinga, sistema apie tai praneš.",
     "clear_btn": "IŠVALYTI",
     "submit_btn": "PATEIKTI",
     "start_block": "PRADŽIA",
