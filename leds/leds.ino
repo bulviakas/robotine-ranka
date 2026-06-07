@@ -1,13 +1,13 @@
 #include <FastLED.h>
 
 #define ROBOT_NUM_LEDS 40
-#define TABLE_NUM_LEDS 70 // All zone LED number
-#define TEST_NUM_LEDS 20
-#define FRIDGE_NUM_LEDS 30
-#define SCAN_NUM_LEDS 20
+#define TABLE_NUM_LEDS 187 // All zone LED number
+#define TEST_NUM_LEDS 71
+#define FRIDGE_NUM_LEDS 60
+#define SCAN_NUM_LEDS 56
 #define BRIGHTNESS 200
-#define TABLE_PIN 5
-#define ROBOT_PIN 11
+#define TABLE_PIN 11
+#define ROBOT_PIN 5
 
 CRGB tables[TABLE_NUM_LEDS];
 CRGB robot[ROBOT_NUM_LEDS];
@@ -68,9 +68,9 @@ void readSerial() {
 }
 
 void resetToIdle() {
-  setZoneColor("FRIDGE", CRGB::Blue);
-  setZoneColor("TEST", CRGB::Yellow);
-  setZoneColor("SCAN", CRGB::Red);
+  setZoneColor("FRIDGE", CRGB(0, 255, 0));
+  setZoneColor("TEST", CRGB(180, 0, 255));
+  setZoneColor("SCAN", CRGB(255, 0, 0));
   setRobotColor(CRGB(40, 40, 40));
   FastLED.show();
 }
@@ -86,15 +86,15 @@ void handleCommand(String cmd) {
   errorMode = false;
 
   if (cmd == "IDLE") {
-    setZoneColor("FRIDGE", CRGB::Blue);
-    setZoneColor("TEST", CRGB::Yellow);
-    setZoneColor("SCAN", CRGB::Red);
+    setZoneColor("FRIDGE", CRGB(0, 255, 0));
+    setZoneColor("TEST", CRGB(180, 0, 255));
+    setZoneColor("SCAN", CRGB(255, 0, 0));
     setRobotColor(CRGB(40, 40, 40));
   }
   else if (cmd == "FRIDGE") {
-    setZoneColor("FRIDGE", CRGB::Blue);
-    setZoneColor("TEST", CRGB::Yellow);
-    setZoneColor("SCAN", CRGB::Red);
+    setZoneColor("FRIDGE", CRGB(0, 255, 0));
+    setZoneColor("TEST", CRGB(255, 0, 255));
+    setZoneColor("SCAN", CRGB(255, 0, 0));
     setRobotColor(CRGB::Blue);
   }
   else if (cmd == "STRONG SHAKE") {
@@ -104,9 +104,9 @@ void handleCommand(String cmd) {
     setRobotColor(CRGB(60, 40, 0));
   }
   else if (cmd == "FINAL") {
-    setZoneColor("FRIDGE", CRGB::Blue);
-    setZoneColor("TEST", CRGB::Yellow);
-    setZoneColor("SCAN", CRGB::Green);
+    setZoneColor("FRIDGE", CRGB(0, 255, 0));
+    setZoneColor("TEST", CRGB(180, 0, 255));
+    setZoneColor("SCAN", CRGB(0, 0, 255));
     setRobotColor(CRGB::Green);
   }
   else if (cmd == "RESET") {
