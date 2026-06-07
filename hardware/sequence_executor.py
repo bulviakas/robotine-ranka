@@ -50,6 +50,7 @@ class SequenceExecutor:
 
     def send_serial_message(self, msg: str):
         self.ser.write((msg + '\n').encode('utf-8'))
+        logger.info("Message sent: " + msg)
 
     def wait_for_done(self, timeout=100):
         start = time()
@@ -81,10 +82,10 @@ class SequenceExecutor:
         GPIO.output(pin, GPIO.LOW)
         sleep(min_delay)
         GPIO.output(pin, GPIO.HIGH)
-
-        self.wait_for_done()
         if led_cmd:
             self.send_serial_message(led_cmd)
+        self.wait_for_done()
+
 
         sleep(0.05)
 
