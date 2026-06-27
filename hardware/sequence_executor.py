@@ -29,7 +29,7 @@ class SequenceExecutor:
             ERR_FRIDGE_PIN,
             END_POS_PIN,
             ERR_TEST_PIN,
-            ERROR_LED_PIN
+            MONITOR_RELAY_PIN
         ]
 
         GPIO.setmode(GPIO.BCM)
@@ -40,7 +40,7 @@ class SequenceExecutor:
             GPIO.output(pin, GPIO.HIGH)
 
         sleep(3)
-        GPIO.output(ERROR_LED_PIN, GPIO.LOW)
+        GPIO.output(MONITOR_RELAY_PIN, GPIO.LOW)
 
         GPIO.setup(IS_ACTION_FINISHED_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
