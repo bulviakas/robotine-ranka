@@ -152,10 +152,13 @@ class SequenceExecutor:
 
         match self.current_position:
             case "FRIDGE":
+                self.send_serial_message("ERROR")
                 self.error_fridge()
             case "TEST":
+                self.send_serial_message("ERROR")
                 self.error_test()
             case "SCAN":
+                self.send_serial_message("ERROR")
                 self.end_pos()
             case "HOME":
                 logger.info("Already homed.")
@@ -199,7 +202,6 @@ class SequenceExecutor:
                     soft_errors.append("no_scan_pause")
 
                 if action != expected:
-                    self.send_serial_message("ERROR")
                     self.recover(f"Expected {expected}, got {action}")
                     return ExecutionResult(
                         status="hard_error",
