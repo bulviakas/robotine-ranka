@@ -2,10 +2,8 @@ from config import *
 from utils import load_svg_img
 from logger import get_logger, setLoggerLevel
 from logging import INFO
-from hardware.sequence_executor import SequenceExecutor, ExecutionResult
-from ui.error_popup import ErrorPopup
+from hardware.sequence_executor import SequenceExecutor
 from hardware.result_handler import run_sequence
-import threading
 logger = get_logger("Command Line")
 setLoggerLevel(logger, INFO)
 
@@ -54,7 +52,6 @@ class CommandLine():
         cy = (bb[1] + bb[3]) / 2
         slot = int((cx - self.x0) // self.slot_w)
 
-        # validity: in range & sequential
         if not (0 <= slot < len(self.slots)):     return False
         if self.slots[slot] is not None:          return False
         if slot and self.slots[slot-1] is None:   return False
@@ -62,7 +59,6 @@ class CommandLine():
             logger.debug("Too far away")
             return False
 
-        # snap!
         tgt_cx = self.x0 + slot*self.slot_w + self.piece_w//2
         dx, dy = tgt_cx - cx, self.y_mid - ((bb[1]+bb[3]) / 2)
         self.canvas.move(block.tag, dx, dy)
