@@ -1,7 +1,7 @@
 from config import *
 from utils import load_svg_img, darken_img
 import tkinter as tk
-from ui import VideoPlayer, CommandLine, Block, LanguageDropdown
+from ui import VideoPlayer, CommandLine, Block, LanguageButton
 from logger import get_logger
 logger = get_logger("Pages")
 
@@ -32,7 +32,7 @@ def setup_start_page(self):
         command=lambda e: self.show_page(self.context_page)
         )
     
-    LanguageDropdown(canvas, languages=LANGUAGES, x=self.self_w * 0.95, y=self.self_h * MENU_TOP_FRAC - 5, command=lambda lang: self.lang_manager.set_language(lang))
+    LanguageButton(canvas, languages=LANGUAGES, x=self.self_w * 0.95, y=self.self_h * MENU_TOP_FRAC - 5, command=lambda lang: self.lang_manager.set_language(lang))
 
 def setup_context_page(self):
 
@@ -236,7 +236,7 @@ def setup_game_page(self):
     # LANGUAGE icon
     lng_y = self.self_h * MENU_TOP_FRAC - 5
     lng_x = tt_x - 1.5*icon_size
-    lang_dd = LanguageDropdown(self.canvas, languages=LANGUAGES, x=lng_x, y=lng_y, command=lambda lang: self.lang_manager.set_language(lang))
+    lang_dd = LanguageButton(self.canvas, languages=LANGUAGES, x=lng_x, y=lng_y, command=lambda lang: self.lang_manager.set_language(lang))
 
     # Start block
     start_block = Block(self, self.lang_manager, self.cmd, WHITE, self.cmd.x0 + self.piece_w//2, 

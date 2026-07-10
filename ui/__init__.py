@@ -1,7 +1,7 @@
 from .video_player import VideoPlayer
 from .block import Block
 from .command_line import CommandLine
-from .language_dropdown import LanguageDropdown
+from .language_button import LanguageButton
 from .pages import setup_start_page, setup_instructions_page, setup_context_page, setup_game_page
 from .error_popup import ErrorPopup
 from .submission_overlay import SubmissionOverlay
