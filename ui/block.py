@@ -6,7 +6,6 @@ from logging import INFO
 logger = get_logger("Block")
 setLoggerLevel(logger, INFO)
 
-
 class Block():
     def __init__(self, app, lang_mngr, cmd, colour, x, y, template=False, start=False, text="", text_offset=7):
         self.app, self.canvas, self.lang_mngr = app, app.canvas, lang_mngr
@@ -20,38 +19,36 @@ class Block():
         self.text_offset = text_offset
         self.start = start
 
-        self._drag_scheduled = False
-        self._last_event = None
-
         if self.start:
             img = load_svg_img(app, START_BLOCK_PATH, (app.piece_w, app.piece_h), colour)
             self.font_size = scale_font(14)
+
         elif self.template:
             img = load_svg_img(app, BLOCK_TEMPLATE_PATH, (1.5*app.piece_w, 1.5*app.piece_h), colour)
             self.font_size = int(self.font_size * 1.75)
             self.text_offset = 2
+
         else:
             img = load_svg_img(app, CMD_BLOCK_PATH, (app.piece_w, app.piece_h), colour)
 
-        self._img = img
-
         self.item = self.canvas.create_image(
-            x, y,
-            image=img,
-            anchor="center",
+            x, y, 
+            image=img, 
+            anchor="center", 
             tags=self.tag
             )
-
+        
         self.label = self.canvas.create_text(
-            x + self.text_offset, y,
-            text=text.replace(' ', '\n'),
-            font=(MAIN_FONT, self.font_size, 'bold'),
-            fill=BLACK,
-            anchor='center',
-            tags=self.tag,
+            x + self.text_offset, y, 
+            text=text.replace(' ', '\n'), 
+            font=(MAIN_FONT, self.font_size, 'bold'), 
+            fill=BLACK, 
+            anchor='center', 
+            tags=self.tag, 
             justify='center'
             )
         lang_mngr.register_widget(app.canvas, text, item_id=self.label)
+
         for ev, cb in (("<Button-1>", self.on_click),
                        ("<B1-Motion>", self.on_drag),
                        ("<ButtonRelease-1>", self.on_release)):
@@ -62,44 +59,37 @@ class Block():
         if not self.locked:
             self.app.cmd.release(self)
             if self.template:
+                # spawn a draggable clone
                 clone = Block(self.app, self.lang_mngr, self.cmd, self.colour, ev.x, ev.y, template=False, text=self.text)
+
                 clone.drag_x, clone.drag_y = ev.x, ev.y
                 clone.on_drag(ev)
 
+                def drag_handler(e): clone.on_drag(e)
+                def release_handler(e): clone.on_release(e)
+
                 canvas = self.canvas
-                canvas.bind("<B1-Motion>", clone.on_drag)
-                canvas.bind("<ButtonRelease-1>", clone.on_release)
+                canvas.bind("<B1-Motion>", drag_handler)
+                canvas.bind("<ButtonRelease-1>", release_handler)
                 return
             self.drag_x, self.drag_y = ev.x, ev.y
 
-    def on_drag(self, ev):
-        if self.locked or self.template:
-            return
-        self._last_event = ev
-        if not self._drag_scheduled:
-            self._drag_scheduled = True
-            self.canvas.after_idle(self._process_drag)
 
-    def _process_drag(self):
-        self._drag_scheduled = False
-        ev = self._last_event
-        if ev is None:
-            return
-        dx, dy = ev.x - self.drag_x, ev.y - self.drag_y
-        if dx or dy:
+    def on_drag(self, ev):
+        if not self.locked:
+            if self.template: return
+            dx, dy = ev.x - self.drag_x, ev.y - self.drag_y
             self.canvas.move(self.tag, dx, dy)
-        self.drag_x, self.drag_y = ev.x, ev.y
+            self.drag_x, self.drag_y = ev.x, ev.y
 
     def on_release(self, _ev):
         logger.debug("Block released")
-        self._drag_scheduled = False
         if not self.locked:
-            if self.template:
-                return
+            if self.template: return
             if not self.app.cmd.try_snap(self):
                 self.return_home()
-            self.canvas.unbind("<B1-Motion>")
-            self.canvas.unbind("<ButtonRelease-1>")
+                self.canvas.unbind("<B1-Motion>")
+                self.canvas.unbind("<ButtonRelease-1>")
 
     def return_home(self):
         self.destroy()
@@ -108,7 +98,7 @@ class Block():
     def lock(self):
         self.locked = True
         logger.info(f"{self.text} block locked")
-
+    
     def unlock(self):
         if not self.start:
             self.locked = False
@@ -116,7 +106,6 @@ class Block():
 
     def destroy(self):
         self.canvas.delete(self.tag)
-
 
 def scale_font(base_size):
     return int(base_size * config.BLOCK_SIZE_COEF)

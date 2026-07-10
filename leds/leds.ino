@@ -1,8 +1,8 @@
 #include <FastLED.h>
 
 #define ROBOT_NUM_LEDS 40
-#define TABLE_NUM_LEDS 187 // All zone LED number
-#define TEST_NUM_LEDS 71
+#define TABLE_NUM_LEDS 185 // All zone LED number
+#define TEST_NUM_LEDS 69
 #define FRIDGE_NUM_LEDS 60
 #define SCAN_NUM_LEDS 56
 #define BRIGHTNESS 200
@@ -22,8 +22,8 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
-  FastLED.addLeds<WS2811, TABLE_PIN, BRG>(tables, TABLE_NUM_LEDS);
-  FastLED.addLeds<WS2811, ROBOT_PIN, BRG>(robot, ROBOT_NUM_LEDS);
+  FastLED.addLeds<WS2811, TABLE_PIN, GRB>(tables, TABLE_NUM_LEDS);
+  FastLED.addLeds<WS2811, ROBOT_PIN, GRB>(robot, ROBOT_NUM_LEDS);
   FastLED.setBrightness(BRIGHTNESS);
 
   resetToIdle();
@@ -68,9 +68,9 @@ void readSerial() {
 }
 
 void resetToIdle() {
-  setZoneColor("FRIDGE", CRGB(0, 255, 0));
-  setZoneColor("TEST", CRGB(180, 0, 255));
-  setZoneColor("SCAN", CRGB(255, 0, 0));
+  setZoneColor("FRIDGE", CRGB::Blue);
+  setZoneColor("TEST", CRGB::Yellow);
+  setZoneColor("SCAN", CRGB::Red);
   setRobotColor(CRGB(40, 40, 40));
   FastLED.show();
 }
@@ -86,15 +86,15 @@ void handleCommand(String cmd) {
   errorMode = false;
 
   if (cmd == "IDLE") {
-    setZoneColor("FRIDGE", CRGB(0, 255, 0));
-    setZoneColor("TEST", CRGB(180, 0, 255));
-    setZoneColor("SCAN", CRGB(255, 0, 0));
+    setZoneColor("FRIDGE", CRGB::Blue);
+    setZoneColor("TEST", CRGB::Yellow);
+    setZoneColor("SCAN", CRGB::Red);
     setRobotColor(CRGB(40, 40, 40));
   }
   else if (cmd == "FRIDGE") {
-    setZoneColor("FRIDGE", CRGB(0, 255, 0));
-    setZoneColor("TEST", CRGB(255, 0, 255));
-    setZoneColor("SCAN", CRGB(255, 0, 0));
+    setZoneColor("FRIDGE", CRGB::Blue);
+    setZoneColor("TEST", CRGB::Yellow);
+    setZoneColor("SCAN", CRGB::Red);
     setRobotColor(CRGB::Blue);
   }
   else if (cmd == "STRONG SHAKE") {
@@ -104,9 +104,9 @@ void handleCommand(String cmd) {
     setRobotColor(CRGB(60, 40, 0));
   }
   else if (cmd == "FINAL") {
-    setZoneColor("FRIDGE", CRGB(0, 255, 0));
-    setZoneColor("TEST", CRGB(180, 0, 255));
-    setZoneColor("SCAN", CRGB(0, 0, 255));
+    setZoneColor("FRIDGE", CRGB::Blue);
+    setZoneColor("TEST", CRGB::Yellow);
+    setZoneColor("SCAN", CRGB::Green);
     setRobotColor(CRGB::Green);
   }
   else if (cmd == "RESET") {
